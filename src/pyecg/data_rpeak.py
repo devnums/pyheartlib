@@ -10,125 +10,110 @@ from pyecg.processing import Processing
 from scipy import stats
 
 
-def get_ecg_record(record_num=106):
-    """
-    return the signal and annotations as a dictionary
-    keys: signal,r_locations,r_labels,rhythms,rhythms_locations
-    """
-    beatdata = BeatData(base_path="../data")
-    rec_dict = beatdata.get_signal_data(record_num=record_num, return_dict=True)
-    rec_dict["signal"] = Processing.denoise_signal(
-        rec_dict["signal"], remove_bl=True, lowpass=False
-    )
-    return rec_dict
+class RpeakData(Data):
+    """Provides data for peak detection."""
 
+    def __init__(
+        self,
+        base_path=os.getcwd(),
+        data_path=DATA_DIR,
+        remove_bl=False,
+        lowpass=False,
+        sampling_rate=360,
+        cutoff=45,
+        order=15,
+    ):
+        super().__init__(
+            base_path,
+            data_path,
+            remove_bl,
+            lowpass,
+            sampling_rate,
+            cutoff,
+            order,
+        )
 
-def full_annotate_rpeak(record):
-    """fully annotate a single recorded signal.
+    def full_annotate(self, record):
+        """fully annotate a single record signal.
 
-    Parameters
-    ----------
-    record : dict
-                keys: signal,r_locations,r_labels,rhythms,rhythms_locations
-    Returns
-    -------
-    list
-        a list of zeros. At any index with an rpeak the zero is changed to label.
-        [00000N00000000000000L00000...]
-    """
-    signal, r_locations, r_labels, _, _ = record.values()
+        Parameters
+        ----------
+        record : dict
+            keys: signal,r_locations,r_labels,rhythms,rhythms_locations
+        Returns
+        -------
+        list
+            a list of zeros. At any index with an rpeak the zero is changed to label.
+            [00000N00000000000000L00000...]
+        """
 
-    full_seq = [0] * len(signal)
-    for i, loc in enumerate(r_locations):
-        full_seq[loc] = r_labels[i]
+        signal, r_locations, r_labels, _, _ = record.values()
+        full_seq = [0] * len(signal)
+        for i, loc in enumerate(r_locations):
+            full_seq[loc] = r_labels[i]
 
-    return [signal, full_seq]
+        record_full = [signal, full_seq]
+        return record_full
 
+    def make_samples_info(annotated_records, win_size=30 * 360, stride=256):
+        """
+        Parameters
+        ----------
+        annotated_records: [[signal1, full_ann1],[signal2, full_ann2],...]
+        win_size : the length of each extracted sample
+        stride : the stride for extracted samples.
+        interval : the output interval for labels.
+        binary : if True 1 is replaced instead of labels
 
-def get_all_annotated_records(rec_list):
-    """
-    
-    Returns
-    -------
-    list    
-        a list containing [signal, full_ann] for all records in rec_list
-        [[signal1, full_ann1],[signal2, full_ann2],...]
-    """
-    all_recs = []
-    for rec_no in tqdm(rec_list):
-        rec_dict = get_ecg_record(record_num=rec_no)
-        d = full_annotate_rpeak(rec_dict)
-        all_recs.append(d)
-    return all_recs
+        Returns
+        -------
+        list
+            a 2d list. Each inner list: [record_no,start_win,end_win,label]
+            [[record_no,start_win,end_win,label],[record_no,start_win,end_win,label], ...]
+            label is a list. Elements are rpeak labels for each interval.
+            eg: [[10,500,800, [000000N00000000L00] ],[],...]
+        """
+        interval = 128  # not necessary, will be calculated in EXGSEQUENCE
+        binary = True  # remove it and only do in ECGSEQUENCE
 
+        stride = int(stride)
+        win_size = int(win_size)
+        interval = int(interval)
 
-def make_samples_info(
-    annotated_records, win_size=30 * 360, stride=256, interval=128, binary=True
-):
-    """
-    Parameters
-    ----------
-    annotated_records: [[signal1, full_ann1],[signal2, full_ann2],...]
-    win_size : the length of each extracted sample
-    stride : the stride for extracted samples.
-    interval : the output interval for labels.
-    binary : if True 1 is replaced instead of labels
-    Returns
-    -------
-    list                
-        a 2d list. Each inner list: [record_no,start_win,end_win,label]
-        [[record_no,start_win,end_win,label],[record_no,start_win,end_win,label], ...]
-        label is a list. Elements are rpeak labels for each interval.
-        eg: [[10,500,800, [000000N00000000L00] ],[],...]
-    """
-    stride = int(stride)
-    win_size = int(win_size)
-    interval = int(interval)
+        samples_info = []
 
-    samples_info = []
+        # each record
+        for rec_no in tqdm(range(len(annotated_records))):
+            signal, full_ann = annotated_records[rec_no]
+            assert len(signal) == len(
+                full_ann
+            ), "signal and annotation must have the same length!"
 
-    # each record
-    for rec_no in tqdm(range(len(annotated_records))):
-        signal, full_ann = annotated_records[rec_no]
-        assert len(signal) == len(
-            full_ann
-        ), "signal and annotation must have the same length!"
+            # each extracted segment
+            end = win_size
+            while end < len(full_ann):
+                start = int(end - win_size)
+                seg = full_ann[start:end]
+                labels_seq = []
 
-        # each extracted segment
-        end = win_size
-        while end < len(full_ann):
-            start = int(end - win_size)
-            seg = full_ann[start:end]
-            labels_seq = []
+                # each subsegment
+                for i in range(0, len(seg), interval):
+                    subseg = seg[i : i + interval]
+                    if any(subseg):
+                        nonzero = [l for l in subseg if l != 0]
+                        lb = nonzero[0]
+                        if binary:
+                            lb = 1
+                        labels_seq.append(lb)
+                    else:
+                        lb = 0
+                        labels_seq.append(lb)
 
-            # each subsegment
-            for i in range(0, len(seg), interval):
-                subseg = seg[i : i + interval]
-                if any(subseg):
-                    nonzero = [l for l in subseg if l != 0]
-                    lb = nonzero[0]
-                    if binary:
-                        lb = 1
-                    labels_seq.append(lb)
-                else:
-                    lb = 0
-                    labels_seq.append(lb)
+                samples_info.append([rec_no, start, end, labels_seq])
+                end += stride
+            time.sleep(3)
 
-            samples_info.append([rec_no, start, end, labels_seq])
-            end += stride
-        time.sleep(3)
-
-    return samples_info
-
-
-def save_samples_rpeak(rec_list, file_path, win_size, stride, interval, binary):
-    annotated_records = get_all_annotated_records(rec_list)
-    samples_info = make_samples_info(
-        annotated_records, win_size, stride, interval, binary
-    )
-    data = [annotated_records, samples_info]
-    save_data(data, file_path=file_path)
-    return data
+        return samples_info
 
 
 class ECGSequence(tf.keras.utils.Sequence):
@@ -168,7 +153,6 @@ class ECGSequence(tf.keras.utils.Sequence):
         class_labels=None,
         shuffle=True,
     ):
-
         self.shuffle = shuffle
         self.binary = binary
         self.raw = raw
