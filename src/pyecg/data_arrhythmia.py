@@ -23,7 +23,6 @@ class ArrhythmiaData(Data):
         cutoff=45,
         order=15,
     ):
-
         super().__init__(
             base_path,
             data_path,
@@ -34,7 +33,7 @@ class ArrhythmiaData(Data):
             order,
         )
 
-    def full_annotate_arr(self, record):
+    def full_annotate(self, record):
         """Fully annotate a signal.
 
         Parameters
@@ -59,30 +58,6 @@ class ArrhythmiaData(Data):
             full_ann[rhythms_locations[i] :] = [rhythms[i]] * remained
         record_full = [signal, full_ann]
         return record_full
-
-    def get_all_annotated_records(self, rec_list):
-        """Creates full annotation for records in the provided list.
-
-        Parameters
-        ----------
-        rec_list : list
-            List of records.
-
-        Returns
-        -------
-        list
-            A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
-        """
-
-        all_recs = []
-        for rec_id in tqdm(rec_list):
-            rec_dict = self.get_ecg_record(record_id=rec_id)
-            rec_dict["full_ann"] = self.full_annotate_arr(rec_dict)[
-                1
-            ]  # adding this list to the dict
-            all_recs.append(rec_dict)
-        return all_recs
 
     def make_samples_info(self, annotated_records, win_size=30 * 360, stride=36):
         """Creates a list of signal excerpts and their labels. For each excerpt the
@@ -126,33 +101,6 @@ class ArrhythmiaData(Data):
                 end += stride
             time.sleep(3)
         return samples_info
-
-    def save_samples_arr(self, rec_list=DS1, file_path=None, stride=36):
-        """Returns and saves the signals and their full annotations along
-        with information neccesary for extracting signal excerpts.
-
-        Parameters
-        ----------
-        rec_list : list, optional
-                Contains ids of records, by default DS1
-        file_path : str, optional
-                Save file name, by default None
-        stride : int, optional
-                Stride of the moving windows, by default 36
-
-        Returns
-        -------
-        list
-                The list contains two elements. First element is a list containing a dict for each record, [rec1,rec2,....].
-                            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'. Second element is
-        a list of lists. Each inner list is like [record_no, start_win, end_win, label]. E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
-        """
-
-        annotated_records = self.get_all_annotated_records(rec_list)
-        samples_info = self.make_samples_info(annotated_records, stride=stride)
-        data = [annotated_records, samples_info]
-        save_data(data, file_path=file_path)
-        return data
 
 
 class ECGSequence(Sequence):
