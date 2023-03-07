@@ -3,6 +3,7 @@ import math
 import time
 import tensorflow as tf
 from tqdm import tqdm
+from pyecg.data import Data, DataSeq
 from pyecg.dataset_config import *
 from pyecg.data_beat import BeatData
 from pyecg.utils import save_data

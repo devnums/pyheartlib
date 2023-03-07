@@ -10,8 +10,8 @@ test_set = [202, 210, 219, 221, 222]
 
 arrhythmia_data = ArrhythmiaData(base_path="./data", remove_bl=False, lowpass=False)
 
-annotated_records, samples_info = arrhythmia_data.save_samples_arr(
-    rec_list=train_set, file_path="./data/train.arr", stride=64
+annotated_records, samples_info = arrhythmia_data.save_samples(
+    rec_list=train_set, file_path="./data/train.arr", win_size=3600, stride=64
 )
 annotated_records, samples_info = load_data("./data/train.arr")
 

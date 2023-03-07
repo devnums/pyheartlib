@@ -8,7 +8,7 @@ from pyecg.io import get_data, save_data, load_data
 from pyecg.processing import Processing
 
 
-class Data(ABC):
+class Data:
     """Parent of other data classes."""
 
     def __init__(
@@ -75,6 +75,11 @@ class Data(ABC):
             order=self.order,
         )
         return data_dict
+
+
+
+class DataSeq(ABC):
+    """Parent of other data classes."""
 
     @abstractmethod
     def full_annotate(self):

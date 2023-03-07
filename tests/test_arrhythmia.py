@@ -22,8 +22,8 @@ def record():
     return r
 
 
-def test_full_annotate_arr(arrhythmia_data, record):
-    signal, full_ann = arrhythmia_data.full_annotate_arr(record)
+def test_full_annotate(arrhythmia_data, record):
+    signal, full_ann = arrhythmia_data.full_annotate(record)
     assert len(signal) == len(full_ann)
     assert full_ann[0] == "unlab"
     assert full_ann[9] == "unlab"
