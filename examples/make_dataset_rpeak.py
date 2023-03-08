@@ -4,7 +4,6 @@ from pyecg.io import load_data
 from pyecg.data_rpeak import RpeakData, ECGSequence
 
 
-# 
 train_set = [201, 203]
 test_set = [202, 210, 219, 221, 222]
 

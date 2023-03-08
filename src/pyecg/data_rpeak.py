@@ -117,49 +117,47 @@ class RpeakData(Data, DataSeq):
 
 
 class ECGSequence(Sequence):
-    """
-    Parameters
-    ----------
-    data: list
-            [[signal1, full_ann1],[signal2, full_ann2],...]
-            only the signal parts are used.
-    samples_info: list
-            [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
-            eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
-    raw: bool
-            Whether to return the full waveform or the computed features.
-    interval: int
-            interval for sub segmenting the waveform for feature and label computations.
-    class_labels: list or None
-            the list of class labels to convert the output label list to integers.
-
-
-    Returns
-    -------
-    numpy.array
-            batch_x: 2d array of (batch,segments,features) 	  (batch_size, 300, 2)
-            batch_y: 2d array of (batch,label_list) 			(batch_size, 300)
-
-    """
 
     def __init__(
         self,
         data,
         samples_info,
+        class_labels=None,
         batch_size=128,
         binary=True,
         raw=True,
         interval=36,
-        class_labels=None,
         shuffle=True,
     ):
+        """
+        Parameters
+        ----------
+        data: list
+            A list containing a dict for each record, [rec1,rec2,....].
+            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+        samples_info: list
+            [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
+            eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
+        class_labels : list, optional
+            the list of class labels to convert the output label list to integers, by default None
+        batch_size : int, optional
+            Batch size, by default 128
+        binary : bool, optional
+            If True return will be 1 instead of riginal str label, by default True
+        raw : bool, optional
+            Whether to return the full waveform or the computed features., by default True
+        interval : int, optional
+            interval for sub segmenting the waveform for feature and label computations, by default 36
+        shuffle : bool, optional
+            If True shuffle the sample data, by default True
+        """
         self.data = data
         self.samples_info = samples_info
+        self.class_labels = class_labels
         self.batch_size = batch_size
         self.binary = binary
         self.raw = raw
         self.interval = interval
-        self.class_labels = class_labels
         self.shuffle = shuffle
         self.on_epoch_end()
 
@@ -167,13 +165,19 @@ class ECGSequence(Sequence):
         return math.ceil(len(self.samples_info) / self.batch_size)
 
     def __getitem__(self, idx):
+        """
+        Returns
+        -------
+        Tuple
+            Tuple of numpy arrays (batch_x,batch_y) for sequences(or computed features) and their labels.
+            batch_x: If raw is False: (batch,segments,features) otherwise (batch,seqs)
+            batch_y: (batch,label_list)
+        """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
         ]
-
         batch_x = []
         batch_y = []
-
         for sample in batch_samples:
             # eg sample:[10,500,800,[0,0,0,'N',0,0...] >>[rec,start,end,label]
             rec_no = sample[0]
@@ -184,20 +188,17 @@ class ECGSequence(Sequence):
             seq = self.data[rec_no]["signal"][start:end]
             full_ann_seq = self.data[rec_no]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
-
             # processing steps on the signal fraggment
             if self.raw == False:
                 seq = self.proc_steps(seq)
                 batch_x.append(list(seq))
             else:
                 batch_x.append(seq)
-
             if self.class_labels != None:
                 label = self.get_integer(label)
             if self.binary:
                 label = self.get_binary(label)
             batch_y.append(label)
-
         return np.array(batch_x), np.array(batch_y)
 
     def on_epoch_end(self):
@@ -235,14 +236,12 @@ class ECGSequence(Sequence):
     def proc_steps(self, seq):
         # get a 1d seq and return a multidim list.
         # each feature is an aggragate of a subseq.
-        # self.interval =36
         b = int(len(seq) / self.interval)
         subseqs = []
         for i in range(b):
             subseq = seq[i * self.interval : (i + 1) * self.interval]
             subseqs.append(subseq)
         subseqs = np.array(subseqs)  # interval=36---> (300,36)
-
         f1 = np.amax(subseqs, axis=1)
         f2 = np.amin(subseqs, axis=1)
         f3 = np.mean(subseqs, axis=1)
@@ -250,7 +249,6 @@ class ECGSequence(Sequence):
         f5 = np.median(subseqs, axis=1)
         f6 = stats.skew(subseqs, axis=1)
         f7 = stats.kurtosis(subseqs, axis=1)
-
         sqr = subseqs**2
         f8 = np.amax(sqr, axis=1)
         f9 = np.amin(sqr, axis=1)
@@ -259,7 +257,5 @@ class ECGSequence(Sequence):
         f12 = np.median(sqr, axis=1)
         f13 = stats.skew(sqr, axis=1)
         f14 = stats.kurtosis(sqr, axis=1)
-
         feats = np.vstack((f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14))
-
         return feats.T

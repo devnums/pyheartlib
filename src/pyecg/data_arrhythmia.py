@@ -9,7 +9,7 @@ from pyecg.dataset_config import DATA_DIR, DS1
 from pyecg.features import get_hrv_features
 
 
-class ArrhythmiaData(Data,DataSeq):
+class ArrhythmiaData(Data, DataSeq):
     """Provides data for Arrhythmia classficaation."""
 
     def __init__(
@@ -110,25 +110,25 @@ class ECGSequence(Sequence):
         class_labels=None,
         batch_size=128,
         shuffle=True,
-        denoise=True,
+        denoise=False,
     ):
         """
         Parameters
         ----------
         data : list
-                        A list containing a dict for each record, [rec1,rec2,....].
-                        Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+            A list containing a dict for each record, [rec1,rec2,....].
+            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
         samples_info : list
-                        A list of lists. Each inner list is like [record_no, start_win, end_win, label].
-                        E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
+            A list of lists. Each inner list is like [record_no, start_win, end_win, label].
+            E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
         class_labels : list, optional
-                        List of arrhythmia classes in the data, by default None
+            List of arrhythmia classes in the data, by default None
         batch_size : int, optional
-                        Batch size, by default 128
+            Batch size, by default 128
         shuffle : bool, optional
-                        If True shuffle the sample data, by default True
+            If True shuffle the sample data, by default True
         denoise : bool, optional
-                        If True denoise the signals, by default True
+            If True denoise the signals, by default False
         """
         self.shuffle = shuffle
         self.denoise = denoise
@@ -142,10 +142,15 @@ class ECGSequence(Sequence):
         return math.ceil(len(self.samples_info) / self.batch_size)
 
     def __getitem__(self, idx):
+        """
+        Returns
+        -------
+        Tuple
+            Tuple of numpy arrays for sequences(or computed features) and labels for each batch.
+        """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
         ]
-
         batch_seq = []
         batch_label = []
         batch_rri = []
@@ -157,17 +162,12 @@ class ECGSequence(Sequence):
             label = sample[3]
             if self.class_labels != None:
                 label = self.get_integer(label)
-
             seq = self.data[rec_no]["signal"][start:end]
-
             batch_seq.append(seq)
             batch_label.append(label)
-
             rri = self.get_rri(rec_no, start, end)
             batch_rri.append(rri)
-
         batch_rri_feat = self.get_rri_features(np.array(batch_rri) * 1000)
-
         # return np.array(batch_seq),np.array(batch_label)
         return [np.array(batch_seq), np.array(batch_rri), batch_rri_feat], np.array(
             batch_label
@@ -179,37 +179,11 @@ class ECGSequence(Sequence):
             np.random.shuffle(self.samples_info)
 
     def get_integer(self, label):
-        """Converts text label to integer.
-
-        Parameters
-        ----------
-        label : str
-                String label.
-
-        Returns
-        -------
-        int
-                Integer label corresponding to the str label.
-        """
+        """Converts text label to integer"""
         return self.class_labels.index(label)
 
     def get_rri(self, rec_no, start, end):
-        """Computes RR intervals.
-        TOdo
-        Parameters
-        ----------
-        rec_no : _type_
-                _description_
-        start : _type_
-                _description_
-        end : _type_
-                _description_
-
-        Returns
-        -------
-        _type_
-                _description_
-        """
+        """Computes RR intervals"""
         r_locations = np.asarray(self.data[rec_no]["r_locations"])  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
         rpeak_locs = list(r_locations[inds])
@@ -224,21 +198,8 @@ class ECGSequence(Sequence):
         # print(rri_zeropadded)
         rri_zeropadded = rri_zeropadded.tolist()
         rri_zeropadded = rri_zeropadded[:20]  # TODO
-
         return rri_zeropadded
 
     def get_rri_features(self, arr):
-        """_summary_
-
-        Parameters
-        ----------
-        arr : _type_
-                _description_
-
-        Returns
-        -------
-        _type_
-                _description_
-        """
         # features = ['max','min']
         return get_hrv_features(arr)
