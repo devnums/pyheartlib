@@ -1,17 +1,15 @@
-import numpy as np
+import os
 import math
 import time
-import tensorflow as tf
+import numpy as np
+from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
 from pyecg.data import Data, DataSeq
-from pyecg.dataset_config import *
-from pyecg.data_beat import BeatData
-from pyecg.utils import save_data
-from pyecg.processing import Processing
+from pyecg.dataset_config import DATA_DIR, DS1
 from scipy import stats
 
 
-class RpeakData(Data):
+class RpeakData(Data, DataSeq):
     """Provides data for peak detection."""
 
     def __init__(
@@ -56,7 +54,7 @@ class RpeakData(Data):
         record_full = [signal, full_seq]
         return record_full
 
-    def make_samples_info(annotated_records, win_size=30 * 360, stride=256):
+    def make_samples_info(self, annotated_records, win_size=30 * 360, stride=256):
         """
         Parameters
         ----------
@@ -85,7 +83,8 @@ class RpeakData(Data):
 
         # each record
         for rec_no in tqdm(range(len(annotated_records))):
-            signal, full_ann = annotated_records[rec_no]
+            signal = annotated_records[rec_no]["signal"]
+            full_ann = annotated_records[rec_no]["full_ann"]
             assert len(signal) == len(
                 full_ann
             ), "signal and annotation must have the same length!"
@@ -117,7 +116,7 @@ class RpeakData(Data):
         return samples_info
 
 
-class ECGSequence(tf.keras.utils.Sequence):
+class ECGSequence(Sequence):
     """
     Parameters
     ----------
@@ -147,21 +146,21 @@ class ECGSequence(tf.keras.utils.Sequence):
         self,
         data,
         samples_info,
-        batch_size,
+        batch_size=128,
         binary=True,
-        raw=False,
+        raw=True,
         interval=36,
         class_labels=None,
         shuffle=True,
     ):
-        self.shuffle = shuffle
+        self.data = data
+        self.samples_info = samples_info
+        self.batch_size = batch_size
         self.binary = binary
         self.raw = raw
         self.interval = interval
-        self.batch_size = batch_size
-        self.data = data
-        self.samples_info = samples_info
         self.class_labels = class_labels
+        self.shuffle = shuffle
         self.on_epoch_end()
 
     def __len__(self):
@@ -182,10 +181,10 @@ class ECGSequence(tf.keras.utils.Sequence):
             end = sample[2]
             # ignoring provided labels in samples_info and get it directly from the data
             # label = sample[3]
-            full_ann_seq = self.data[rec_no][1][start:end]
+            seq = self.data[rec_no]["signal"][start:end]
+            full_ann_seq = self.data[rec_no]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
 
-            seq = self.data[rec_no][0][start:end]
             # processing steps on the signal fraggment
             if self.raw == False:
                 seq = self.proc_steps(seq)
