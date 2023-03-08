@@ -6,7 +6,6 @@ from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
 from pyecg.data import Data, DataSeq
 from pyecg.dataset_config import DATA_DIR, DS1
-from pyecg.io import get_data, save_data
 from pyecg.features import get_hrv_features
 
 
