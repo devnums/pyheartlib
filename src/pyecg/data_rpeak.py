@@ -72,8 +72,8 @@ class RpeakData(Data, DataSeq):
             label is a list. Elements are rpeak labels for each interval.
             eg: [[10,500,800, [000000N00000000L00] ],[],...]
         """
-        interval = 128  # not necessary, will be calculated in EXGSEQUENCE
-        binary = True  # remove it and only do in ECGSEQUENCE
+        interval = 36  # not necessary, will be calculated in EXGSEQUENCE
+        binary = False  # remove it and only do in ECGSEQUENCE
 
         stride = int(stride)
         win_size = int(win_size)
@@ -94,8 +94,7 @@ class RpeakData(Data, DataSeq):
             while end < len(full_ann):
                 start = int(end - win_size)
                 seg = full_ann[start:end]
-                labels_seq = []
-
+                labels_seq = []  #not necesssary anymore,will be done in SEQUENCE
                 # each subsegment
                 for i in range(0, len(seg), interval):
                     subseg = seg[i : i + interval]
