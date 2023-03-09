@@ -1,7 +1,9 @@
 import pytest
 import numpy
 import pandas
-from pyecg.data_rpeak import RpeakData
+from pyecg.data_rpeak import RpeakData, ECGSequence
+from pyecg.io import load_data
+import hashlib
 
 
 @pytest.fixture
@@ -13,11 +15,25 @@ def rpeak_data():
 @pytest.fixture
 def record():
     r = {
-        "signal": numpy.random.uniform(-1, 1, 1030),
-        "r_locations": [200, 410, 650, 830],
-        "r_labels": ["N", "V", "A", "A"],
+        "signal": numpy.random.uniform(-1, 1, 4030),
+        "r_locations": [
+            200,
+            410,
+            650,
+            830,
+            1020,
+            1240,
+            1650,
+            1840,
+            2015,
+            2310,
+            2620,
+            2910,
+            3200,
+        ],
+        "r_labels": ["N", "V", "A", "A", "N", "N", "V", "A", "A", "N", "N", "V", "A"],
         "rhythms": ["(N", "(AFIB", "(T"],
-        "rhythms_locations": [10, 100, 200],
+        "rhythms_locations": [10, 800, 1500],
     }
     return r
 
@@ -32,4 +48,49 @@ def test_full_annotate(rpeak_data, record):
     assert full_ann[201] == 0
     assert len(set(full_ann)) == 4
     rlabels = record["r_labels"] + [0]
-    assert list(set(full_ann)) == list(set(rlabels))
+    assert (set(full_ann)) == (set(rlabels))
+
+
+from dummy import DummyData
+
+test_data_dir = "./tests/dummy_data"
+dmm = DummyData(save_dir=test_data_dir)
+dmm.save(record_name="dummy101")
+dmm.save(record_name="dummy102")
+
+
+@pytest.fixture
+def rpeakdata():
+    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    return obj
+
+
+def test_save_samples(rpeakdata):
+    ann, sam = rpeakdata.save_samples(
+        rec_list=["dummy101", "dummy102"],
+        file_path=test_data_dir + "/tmp.rpeak",
+        win_size=400,
+        stride=200,
+    )
+    annotated_records, samples_info = load_data(test_data_dir + "/tmp.rpeak")
+    assert annotated_records[0]["r_labels"] == ann[0]["r_labels"]
+    assert samples_info[0][2] == sam[0][2]
+
+
+@pytest.fixture
+def seq_generator():
+    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    ann, sam = obj.save_samples(
+    rec_list=["dummy101", "dummy102"],
+    file_path=test_data_dir + "/tmp.rpeak",
+    win_size=400,
+    stride=200,
+    )
+    obj = ECGSequence(ann, sam, batch_size=1, binary=False, raw=True, interval=72)
+    return obj
+
+def test_getitem(seq_generator):
+    i = 0
+    label = seq_generator.__getitem__(i)[1]  # excerpt label
+    seq = seq_generator.__getitem__(i)[0]  # excerpt values
+    print()
