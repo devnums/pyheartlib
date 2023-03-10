@@ -81,16 +81,29 @@ def test_save_samples(rpeakdata):
 def seq_generator():
     obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
-    rec_list=["dummy101", "dummy102"],
-    file_path=test_data_dir + "/tmp.rpeak",
-    win_size=400,
-    stride=200,
+        rec_list=["dummy101", "dummy102"],
+        file_path=test_data_dir + "/tmp.rpeak",
+        win_size=400,
+        stride=200,
     )
-    obj = ECGSequence(ann, sam, batch_size=1, binary=False, raw=True, interval=72)
+    obj = ECGSequence(
+        ann, sam, batch_size=2, binary=False, raw=True, interval=75, shuffle=False
+    )
     return obj
 
+
 def test_getitem(seq_generator):
-    i = 0
-    label = seq_generator.__getitem__(i)[1]  # excerpt label
-    seq = seq_generator.__getitem__(i)[0]  # excerpt values
-    print()
+    batch = 0
+    seq = seq_generator.__getitem__(batch)[0]  # excerpt values
+    label = seq_generator.__getitem__(batch)[1]  # excerpt label
+    assert seq.shape == (2, 400)
+    assert label.shape == (2, 6)
+    assert label[0][0] == 0
+    assert label[0][1] == "N"
+    assert label[0][2] == 0
+    assert label[0][3] == 0
+    assert label[0][4] == 0
+    assert label[0][5] == 0
+    assert label[1][0] == 0
+    assert label[1][4] == "N"
+    assert label[1][5] == 0
