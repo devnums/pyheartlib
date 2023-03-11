@@ -94,7 +94,7 @@ class RpeakData(Data, DataSeq):
             while end < len(full_ann):
                 start = int(end - win_size)
                 seg = full_ann[start:end]
-                labels_seq = []  #not necesssary anymore,will be done in SEQUENCE
+                labels_seq = []  # not necesssary anymore,will be done in SEQUENCE
                 # each subsegment
                 for i in range(0, len(seg), interval):
                     subseg = seg[i : i + interval]
@@ -116,14 +116,13 @@ class RpeakData(Data, DataSeq):
 
 
 class ECGSequence(Sequence):
-
     def __init__(
         self,
         data,
         samples_info,
         class_labels=None,
-        batch_size=128,
         binary=True,
+        batch_size=128,
         raw=True,
         interval=36,
         shuffle=True,
@@ -159,6 +158,8 @@ class ECGSequence(Sequence):
         self.interval = interval
         self.shuffle = shuffle
         self.on_epoch_end()
+        if self.class_labels != None:
+            self.binary = False
 
     def __len__(self):
         return math.ceil(len(self.samples_info) / self.batch_size)
@@ -207,13 +208,13 @@ class ECGSequence(Sequence):
 
     def get_integer(self, label):
         # text label to integer >> 0,1,2,...
-        label = [list(self.class_labels).index(str(item)) for item in label]
-        return label
+        int_label = [list(self.class_labels).index(item) for item in label]
+        return int_label
 
     def get_binary(self, label):
         # text label to integer 0,1 label
-        label = [1 if item != 0 else 0 for item in label]
-        return label
+        binary_label = [1 if item != 0 else 0 for item in label]
+        return binary_label
 
     def get_label(self, seg):
         # this function is used if intentions is to not use provided labels in samples_info
