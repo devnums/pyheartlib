@@ -78,7 +78,7 @@ def test_save_samples(rpeakdata):
 
 
 @pytest.fixture
-def seq_generator():
+def seq_generator1():
     obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
@@ -87,23 +87,95 @@ def seq_generator():
         stride=200,
     )
     obj = ECGSequence(
-        ann, sam, batch_size=2, binary=False, raw=True, interval=75, shuffle=False
+        ann, sam, binary=False, batch_size=7, raw=True, interval=75, shuffle=False
     )
     return obj
 
 
-def test_getitem(seq_generator):
+def test_getitem1(seq_generator1):
     batch = 0
-    seq = seq_generator.__getitem__(batch)[0]  # excerpt values
-    label = seq_generator.__getitem__(batch)[1]  # excerpt label
-    assert seq.shape == (2, 400)
-    assert label.shape == (2, 6)
-    assert label[0][0] == 0
+    seq = seq_generator1.__getitem__(batch)[0]  # excerpt values
+    label = seq_generator1.__getitem__(batch)[1]  # excerpt label
+    assert seq.shape == (7, 400)
+    assert label.shape == (7, 6)
+    assert int(label[0][0]) == 0
     assert label[0][1] == "N"
+    assert int(label[0][2]) == 0
+    assert int(label[0][3]) == 0
+    assert int(label[0][4]) == 0
+    assert int(label[0][5]) == 0
+    assert int(label[1][0]) == 0
+    assert label[1][3] == "N"
+    assert int(label[1][5]) == 0
+    assert label[4][0] == "V"
+    assert label[6][4] == "A"
+
+
+
+@pytest.fixture
+def seq_generator2():
+    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    ann, sam = obj.save_samples(
+        rec_list=["dummy101", "dummy102"],
+        file_path=test_data_dir + "/tmp.rpeak",
+        win_size=400,
+        stride=200,
+    )
+    obj = ECGSequence(
+        ann, sam, binary=True, batch_size=7, raw=True, interval=75, shuffle=False
+    )
+    return obj
+
+
+def test_getitem2(seq_generator2):
+    batch = 0
+    seq = seq_generator2.__getitem__(batch)[0]  # excerpt values
+    label = seq_generator2.__getitem__(batch)[1]  # excerpt label
+    assert seq.shape == (7, 400)
+    assert label.shape == (7, 6)
+    assert label[0][0] == 0
+    assert label[0][1] == 1
     assert label[0][2] == 0
     assert label[0][3] == 0
     assert label[0][4] == 0
     assert label[0][5] == 0
     assert label[1][0] == 0
-    assert label[1][4] == "N"
+    assert label[1][3] == 1
     assert label[1][5] == 0
+    assert label[4][0] == 1
+    assert label[6][4] == 1
+
+
+
+@pytest.fixture
+def seq_generator3():
+    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    ann, sam = obj.save_samples(
+        rec_list=["dummy101", "dummy102"],
+        file_path=test_data_dir + "/tmp.rpeak",
+        win_size=400,
+        stride=200,
+    )
+    obj = ECGSequence(
+        ann, sam, class_labels=[0,"N","V","A"], batch_size=7, raw=True, interval=75, shuffle=False
+    )
+    return obj
+
+
+def test_getitem3(seq_generator3):
+    batch = 0
+    seq = seq_generator3.__getitem__(batch)[0]  # excerpt values
+    label = seq_generator3.__getitem__(batch)[1]  # excerpt label
+    assert seq.shape == (7, 400)
+    assert label.shape == (7, 6)
+    assert label[0][0] == 0
+    assert label[0][1] == 1
+    assert label[0][2] == 0
+    assert label[0][3] == 0
+    assert label[0][4] == 0
+    assert label[0][5] == 0
+    assert label[1][0] == 0
+    assert label[1][3] == 1
+    assert label[1][5] == 0
+    assert label[4][0] == 2
+    assert label[6][4] == 3
