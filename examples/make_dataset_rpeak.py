@@ -22,7 +22,7 @@ class_labels = list(np.unique(labels))
 print(class_labels)
 
 training_generator = ECGSequence(
-    annotated_records, samples_info, batch_size=1, binary=False, raw=True, interval=72
+    annotated_records, samples_info, binary=False, batch_size=1, raw=True, interval=72
 )
 
 i = 0
