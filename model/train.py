@@ -7,13 +7,12 @@ from pyecg.io import load_data
 annotated_records, samples_info = load_data("./data/train.rpeak")
 print("Train data loaded, number of sampels:", str(len(samples_info)))
 
-
 labels = []
 for sample in samples_info:
     labels.append(sample[3])
 print(len(labels))
 
-
+#import model architecture
 from arch_rpeak2 import model_arch
 
 params_model = {
@@ -35,7 +34,6 @@ mymodel.compile(
     metrics=["accuracy"],
     loss_weights=None,
 )
-
 early_stopping = tf.keras.callbacks.EarlyStopping(
     monitor="val_loss", min_delta=0, patience=8, verbose=1
 )
@@ -62,7 +60,7 @@ batch_sleep = tf.keras.callbacks.LambdaCallback(
 )
 
 callbacks = [early_stopping, model_checkpoint, reduce_lr]
-#callbacks = [batch_sleep]
+# callbacks = [batch_sleep]
 
 from pyecg.data_rpeak import ECGSequence
 
@@ -90,8 +88,7 @@ validation_generator = ECGSequence(
     interval=36,
 )
 
-
-# model fitting
+# train model
 model_history = mymodel.fit(
     x=train_generator,
     validation_data=validation_generator,
