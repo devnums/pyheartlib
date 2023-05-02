@@ -5,7 +5,8 @@ from pyecg.data_rpeak import RpeakData, ECGSequence
 
 
 train_set = [201, 203]
-test_set = [202, 210, 219, 221, 222]
+val_set = [205]
+test_set = [210, 212, 213]
 
 
 # create train dataset
@@ -13,6 +14,18 @@ rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
     rec_list=train_set, file_path="./data/train.rpeak", win_size=10 * 360, stride=360
 )
+# create val dataset
+rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
+annotated_records, samples_info = rpeak_data.save_samples(
+    rec_list=val_set, file_path="./data/val.rpeak", win_size=10 * 360, stride=360
+)
+
+# create test dataset
+rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
+annotated_records, samples_info = rpeak_data.save_samples(
+    rec_list=test_set, file_path="./data/test.rpeak", win_size=10 * 360, stride=360
+)
+
 annotated_records, samples_info = load_data("./data/train.rpeak")
 print("number of generated sampels:", str(len(samples_info)))
 
