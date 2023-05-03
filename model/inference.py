@@ -64,7 +64,7 @@ for i in tqdm(range(0, 20)):  # range(round(len(samples_info_test)/batch_size)):
         st = samples_info_test[i][1]
         en = samples_info_test[i][2]
         sig = annotated_records_test[rec]["signal"][st:en]
-        plt.figure(figsize=(20, 10))
+        plt.figure(figsize=(10, 5))
         plt.plot(sig)
         for p in range(labels_true.shape[1]):
             if labels_true[0][p] == 1:

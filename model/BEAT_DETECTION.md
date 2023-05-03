@@ -1,4 +1,4 @@
-# BEAT DETECTION EXAMPLE
+# Beat Detection Example
 
 This directory contains the code for training a heartbeat detection model. As the task is not complex, it can be trained with high accuracy on few samples.
 
