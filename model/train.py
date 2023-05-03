@@ -2,6 +2,9 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from pyecg.io import load_data
+from pyecg.utils import reset_seed
+
+reset_seed()
 
 # load train data
 annotated_records, samples_info = load_data("./data/train.rpeak")
@@ -12,8 +15,8 @@ for sample in samples_info:
     labels.append(sample[3])
 print(len(labels))
 
-#import model architecture
-from arch_rpeak2 import model_arch
+# import model architecture
+from model_arch import model_arch
 
 params_model = {
     "x_input_dim": samples_info[0][2] - samples_info[0][1],  # win size
@@ -22,7 +25,7 @@ params_model = {
     "regularizer": None,
 }
 print(params_model)
-params_train = {"batch_size": 128, "epochs": 2}
+params_train = {"batch_size": 128, "epochs": 10}
 
 mymodel = model_arch(params_model)
 opt = tf.keras.optimizers.Adam(

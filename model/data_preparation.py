@@ -2,28 +2,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pyecg.io import load_data
 from pyecg.data_rpeak import RpeakData, ECGSequence
+from pyecg.dataset_config import DS1, DS2
 
 
-train_set = [201, 203]
-val_set = [205]
-test_set = [210, 212, 213]
+train_set = DS1[:18]
+val_set = DS1[18:]
+test_set = DS2
 
 
 # create train dataset
 rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=train_set, file_path="./data/train.rpeak", win_size=10 * 360, stride=360
+    rec_list=train_set, file_path="./data/train.rpeak", win_size=10 * 360, stride=1440
 )
 # create val dataset
 rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=val_set, file_path="./data/val.rpeak", win_size=10 * 360, stride=360
+    rec_list=val_set, file_path="./data/val.rpeak", win_size=10 * 360, stride=1440
 )
 
 # create test dataset
 rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=test_set, file_path="./data/test.rpeak", win_size=10 * 360, stride=360
+    rec_list=test_set, file_path="./data/test.rpeak", win_size=10 * 360, stride=1440
 )
 
 annotated_records, samples_info = load_data("./data/train.rpeak")
