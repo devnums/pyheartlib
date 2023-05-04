@@ -26,6 +26,6 @@ This paper introduces `pyecg`, a Python package for processing and modeling elec
 
 An example is provided along with this package which demonstrates a deep learning model designed using Keras library for the heartbeat detection task. As this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
 
-![Example: heartbeat detection.\label{fig:example}](mis.png){ width=80% }
+![Example: heartbeat detection using deep learning.\label{fig:example}](mis.png){ width=80% }
 
 # References
