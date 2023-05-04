@@ -20,13 +20,13 @@ Electrocardiogram (ECG) signals are the electrical activity of the heart as a gr
 
 # Statement of need
 
-This paper introduces `pyecg`, a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore both traditional machine learning models and deep learning models can be used. The first release of this software works with Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries and supports MIT-BIH Arrhythmia Database format [@moody2001impact]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
+This paper introduces `pyecg`, a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore both traditional machine learning models and deep learning models can be used. The first release of this software works with Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries and supports MIT-BIH Arrhythmia Database format [@moody2001impact;@goldberger2000physiobank]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
 
 # Example
 
 An example model is provided along with this package which demonstrates a deep learning model designed using Keras library for the heartbeat detection task. As this task is less complex compared to heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
 
-![Heartbeat detection example.\label{fig:example}](mis.png)
+![Heartbeat detection example.\label{fig:example}](mis.png){ width=80% }
 
 # References
 
