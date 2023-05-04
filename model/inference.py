@@ -19,6 +19,7 @@ test_generator = ECGSequence(
     batch_size=batch_size,
     raw=True,
     interval=36,
+    shuffle=False
 )
 labels_true = []
 labels_pred = []
@@ -52,6 +53,7 @@ for i in tqdm(range(0, 20)):  # range(round(len(samples_info_test)/batch_size)):
         batch_size=batch_size,
         raw=True,
         interval=36,
+        shuffle=False
     )
     samples = test_generator.__getitem__(0)
     labels_true = samples[1]
@@ -65,27 +67,28 @@ for i in tqdm(range(0, 20)):  # range(round(len(samples_info_test)/batch_size)):
         en = samples_info_test[i][2]
         sig = annotated_records_test[rec]["signal"][st:en]
         plt.figure(figsize=(10, 5))
-        plt.plot(sig)
+        plt.plot(sig, linewidth = 1)
         for p in range(labels_true.shape[1]):
             if labels_true[0][p] == 1:
-                plt.scatter(p * 36, 1, s=100, c="g")
+                plt.scatter(p * 36, 1.2, s=40, c="limegreen")
         for p in range(labels_pred.shape[1]):
             if labels_pred[0][p] == 1:
-                plt.scatter(p * 36, 0.92, s=100, c="r")
+                plt.scatter(p * 36, 1.1, s=40, c="dodgerblue")
         for p in range(labels_pred.shape[1]):
             if labels_pred[0][p] != labels_true[0][p] and labels_true[0][p] == 0:
-                plt.scatter(p * 36, 0.92, s=100, c="orange")
+                plt.scatter(p * 36, 1.1, s=40, c="orange")
         for p in range(labels_pred.shape[1]):
             if labels_pred[0][p] != labels_true[0][p] and labels_true[0][p] == 1:
-                plt.scatter(p * 36, 1, s=100, c="black")        
+                plt.scatter(p * 36, 1.2, s=40, c="red")        
         # add legend
-        plt.scatter(0, 1.3, s=100, c="g", label="True")
-        plt.scatter(0, 1.3, s=100, c="r", label="Pred")
-        plt.scatter(0, 1.3, s=100, c="orange", label="False positive")
-        plt.scatter(0, 1.3, s=100, c="black", label="False negative")
-        plt.scatter(0, 1.3, s=110, c="white")
+        plt.scatter(0, 1.3, s=40, c="limegreen", label="True")
+        plt.scatter(0, 1.3, s=40, c="dodgerblue", label="Pred")
+        plt.scatter(0, 1.3, s=40, c="orange", label="False positive")
+        plt.scatter(0, 1.3, s=40, c="red", label="False negative")
+        plt.scatter(0, 1.3, s=60, c="white")
         plt.legend(loc="lower left")
         # save fig
-        plt.title("Heartbeat detection")
+        plt.title("Heartbeat Detection")
+        plt.rcParams.update({'font.size': 12})
         fig_path = "model/plots/mis_" + str(i) + ".png"
         plt.savefig(fig_path, dpi=300)
