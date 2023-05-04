@@ -13,16 +13,16 @@ class BeatData(Data):
 
     Examples
     --------
-    Creating the object:
+    >>> # creating the object
     >>> beatdata = BeatData(base_path='../data', win=[500,500],remove_bl=False,lowpass=False)
-    Saving the dataset file:
+    >>> # saving the dataset file:
     >>> beatdata.save_dataset(records=DS1[:18], save_file_name='train.beat')
-    Loading the dataset file into a dictionary:
+    >>> # loading the dataset file into a dictionary:
     >>> ds = beatdata.load_data(file_name='train.beat')
-            file loaded: ../data/train.beat
-            shape of "waveforms" is (38949, 1000)
-            shape of "beat_feats" is (38949, 62)
-            shape of "labels" is (38949,)
+    file loaded: ../data/train.beat
+    shape of "waveforms" is (38949, 1000)
+    shape of "beat_feats" is (38949, 62)
+    shape of "labels" is (38949,)
     >>> x_train, r_train, y_train = ds.values()
     """
 
