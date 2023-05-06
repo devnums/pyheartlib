@@ -10,7 +10,26 @@ from pyecg.features import get_hrv_features
 
 
 class ArrhythmiaData(Data, DataSeq):
-    """Provides data for Arrhythmia classficaation."""
+    """Provides signal data with single value annotations.
+    
+    Parameters
+    ----------
+    base_path : str, optional
+        Path of main directory for loading and saving data, by default os.getcwd()
+    data_path : str, optional
+        Relative path of raw input data regarding to the base_path.
+    remove_bl : bool, optional
+        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+    lowpass : bool, optional
+        Whether to apply low pass filtering to the raw signals, by default False
+    sampling_rate : int, optional
+        Sampling rate of the signals, by default 360
+    cutoff : int, optional
+        Parameter of the low pass filter, by default 45
+    order : int, optional
+        Parameter of the low pass filter, by default 15 
+    
+    """
 
     def __init__(
         self,
@@ -38,7 +57,7 @@ class ArrhythmiaData(Data, DataSeq):
         Parameters
         ----------
         record : dict
-            Record as a dictionary with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
+            Record as a dictionary with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations'.
 
         Returns
         -------
@@ -59,14 +78,14 @@ class ArrhythmiaData(Data, DataSeq):
         return record_full
 
     def make_samples_info(self, annotated_records, win_size=30 * 360, stride=36):
-        """Creates a list of signal excerpts and their labels. For each excerpt the
-            record id, start point, and end point of it on the original signal is extracted.
+        """Creates a list of signal excerpts and their corresponding labels. For each excerpt, \ 
+        record id, onset, and offset point of it on the original signal is recorded.
 
         Parameters
         ----------
         annotated_records : list
             A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
         win_size : int, optional
             Windows size, by default 30*360
         stride : int, optional
@@ -75,7 +94,7 @@ class ArrhythmiaData(Data, DataSeq):
         Returns
         -------
         list
-            A list of lists. Each inner list is like [record_no, start_win, end_win, label].
+            A list of lists. Each inner list is like [record_id, start_win, end_win, label].
             E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...]
         """
 
@@ -83,9 +102,9 @@ class ArrhythmiaData(Data, DataSeq):
         win_size = int(win_size)
 
         samples_info = []
-        for rec_no in tqdm(range(len(annotated_records))):
-            signal = annotated_records[rec_no]["signal"]
-            full_ann = annotated_records[rec_no]["full_ann"]
+        for rec_id in tqdm(range(len(annotated_records))):
+            signal = annotated_records[rec_id]["signal"]
+            full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
                 full_ann
             ), "signal and annotation must have the same length!"
@@ -96,13 +115,34 @@ class ArrhythmiaData(Data, DataSeq):
                 # unique arrhythmia type in each segment
                 if len(set(full_ann[start:end])) == 1:
                     label = full_ann[start]
-                    samples_info.append([rec_no, start, end, label])
+                    samples_info.append([rec_id, start, end, label])
                 end += stride
             time.sleep(3)
         return samples_info
 
 
 class ECGSequence(Sequence):
+    """
+    Generates batches of data according to the meta information provided for each sample. 
+    Therefore it is memory efficent and there is no need to put large amount of data in the memory.
+
+    Parameters
+    ----------
+    data : list
+        A list containing a dict for each record, [rec1,rec2,....].
+        Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
+    samples_info : list
+        A list of lists. Each inner list is like [record_id, start_win, end_win, label].
+        E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
+    class_labels : list, optional
+        List of arrhythmia classes in the data, by default None
+    batch_size : int, optional
+        Batch size, by default 128
+    shuffle : bool, optional
+        If True shuffle the sample data, by default True
+    denoise : bool, optional
+        If True denoise the signals, by default False
+    """
     def __init__(
         self,
         data,
@@ -112,24 +152,6 @@ class ECGSequence(Sequence):
         shuffle=True,
         denoise=False,
     ):
-        """
-        Parameters
-        ----------
-        data : list
-            A list containing a dict for each record, [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
-        samples_info : list
-            A list of lists. Each inner list is like [record_no, start_win, end_win, label].
-            E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
-        class_labels : list, optional
-            List of arrhythmia classes in the data, by default None
-        batch_size : int, optional
-            Batch size, by default 128
-        shuffle : bool, optional
-            If True shuffle the sample data, by default True
-        denoise : bool, optional
-            If True denoise the signals, by default False
-        """
         self.shuffle = shuffle
         self.denoise = denoise
         self.batch_size = batch_size
@@ -156,16 +178,16 @@ class ECGSequence(Sequence):
         batch_rri = []
         for sample in batch_samples:
             # eg sample:[10,500,800,'AFIB'] ::: [rec,start,end,label]
-            rec_no = sample[0]
+            rec_id = sample[0]
             start = sample[1]
             end = sample[2]
             label = sample[3]
             if self.class_labels != None:
                 label = self.get_integer(label)
-            seq = self.data[rec_no]["signal"][start:end]
+            seq = self.data[rec_id]["signal"][start:end]
             batch_seq.append(seq)
             batch_label.append(label)
-            rri = self.get_rri(rec_no, start, end)
+            rri = self.get_rri(rec_id, start, end)
             batch_rri.append(rri)
         batch_rri_feat = self.get_rri_features(np.array(batch_rri) * 1000)
         # return np.array(batch_seq),np.array(batch_label)
@@ -182,9 +204,9 @@ class ECGSequence(Sequence):
         """Converts text label to integer"""
         return self.class_labels.index(label)
 
-    def get_rri(self, rec_no, start, end):
+    def get_rri(self, rec_id, start, end):
         """Computes RR intervals"""
-        r_locations = np.asarray(self.data[rec_no]["r_locations"])  # entire record
+        r_locations = np.asarray(self.data[rec_id]["r_locations"])  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
         rpeak_locs = list(r_locations[inds])
         rri = [

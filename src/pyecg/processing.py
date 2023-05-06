@@ -64,7 +64,7 @@ class Processing:
         Parameters
         ----------
         signal : numpy.ndarray
-        1D signal.
+            A one dimensional signal.
         cutoff : int, optional
             Filter parameter, by default 45
         sampling_rate : int, optional
@@ -92,7 +92,7 @@ class Processing:
         Parameters
         ----------
         signal : numpy.ndarray
-            1D signal.
+            A one dimensional signal.
         remove_bl : bool, optional
             If true remves baseline wander, by default True
         lowpass : bool, optional
@@ -140,7 +140,7 @@ class STFT:
         pass
 
     def specgram(self, signals, sampling_rate=None, nperseg=None, noverlap=None):
-        """Applies stft on the signals.
+        """Applies Short time fourier transform on the signals.
 
         Parameters
         ----------

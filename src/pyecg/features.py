@@ -8,14 +8,14 @@ def get_stat_features(data, features="all"):
 
     Parameters
     ----------
-    data : 2D numpy.array
+    data : numpy.array
         A 2D numpy array with shape (#samples,len_series).
     features : list
         A list of features to be computed.
 
     Returns
     -------
-    features_arr : 2D numpy.array
+    features_arr : numpy.array
         A 2D numpy array with the shape (#samples, #features).
     """
     if features == "all":
@@ -68,7 +68,7 @@ def get_hrv_features(rri, features="all"):
 
     Parameters
     ----------
-    rri : 2D numpy.array
+    rri : numpy.array
         A 2D numpy array with shape (#samples,len_series).
         Series are rr intervals in miliseconds(ms)
     features : list
@@ -76,7 +76,7 @@ def get_hrv_features(rri, features="all"):
 
     Returns
     -------
-    features_arr : 2D numpy.array
+    features_arr : numpy.array
         A 2D numpy array with the shape (#samples, #features).
     """
     if features == "all":

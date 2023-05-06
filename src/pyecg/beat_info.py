@@ -7,10 +7,25 @@ import types
 
 class BeatInfo:
     """
-    Provides information and features for a single beat.            
+    Provides information and features for a single beat.   
+
+    Parameters
+    ----------
+    beat_loc : int
+        Index of beat in the rpeaks locations list, considering pre-RR and post-RR values.
+    fs : int, optional
+        Sampling rate, by default 360
+    in_ms : bool, optional
+        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True         
 
     Attributes
     ----------
+    beat_loc : int
+        Index of beat in the rpeaks locations list, considering pre-RR and post-RR values.
+    fs : int, optional
+        Sampling rate, by default 360
+    in_ms : bool, optional
+        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True  
     whole_waveform : list
         Whole waveform.
     bwaveform : list
@@ -30,17 +45,6 @@ class BeatInfo:
     """
 
     def __init__(self, beat_loc, fs=360, in_ms=True):
-        """
-        Parameters
-        ----------
-        beat_loc : int
-            Index of beat in the rpeaks locations list, considering pre-RR and post-RR values.
-        fs : int, optional
-            Sampling rate, by default 360
-        in_ms : bool, optional
-            Whether to calculate rr-intervals in time(miliseconds) or samples, by default True
-        """
-
         self.fs = fs
         self.beat_loc = beat_loc
         self.in_ms = in_ms
@@ -50,9 +54,7 @@ class BeatInfo:
         Parameters
         ----------
         data : dict
-            A dict containing data about the beat. 
-            
-            Keys are:
+            A dict containing data about the beat with keys:
             
             'waveform' : list
                 Waveform of the beat.
@@ -94,18 +96,18 @@ class BeatInfo:
         return avail_feats
 
     def add_features(self, new_features):
-        """Adds additional features as methods.
+        """Adds new features.
 
         Parameters
         ----------
         new_features : list
-            List of function definitions. [feat1,feat2]
+            Names of new features. Such as: [new_feature_1, new_feature_2]
         """
         for new_feature in new_features:
             setattr(self, new_feature.__name__, types.MethodType(new_feature, self))
 
     def select_features(self, features):
-        """Assigns the provided features to an attribute.
+        """Select features.
 
         Parameters
         ----------
@@ -115,7 +117,7 @@ class BeatInfo:
         self.selected_features_names = features
 
     def compute_features(self):
-        """Computes the features.
+        """Computes features.
 
         Returns
         -------
@@ -204,7 +206,7 @@ class BeatInfo:
         Returns
         -------
         list
-            List containing RR intervals.
+            Contains RR intervals.
         """
         if in_ms:
             rpeaks = [1000 * item / self.fs for item in self.rpeaks]
@@ -219,7 +221,7 @@ class BeatInfo:
         Returns
         -------
         list
-            List containing successive differences of rri.
+            Contains successive differences of rri.
         """
         sdrri = list(np.diff(np.asarray(self.rri)))
         return sdrri
@@ -579,8 +581,3 @@ class BeatInfo:
             )
         )
         fig.clear()
-
-        # TODO
-        # try longer times
-        # only plot abnormal beats and one before and after
-        # in pqrst file smooth beat before finding p q s waves-->wavelet maybe

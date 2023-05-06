@@ -11,6 +11,31 @@ class BeatData(Data):
     """
     Processes the provided data and creates the dataset file containg waveforms, features, and labels.
 
+    Parameters
+    ----------
+    base_path : str, optional
+        Path of main directory for loading and saving data, by default os.getcwd()
+    data_path : str, optional
+        Relative path of raw input data regarding to the base_path.
+    win : list, optional
+        [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
+    num_pre_rr : int, optional
+        Number of previous rpeak locations must be returned by the function, by default 10
+    num_post_rr : int, optional
+        Number of future rpeak locations must be returned by the function., by default 10
+    remove_bl : bool, optional
+        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+    lowpass : bool, optional
+        Whether to apply low pass filtering to the raw signals, by default False
+    sampling_rate : int, optional
+        Sampling rate of the signals, by default 360
+    cutoff : int, optional
+        Parameter of the low pass filter, by default 45
+    order : int, optional
+        Parameter of the low pass filter, by default 15
+    progress_bar : bool, optional
+        If True shows a progress bar, by default True
+
     Examples
     --------
     >>> beatdata = BeatData(base_path="./data", win=[200, 200], remove_bl=False, lowpass=False, progress_bar=True)
@@ -42,32 +67,6 @@ class BeatData(Data):
         order=15,
         progress_bar=True,
     ):
-        """
-        Parameters
-        ----------
-        base_path : str, optional
-            Path of main directory for loading and saving data, by default os.getcwd()
-        data_path : str, optional
-            Relative path of raw input data regarding to the base_path.
-        win : list, optional
-            [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
-        num_pre_rr : int, optional
-            Number of previous rpeak locations must be returned by the function, by default 10
-        num_post_rr : int, optional
-            Number of future rpeak locations must be returned by the function., by default 10
-        remove_bl : bool, optional
-            If True removes the baseline from the raw signals before extracting beat excerpts, by default False
-        lowpass : bool, optional
-            Whether to apply low pass filtering to the raw signals, by default False
-        sampling_rate : int, optional
-            Sampling rate of the signals, by default 360
-        cutoff : int, optional
-            Parameter of the low pass filter, by default 45
-        order : int, optional
-            Parameter of the low pass filter, by default 15
-        progress_bar : bool, optional
-            If True shows a progress bar, by default True
-        """
         super().__init__(
             base_path,
             data_path,
@@ -90,7 +89,7 @@ class BeatData(Data):
         r_locations=None,
         r_label=None,
     ):
-        """Fragments one signal into beats and returns the signal excerpts and their labels.
+        """Fragments one signal into beats and returns the signal excerpts and corresponding labels.
 
         Parameters
         ----------
@@ -219,7 +218,7 @@ class BeatData(Data):
         -------
         Tuple
             features : list
-                A list containing feature dictionaries for all beats.
+                Contains feature dictionaries for all the beats.
             labels : list
                 Contains corresponding beat labels.
         """
@@ -393,7 +392,7 @@ class BeatData(Data):
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file : str, optional
-            File name, by default None
+            Name of the file to be saved, by default None
         """
         ds = self.make_dataset([record], beatinfo_obj)
         if clean == True:
@@ -441,15 +440,15 @@ class BeatData(Data):
         Parameters
         ----------
         records : list, optional
-                A list of record ids.
+            A list of record ids.
         beatinfo_obj : instance of BeatInfo
             An instance of BeatInfo.
         clean : bool, optional
-                If True doesnt include irrelevant label classes, by default True
+            If True doesnt include irrelevant label classes, by default True
         split_ratio : float, optional
-                Ratio of test set, by default 0.3
+            Ratio of test set, by default 0.3
         file_prefix : str, optional
-                File name prefix, by default 'intra'
+            Prefix for the file names to be saved, by default 'intra'
         """
         xdata_train = []
         fdata_train = pd.DataFrame()
@@ -549,7 +548,7 @@ class BeatData(Data):
         Returns
         -------
         pandas.dataframe
-            Pandas dataframe of count of each label type.
+            Contains count of each label type.
         """
 
         if cols == None:

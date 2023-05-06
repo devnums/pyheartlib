@@ -10,7 +10,25 @@ from scipy import stats
 
 
 class RpeakData(Data, DataSeq):
-    """Provides data for peak detection."""
+    """Provides signal data with annotations as a list. 
+
+    Parameters
+    ----------
+    base_path : str, optional
+        Path of main directory for loading and saving data, by default os.getcwd()
+    data_path : str, optional
+        Relative path of raw input data regarding to the base_path.
+    remove_bl : bool, optional
+        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+    lowpass : bool, optional
+        Whether to apply low pass filtering to the raw signals, by default False
+    sampling_rate : int, optional
+        Sampling rate of the signals, by default 360
+    cutoff : int, optional
+        Parameter of the low pass filter, by default 45
+    order : int, optional
+        Parameter of the low pass filter, by default 15
+    """
 
     def __init__(
         self,
@@ -82,9 +100,9 @@ class RpeakData(Data, DataSeq):
         samples_info = []
 
         # each record
-        for rec_no in tqdm(range(len(annotated_records))):
-            signal = annotated_records[rec_no]["signal"]
-            full_ann = annotated_records[rec_no]["full_ann"]
+        for rec_id in tqdm(range(len(annotated_records))):
+            signal = annotated_records[rec_id]["signal"]
+            full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
                 full_ann
             ), "signal and annotation must have the same length!"
@@ -108,7 +126,7 @@ class RpeakData(Data, DataSeq):
                         lb = 0
                         labels_seq.append(lb)
 
-                samples_info.append([rec_no, start, end, labels_seq])
+                samples_info.append([rec_id, start, end, labels_seq])
                 end += stride
             time.sleep(3)
 
@@ -116,6 +134,32 @@ class RpeakData(Data, DataSeq):
 
 
 class ECGSequence(Sequence):
+    """
+    Generates batches of data according to the meta information provided for each sample. 
+    Therefore it is memory efficent and there is no need to put large amount of data in the memory.
+
+    Parameters
+    ----------
+    data: list
+        A list containing a dict for each record, [rec1,rec2,....].
+        Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+    samples_info: list
+        [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
+        eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
+    class_labels : list, optional
+        the list of class labels to convert the output label list to integers, by default None
+    batch_size : int, optional
+        Batch size, by default 128
+    binary : bool, optional
+        If True return will be 1 instead of riginal str label, by default True
+    raw : bool, optional
+        Whether to return the full waveform or the computed features., by default True
+    interval : int, optional
+        interval for sub segmenting the waveform for feature and label computations, by default 36
+    shuffle : bool, optional
+        If True shuffle the sample data, by default True
+    """
+    
     def __init__(
         self,
         data,
@@ -127,28 +171,6 @@ class ECGSequence(Sequence):
         interval=36,
         shuffle=True,
     ):
-        """
-        Parameters
-        ----------
-        data: list
-            A list containing a dict for each record, [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
-        samples_info: list
-            [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
-            eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
-        class_labels : list, optional
-            the list of class labels to convert the output label list to integers, by default None
-        batch_size : int, optional
-            Batch size, by default 128
-        binary : bool, optional
-            If True return will be 1 instead of riginal str label, by default True
-        raw : bool, optional
-            Whether to return the full waveform or the computed features., by default True
-        interval : int, optional
-            interval for sub segmenting the waveform for feature and label computations, by default 36
-        shuffle : bool, optional
-            If True shuffle the sample data, by default True
-        """
         self.data = data
         self.samples_info = samples_info
         self.class_labels = class_labels
@@ -170,7 +192,7 @@ class ECGSequence(Sequence):
         -------
         Tuple
             Tuple of numpy arrays (batch_x,batch_y) for sequences(or computed features) and their labels.
-            batch_x: If raw is False: (batch,segments,features) otherwise (batch,seqs)
+            batch_x: If raw is False: (batch,segments,features), otherwise (batch,seqs)
             batch_y: (batch,label_list)
         """
         batch_samples = self.samples_info[
@@ -180,13 +202,13 @@ class ECGSequence(Sequence):
         batch_y = []
         for sample in batch_samples:
             # eg sample:[10,500,800,[0,0,0,'N',0,0...] >>[rec,start,end,label]
-            rec_no = sample[0]
+            rec_id = sample[0]
             start = sample[1]
             end = sample[2]
             # ignoring provided labels in samples_info and get it directly from the data
             # label = sample[3]
-            seq = self.data[rec_no]["signal"][start:end]
-            full_ann_seq = self.data[rec_no]["full_ann"][start:end]
+            seq = self.data[rec_id]["signal"][start:end]
+            full_ann_seq = self.data[rec_id]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
             # processing steps on the signal fraggment
             if self.raw == False:
@@ -202,7 +224,7 @@ class ECGSequence(Sequence):
         return np.array(batch_x), np.array(batch_y)
 
     def on_epoch_end(self):
-        # after each epoch shuffles the samples
+        """After each epoch shuffles the samples."""
         if self.shuffle:
             np.random.shuffle(self.samples_info)
 

@@ -9,7 +9,25 @@ from pyecg.processing import Processing
 
 
 class Data:
-    """Parent of other data classes."""
+    """Parent of other data classes.
+
+    Parameters
+    ----------
+    base_path : str, optional
+        Path of main directory for loading and saving data, by default os.getcwd()
+    data_path : str, optional
+        Relative path of raw input data regarding to the base_path.
+    remove_bl : bool, optional
+        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+    lowpass : bool, optional
+        Whether to apply low pass filtering to the raw signals, by default False
+    sampling_rate : int, optional
+        Sampling rate of the signals, by default 360
+    cutoff : int, optional
+        Parameter of the low pass filter, by default 45
+    order : int, optional
+        Parameter of the low pass filter, by default 15   
+    """
 
     def __init__(
         self,
@@ -21,23 +39,6 @@ class Data:
         cutoff=45,
         order=15,
     ):
-        """
-        Parameters
-        ----------
-        base_path : str, optional
-            Path of main directory for loading and saving data, by default os.getcwd()
-        remove_bl : bool, optional
-            If True removes the baseline from the raw signals before extracting beat excerpts, by default False
-        lowpass : bool, optional
-            Whether to apply low pass filtering to the raw signals, by default False
-        sampling_rate : int, optional
-            Sampling rate of the signals, by default 360
-        cutoff : int, optional
-            Parameter of the low pass filter, by default 45
-        order : int, optional
-            Parameter of the low pass filter, by default 15
-        """
-
         self.base_path = base_path
         self.data_path = os.path.join(self.base_path, data_path)
         self.remove_bl = remove_bl
@@ -54,15 +55,15 @@ class Data:
         record_id : str
             Record id.
         return_dict : bool
-            If True returns as a dict otherwise returns as a pandas dataframe.
+            If True returns a dictionary, otherwise returns a pandas dataframe.
 
         Returns
         -------
         dict or dataframe
             If return_dict is True, it returns a dictionary
-            with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
+            with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations'.
             If return_dict is False, it returns a dataframe containing the time, raw signal, and
-            a list of equal size to the raw signal with None values except at anntations locations.
+            a list of equal size to the raw signal with None values except at annotations locations.
         """
         record_path = os.path.join(self.data_path, str(record_id))
         data_dict = get_data(record_path, return_dict=True)
@@ -97,7 +98,7 @@ class DataSeq(ABC):
         -------
         list
             A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
         """
 
         all_recs = []
@@ -120,11 +121,11 @@ class DataSeq(ABC):
         Parameters
         ----------
         rec_list : list, optional
-                Contains ids of records, by default DS1
+            Contains ids of records, by default DS1
         file_path : str, optional
-                Save file name, by default None
+            Save file name, by default None
         stride : int, optional
-                Stride of the moving windows, by default 36
+            Stride of the moving windows, by default 36
 
         Returns
         -------

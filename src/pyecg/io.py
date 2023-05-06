@@ -12,13 +12,14 @@ def get_data(record_path, return_dict=True):
     record_path : str
         Path of the record.
     return_dict : bool
-        If True returns as a dict otherwise returns as a pandas dataframe.
+        If True returns as a dict, otherwise returns as a pandas dataframe.
 
     Returns
     -------
     dict or dataframe
         If return_dict is True, it returns a dictionary
         with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
+        
         If return_dict is False, it returns a dataframe containing the time, raw signal, and
         a list of equal size to the raw signal with None values except at anntations locations.
     """
