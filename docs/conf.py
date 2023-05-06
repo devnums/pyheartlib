@@ -34,3 +34,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", '**/archs',]
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
+
+# -- MyST-NB -------------------------------------------------
+nb_execution_timeout = 180
