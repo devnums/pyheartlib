@@ -28,7 +28,7 @@ class BeatData(Data):
 
     def __init__(
         self,
-        base_path=os.getcwd(),  # TODO look or create data dir
+        base_path=os.getcwd(), 
         data_path=DATA_DIR,
         win=[60, 120],
         num_pre_rr=10,
@@ -38,6 +38,7 @@ class BeatData(Data):
         sampling_rate=360,
         cutoff=45,
         order=15,
+        progress_bar=True 
     ):
         """
         Parameters
@@ -75,6 +76,7 @@ class BeatData(Data):
         self.num_pre_rr = num_pre_rr
         self.num_post_rr = num_post_rr
         self.beat_loc = self.num_pre_rr
+        self.progress_bar = not progress_bar
 
     def make_frags(
         self,
@@ -156,7 +158,7 @@ class BeatData(Data):
         rds = []
         start_idxs = []
         rec_ids_list = []  # debug
-        for i in tqdm(range(len(records))):
+        for i in tqdm(range(len(records)), disable=self.progress_bar):
             rec_dict = self.get_ecg_record(record_id=records[i])
             signal, r_locations, r_labels, _, _ = rec_dict.values()
             signal_frags, beat_types, r_locs, s_idxs = self.make_frags(
@@ -214,7 +216,7 @@ class BeatData(Data):
         features = []
         labels = []
         # beats loop
-        for i in tqdm(range(len(data["rpeak_locs"]))):
+        for i in tqdm(range(len(data["rpeak_locs"])), disable=self.progress_bar):
             beatinfo_obj(
                 {
                     "waveform": data["waveforms"][i],
@@ -520,6 +522,7 @@ class BeatData(Data):
                 )
             )
         print(self.report_stats_table([ds["labels"]], [file_name]))
+        print()
         return ds
 
     def per_record_stats(self, rec_ids_list=DS1, cols=None):
