@@ -9,26 +9,28 @@ from pyecg.io import get_data, save_data, load_data
 
 class BeatData(Data):
     """
-    Processes the provided data and creates the dataset file containg waveforms,features,and labels.
+    Processes the provided data and creates the dataset file containg waveforms, features, and labels.
 
     Examples
     --------
-    >>> # creating the object
-    >>> beatdata = BeatData(base_path='../data', win=[500,500],remove_bl=False,lowpass=False)
-    >>> # saving the dataset file:
-    >>> beatdata.save_dataset(records=DS1[:18], save_file_name='train.beat')
-    >>> # loading the dataset file into a dictionary:
-    >>> ds = beatdata.load_data(file_name='train.beat')
-    file loaded: ../data/train.beat
-    shape of "waveforms" is (38949, 1000)
-    shape of "beat_feats" is (38949, 62)
-    shape of "labels" is (38949,)
-    >>> x_train, r_train, y_train = ds.values()
+    >>> beatdata = BeatData(base_path="./data", win=[200, 200], remove_bl=False, lowpass=False, progress_bar=True)
+    >>> # create a BeatInfo object
+    >>> beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    >>> # save the dataset file
+    >>> beatdata.save_dataset_inter(DS1[17:18], beatinfo, file="train.beat")
+    >>> # load the dataset from file
+    >>> train_ds = beatdata.load_data(file_name="train.beat")
+    File loaded from: ./data/train.beat
+    -Shape of "waveforms" is (2985, 400). Number of samples is 2985.
+    -Shape of "beat_feats" is (2985, 27). Number of samples is 2985.
+    -Shape of "labels" is (2985,). Number of samples is 2985.
+                N  L  R  j  e  V  E    A  S  a  J  F  f  /  Q
+    train.beat  2601  0  0  0  0  1  0  383  0  0  0  0  0  0  0
     """
 
     def __init__(
         self,
-        base_path=os.getcwd(), 
+        base_path=os.getcwd(),
         data_path=DATA_DIR,
         win=[60, 120],
         num_pre_rr=10,
@@ -38,13 +40,15 @@ class BeatData(Data):
         sampling_rate=360,
         cutoff=45,
         order=15,
-        progress_bar=True 
+        progress_bar=True,
     ):
         """
         Parameters
         ----------
         base_path : str, optional
             Path of main directory for loading and saving data, by default os.getcwd()
+        data_path : str, optional
+            Relative path of raw input data regarding to the base_path.
         win : list, optional
             [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
         num_pre_rr : int, optional
@@ -61,6 +65,8 @@ class BeatData(Data):
             Parameter of the low pass filter, by default 45
         order : int, optional
             Parameter of the low pass filter, by default 15
+        progress_bar : bool, optional
+            If True shows a progress bar, by default True
         """
         super().__init__(
             base_path,
@@ -97,16 +103,17 @@ class BeatData(Data):
 
         Returns
         -------
-        signal_frags : numpy.ndarray
-            A 2D array containing extracted beat excerpts.
-        beat_types : list
-            Contains the corersponding labels of each beat excerpt.
-        r_locs : list
-            A list containing lists of previous, itself, and future rpeak locations
-            for each beat. Can be used for HRV calculations.
-        s_idxs : list
-            Contains the starting point of each extracted beat excerpt on the origional signal.
-            This is computed by subtracting the window onset from the rpeak location.
+        Tuple
+            signal_frags : numpy.ndarray
+                A 2D array containing extracted beat excerpts.
+            beat_types : list
+                Contains the corersponding labels of each beat excerpt.
+            r_locs : list
+                A list containing lists of previous, itself, and future rpeak locations
+                for each beat. Can be used for HRV calculations.
+            s_idxs : list
+                Contains the starting point of each extracted beat excerpt on the origional signal.
+                This is computed by subtracting the window onset from the rpeak location.
         """
         if not self.num_pre_rr < (len(r_locations) - self.num_post_rr):
             raise ValueError(
@@ -139,13 +146,13 @@ class BeatData(Data):
         ----------
         records : list
             A list containing records ids.
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
 
         Returns
         -------
         dict
-
-            Keys are:
-
+            A dictionary with keys:
                 'waveforms' : numpy.ndarray
                     2D ndarray of beat waveforms.
                 'beat_feats' : pd.DataFrame
@@ -200,18 +207,21 @@ class BeatData(Data):
         Parameters
         ----------
         data : dict
-            Keys:
+            A dictionary with keys:
                 'waveform' : list of waveforms
                 'rpeak_locs' : list of rpeak locations
                 'rec_ids' : list of record ids
                 'start_idxs' : list of start_idxs of waveforms on the raw signal
                 'labels' : list of beat labels
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
         Returns
         -------
-        features : list
-            A list containing feature dictionaries for all beats.
-        labels : list
-            Contains corresponding beat labels.
+        Tuple
+            features : list
+                A list containing feature dictionaries for all beats.
+            labels : list
+                Contains corresponding beat labels.
         """
         features = []
         labels = []
@@ -245,12 +255,12 @@ class BeatData(Data):
         Parameters
         ----------
         ds : dict
-            Dataset as a dictionary containing waveforms,beat features, and labels.
+            Dataset as a dictionary containing waveforms, beat features, and labels.
 
         Returns
         -------
         dict
-            Cleaned dataset.
+            Cleaned dataset
         """
 
         yds = ds["labels"]
@@ -340,17 +350,17 @@ class BeatData(Data):
         df = pd.DataFrame(res_list, index=indx)
         return df
 
-    def save_dataset_inter(
-        self, records, beatinfo_obj, save_file_name=None, clean=True
-    ):
+    def save_dataset_inter(self, records, beatinfo_obj, file=None, clean=True):
         """Makes dataset and saves it in a file.
 
         Parameters
         ----------
-        save_file_name : str
-            Name of the file.
         records : list
             A list containing records ids.
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
+        file : str
+            Name of the file to be saved.
         clean : bool, optional
             If True removes irrelavant label types, by default True
 
@@ -360,15 +370,15 @@ class BeatData(Data):
             File path is not provided.
         """
 
-        if save_file_name is None:
+        if file is None:
             raise ValueError("Save file path is not provided!")
         ds = self.make_dataset(records, beatinfo_obj)
         if clean == True:
             ds = self.clean_irrelevant_data(ds)
-        save_data(ds, file_path=os.path.join(self.base_path, save_file_name))
+        save_data(ds, file_path=os.path.join(self.base_path, file))
 
     def save_dataset_single(
-        self, record, clean=True, split_ratio=0.3, save_file_name=None
+        self, record, beatinfo_obj, clean=True, split_ratio=0.3, file=None
     ):
         """Saves the signal fragments and their labels into a file for a single record.
 
@@ -376,11 +386,13 @@ class BeatData(Data):
         ----------
         record : str
             Record id.
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
         clean : bool, optional
             If True doesnt include irrelevant label classes, by default True
         split_ratio : float, optional
             Ratio of test set, by default 0.3
-        save_file_name : str, optional
+        file : str, optional
             File name, by default None
         """
         ds = self.make_dataset([record], beatinfo_obj)
@@ -407,12 +419,12 @@ class BeatData(Data):
             "labels": yarr_train,
         }
         ds_test = {"waveforms": xarr_test, "beat_feats": farr_test, "labels": yarr_test}
-        if save_file_name == None:
+        if file == None:
             file_train = str(record) + "_train" + ".beat"
             file_test = str(record) + "_test" + ".beat"
         else:
-            file_train = save_file_name + "_train" + ".beat"
-            file_test = save_file_name + "_test" + ".beat"
+            file_train = file + "_train" + ".beat"
+            file_test = file + "_test" + ".beat"
         save_data(ds_train, file_path=os.path.join(self.base_path, file_train))
         save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
@@ -422,7 +434,7 @@ class BeatData(Data):
         beatinfo_obj,
         clean=True,
         split_ratio=0.3,
-        save_file_prefix="intra",
+        file_prefix="intra",
     ):
         """Makes and saves the dataset in intra way.
 
@@ -430,21 +442,23 @@ class BeatData(Data):
         ----------
         records : list, optional
                 A list of record ids.
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
         clean : bool, optional
                 If True doesnt include irrelevant label classes, by default True
         split_ratio : float, optional
                 Ratio of test set, by default 0.3
-        save_file_prefix : str, optional
+        file_prefix : str, optional
                 File name prefix, by default 'intra'
         """
         xdata_train = []
-        fdata_train = []
+        fdata_train = pd.DataFrame()
         ydata_train = []
         xdata_test = []
-        fdata_test = []
+        fdata_test = pd.DataFrame()
         ydata_test = []
         for record in records:
-            ds = self.make_dataset(records=[record])
+            ds = self.make_dataset([record], beatinfo_obj)
             if clean is True:
                 ds = self.clean_irrelevant_data(ds)
 
@@ -452,8 +466,7 @@ class BeatData(Data):
             xarr = ds["waveforms"]
             farr = ds["beat_feats"]
             yarr = ds["labels"]
-            print(xarr.shape[0])
-            print(len(xarr))
+
             split_idx = int(split_ratio * xarr.shape[0])
             xarr_train = xarr[:split_idx]
             xarr_test = xarr[split_idx:]
@@ -463,17 +476,15 @@ class BeatData(Data):
             yarr_test = yarr[split_idx:]
 
             xdata_train = xdata_train + xarr_train.tolist()
-            fdata_train = fdata_train + farr_train.tolist()
+            fdata_train = pd.concat([fdata_train, farr_train])
             ydata_train = ydata_train + yarr_train.tolist()
             xdata_test = xdata_test + xarr_test.tolist()
-            fdata_test = fdata_test + farr_test.tolist()
+            fdata_test = pd.concat([fdata_test, farr_test])
             ydata_test = ydata_test + yarr_test.tolist()
 
         xdata_train = np.array(xdata_train)
-        fdata_train = np.array(fdata_train)
         ydata_train = np.array(ydata_train)
         xdata_test = np.array(xdata_test)
-        fdata_test = np.array(fdata_test)
         ydata_test = np.array(ydata_test)
 
         ds_train = {
@@ -487,10 +498,10 @@ class BeatData(Data):
             "labels": ydata_test,
         }
 
-        file_train = save_file_prefix + "_train" + ".beat"
+        file_train = file_prefix + "_train" + ".beat"
         save_data(ds_train, file_path=os.path.join(self.base_path, file_train))
 
-        file_test = save_file_prefix + "_test" + ".beat"
+        file_test = file_prefix + "_test" + ".beat"
         save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
     def load_data(self, file_name):
@@ -504,7 +515,7 @@ class BeatData(Data):
         Returns
         -------
         pandas.dataframe
-            Dataset as a dataframe. Keys are waveforms,beat_feats,and labels. Values are numpy.ndarray.
+            Dataset as a dataframe. Keys are waveforms, beat_feats, and labels.
 
         Raises
         ------

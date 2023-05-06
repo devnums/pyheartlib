@@ -32,11 +32,11 @@ beatinfo.select_features(["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_
 
 # use the save_dataset_inter method to create the dataset file.
 # The file will be saved in the base data directory.
-beatdata.save_dataset_inter(DS1[17:18], beatinfo, save_file_name="train.beat")
+beatdata.save_dataset_inter(DS1[17:18], beatinfo, file="train.beat")
 
 # In a similar way for validation and test sets
-beatdata.save_dataset_inter(DS1[18:20], beatinfo, save_file_name="val.beat")
-beatdata.save_dataset_inter(DS2[1:2], beatinfo, save_file_name="test.beat")
+beatdata.save_dataset_inter(DS1[18:20], beatinfo, file="val.beat")
+beatdata.save_dataset_inter(DS2[1:2], beatinfo, file="test.beat")
 
 # Loading the sets
 train_ds = beatdata.load_data(file_name="train.beat")
