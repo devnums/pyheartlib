@@ -571,7 +571,7 @@ class BeatData(Data):
         return X
 
     def slice_data(self, ds, labels_list):
-        # only keep the lables in lable_list
+        # only keep the labels in label_list
         # ds = copy.copy(ds)
         sliced_x = ds["waveforms"]
         sliced_r = ds["beat_feats"]
@@ -587,8 +587,8 @@ class BeatData(Data):
 
         return {"waveforms": sliced_x, "beat_feats": sliced_r, "labels": sliced_y}
 
-    def binarize_lables(self, y, positive_lable, pos=1, neg=-1):
-        # y a list of lables
-        # positive_lable: positive class lable
-        new_y = [pos if item == positive_lable else neg for item in y]
+    def binarize_labels(self, y, positive_label, pos=1, neg=-1):
+        # y a list of labels
+        # positive_label: positive class label
+        new_y = [pos if item == positive_label else neg for item in y]
         return new_y

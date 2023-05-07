@@ -65,12 +65,12 @@ def aug_increase(ds, desired_size=21000):
 
 
 """
-def slice_data(ds, lable_list):
-  #only keep the provided lables
+def slice_data(ds, label_list):
+  #only keep the provided labels
   sliced_x = copy.deepcopy(ds['x'])
   sliced_y = copy.deepcopy(ds['y'])
   indexes_keep = []
-  for sym in lable_list:
+  for sym in label_list:
     inds = [i for i,item in enumerate(y) if item==sym]
     indexes_keep = indexes_keep+inds
   print(len(indexes_keep))
@@ -81,8 +81,8 @@ def slice_data(ds, lable_list):
 """
 
 
-def binarize_lables(y, positive_lable, pos=1, neg=-1):
-    # y a list of lables
-    # positive_lable: positive class lable
-    new_y = [pos if item == positive_lable else neg for item in y]
+def binarize_labels(y, positive_label, pos=1, neg=-1):
+    # y a list of labels
+    # positive_label: positive class label
+    new_y = [pos if item == positive_label else neg for item in y]
     return new_y

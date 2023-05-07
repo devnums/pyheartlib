@@ -10,28 +10,22 @@ val_set = DS1[18:]
 test_set = DS2
 
 
-# create train dataset
+# create train, validation, and test sets
 rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=train_set, file_path="./data/train.rpeak", win_size=10 * 360, stride=1440
+    rec_list=train_set, file_name="train.rpeak", win_size=10 * 360, stride=1440
 )
-# create val dataset
-rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=val_set, file_path="./data/val.rpeak", win_size=10 * 360, stride=1440
+    rec_list=val_set, file_name="val.rpeak", win_size=10 * 360, stride=1440
 )
-
-# create test dataset
-rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
 annotated_records, samples_info = rpeak_data.save_samples(
-    rec_list=test_set, file_path="./data/test.rpeak", win_size=10 * 360, stride=1440
+    rec_list=test_set, file_name="test.rpeak", win_size=10 * 360, stride=1440
 )
 
+# for verfication
 annotated_records, samples_info = load_data("./data/train.rpeak")
 print("number of generated sampels:", str(len(samples_info)))
 
-
-# for verfication
 training_generator = ECGSequence(
     annotated_records, samples_info, binary=True, batch_size=1, raw=True, interval=36
 )
