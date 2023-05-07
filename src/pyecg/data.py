@@ -26,7 +26,7 @@ class Data:
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
-        Parameter of the low pass filter, by default 15   
+        Parameter of the low pass filter, by default 15
     """
 
     def __init__(
@@ -78,9 +78,10 @@ class Data:
         return data_dict
 
 
-
 class DataSeq(ABC):
     """Parent of other data classes."""
+
+    progress_bar = True
 
     @abstractmethod
     def full_annotate(self):
@@ -102,7 +103,7 @@ class DataSeq(ABC):
         """
 
         all_recs = []
-        for rec_id in tqdm(rec_list):
+        for rec_id in tqdm(rec_list, disable=DataSeq.progress_bar):
             rec_dict = self.get_ecg_record(record_id=rec_id)
             rec_dict["full_ann"] = self.full_annotate(rec_dict)[
                 1
@@ -114,7 +115,7 @@ class DataSeq(ABC):
     def make_samples_info(self):
         pass
 
-    def save_samples(self, rec_list, file_path, win_size, stride):
+    def save_samples(self, rec_list, file_name, win_size, stride):
         """Returns and saves the signals and their full annotations along
         with information neccesary for extracting signal excerpts.
 
@@ -122,7 +123,7 @@ class DataSeq(ABC):
         ----------
         rec_list : list, optional
             Contains ids of records, by default DS1
-        file_path : str, optional
+        file_name : str, optional
             Save file name, by default None
         stride : int, optional
             Stride of the moving windows, by default 36
@@ -138,5 +139,6 @@ class DataSeq(ABC):
         annotated_records = self.get_all_annotated_records(rec_list)
         samples_info = self.make_samples_info(annotated_records, win_size, stride)
         data = [annotated_records, samples_info]
+        file_path = os.path.join(self.base_path, file_name)
         save_data(data, file_path=file_path)
         return data

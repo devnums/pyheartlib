@@ -1,4 +1,6 @@
 import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import math
 import time
 import numpy as np
@@ -10,7 +12,7 @@ from scipy import stats
 
 
 class RpeakData(Data, DataSeq):
-    """Provides signal data with annotations as a list. 
+    """Provides signal data with annotations as a list.
 
     Parameters
     ----------
@@ -28,6 +30,8 @@ class RpeakData(Data, DataSeq):
         Parameter of the low pass filter, by default 45
     order : int, optional
         Parameter of the low pass filter, by default 15
+    progress_bar : bool, optional
+        If True shows a progress bar, by default True
     """
 
     def __init__(
@@ -39,6 +43,7 @@ class RpeakData(Data, DataSeq):
         sampling_rate=360,
         cutoff=45,
         order=15,
+        progress_bar=True,
     ):
         super().__init__(
             base_path,
@@ -49,6 +54,8 @@ class RpeakData(Data, DataSeq):
             cutoff,
             order,
         )
+        self.progress_bar = not progress_bar
+        DataSeq.progress_bar = not progress_bar
 
     def full_annotate(self, record):
         """fully annotate a single record signal.
@@ -100,7 +107,7 @@ class RpeakData(Data, DataSeq):
         samples_info = []
 
         # each record
-        for rec_id in tqdm(range(len(annotated_records))):
+        for rec_id in tqdm(range(len(annotated_records)), disable=self.progress_bar):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
@@ -135,7 +142,7 @@ class RpeakData(Data, DataSeq):
 
 class ECGSequence(Sequence):
     """
-    Generates batches of data according to the meta information provided for each sample. 
+    Generates batches of data according to the meta information provided for each sample.
     Therefore it is memory efficent and there is no need to put large amount of data in the memory.
 
     Parameters
@@ -159,7 +166,7 @@ class ECGSequence(Sequence):
     shuffle : bool, optional
         If True shuffle the sample data, by default True
     """
-    
+
     def __init__(
         self,
         data,
