@@ -160,7 +160,7 @@ class ECGSequence(Sequence):
     binary : bool, optional
         If True return will be 1 instead of riginal str label, by default True
     raw : bool, optional
-        Whether to return the full waveform or the computed features., by default True
+        Whether to return the full waveform or the computed features, by default True
     interval : int, optional
         interval for sub segmenting the waveform for feature and label computations, by default 36
     shuffle : bool, optional
@@ -219,7 +219,7 @@ class ECGSequence(Sequence):
             label = self.get_label(full_ann_seq)
             # processing steps on the signal fraggment
             if self.raw == False:
-                seq = self.proc_steps(seq)
+                seq = self.compute_wf_feats(seq)
                 batch_x.append(list(seq))
             else:
                 batch_x.append(seq)
@@ -262,7 +262,7 @@ class ECGSequence(Sequence):
                 labels_seq.append(lb)
         return labels_seq
 
-    def proc_steps(self, seq):
+    def compute_wf_feats(self, seq):
         # get a 1d seq and return a multidim list.
         # each feature is an aggragate of a subseq.
         b = int(len(seq) / self.interval)

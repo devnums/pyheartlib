@@ -182,14 +182,15 @@ class ECGSequence(Sequence):
             start = sample[1]
             end = sample[2]
             label = sample[3]
+            labelm = label
             if self.class_labels != None:
-                label = self.get_integer(label)
+                labelm = self.get_integer(label)
             seq = self.data[rec_id]["signal"][start:end]
             batch_seq.append(seq)
-            batch_label.append(label)
+            batch_label.append(labelm)
             rri = self.get_rri(rec_id, start, end)
             batch_rri.append(rri)
-        batch_rri_feat = self.get_rri_features(np.array(batch_rri) * 1000)
+        batch_rri_feat = self.compute_rri_features(np.array(batch_rri) * 1000)
         # return np.array(batch_seq),np.array(batch_label)
         return [np.array(batch_seq), np.array(batch_rri), batch_rri_feat], np.array(
             batch_label
@@ -222,6 +223,6 @@ class ECGSequence(Sequence):
         rri_zeropadded = rri_zeropadded[:20]  # TODO
         return rri_zeropadded
 
-    def get_rri_features(self, arr):
+    def compute_rri_features(self, arr):
         # features = ['max','min']
         return get_hrv_features(arr)
