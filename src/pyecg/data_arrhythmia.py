@@ -6,7 +6,7 @@ from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
 from pyecg.data import Data, DataSeq
 from pyecg.dataset_config import DATA_DIR, DS1
-from pyecg.features import get_hrv_features
+from pyecg.features import get_hrv_features, get_wf_feats
 
 
 class ArrhythmiaData(Data, DataSeq):
@@ -138,6 +138,10 @@ class ECGSequence(Sequence):
         List of arrhythmia classes in the data, by default None
     batch_size : int, optional
         Batch size, by default 128
+    raw : bool, optional
+        Whether to return the full waveform or the computed features, by default True
+    interval : int, optional
+        interval for sub segmenting the signal for waveform feature computation, by default 36
     shuffle : bool, optional
         If True shuffle the sample data, by default True
     denoise : bool, optional
@@ -149,12 +153,16 @@ class ECGSequence(Sequence):
         samples_info,
         class_labels=None,
         batch_size=128,
+        raw=True,
+        interval=36,
         shuffle=True,
         denoise=False,
     ):
         self.shuffle = shuffle
         self.denoise = denoise
         self.batch_size = batch_size
+        self.raw = raw
+        self.interval = interval
         self.data = data
         self.samples_info = samples_info
         self.class_labels = class_labels
@@ -185,9 +193,14 @@ class ECGSequence(Sequence):
             labelm = label
             if self.class_labels != None:
                 labelm = self.get_integer(label)
-            seq = self.data[rec_id]["signal"][start:end]
-            batch_seq.append(seq)
             batch_label.append(labelm)
+            seq = self.data[rec_id]["signal"][start:end]
+            # compute signal waveform features for fragments 
+            if self.raw == False:
+                seq = self.compute_wf_feats(seq)
+                batch_seq.append(list(seq))
+            else:
+                batch_seq.append(seq)
             rri = self.get_rri(rec_id, start, end)
             batch_rri.append(rri)
         batch_rri_feat = self.compute_rri_features(np.array(batch_rri) * 1000)
@@ -226,3 +239,6 @@ class ECGSequence(Sequence):
     def compute_rri_features(self, arr):
         # features = ['max','min']
         return get_hrv_features(arr)
+    
+    def compute_wf_feats(self, seq):
+        return get_wf_feats(seq, self.interval)

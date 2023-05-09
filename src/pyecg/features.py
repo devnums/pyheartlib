@@ -178,3 +178,34 @@ def get_hrv_features(rri, features="all"):
         features_arr[:, ix] = np.std(hr, axis=1)
 
     return features_arr
+
+
+def get_wf_feats(sig, interval):
+    """Computes features for the signal waveform
+    
+    The input signal is segmneted into subsignals based on the given interval parameter.
+
+    """
+    b = int(len(sig) / interval)
+    subseqs = []
+    for i in range(b):
+        subseq = sig[i * interval : (i + 1) * interval]
+        subseqs.append(subseq)
+    subseqs = np.array(subseqs)  # interval=36---> (300,36)
+    f1 = np.amax(subseqs, axis=1)
+    f2 = np.amin(subseqs, axis=1)
+    f3 = np.mean(subseqs, axis=1)
+    f4 = np.std(subseqs, axis=1)
+    f5 = np.median(subseqs, axis=1)
+    f6 = stats.skew(subseqs, axis=1)
+    f7 = stats.kurtosis(subseqs, axis=1)
+    sqr = subseqs**2
+    f8 = np.amax(sqr, axis=1)
+    f9 = np.amin(sqr, axis=1)
+    f10 = np.mean(sqr, axis=1)
+    f11 = np.std(sqr, axis=1)
+    f12 = np.median(sqr, axis=1)
+    f13 = stats.skew(sqr, axis=1)
+    f14 = stats.kurtosis(sqr, axis=1)
+    feats = np.vstack((f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14))
+    return feats.T

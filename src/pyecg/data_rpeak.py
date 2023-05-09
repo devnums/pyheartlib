@@ -9,6 +9,7 @@ from tqdm import tqdm
 from pyecg.data import Data, DataSeq
 from pyecg.dataset_config import DATA_DIR, DS1
 from scipy import stats
+from pyecg.features import get_wf_feats
 
 
 class RpeakData(Data, DataSeq):
@@ -217,7 +218,7 @@ class ECGSequence(Sequence):
             seq = self.data[rec_id]["signal"][start:end]
             full_ann_seq = self.data[rec_id]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
-            # processing steps on the signal fraggment
+            # compute signal waveform features for fragments 
             if self.raw == False:
                 seq = self.compute_wf_feats(seq)
                 batch_x.append(list(seq))
@@ -263,28 +264,4 @@ class ECGSequence(Sequence):
         return labels_seq
 
     def compute_wf_feats(self, seq):
-        # get a 1d seq and return a multidim list.
-        # each feature is an aggragate of a subseq.
-        b = int(len(seq) / self.interval)
-        subseqs = []
-        for i in range(b):
-            subseq = seq[i * self.interval : (i + 1) * self.interval]
-            subseqs.append(subseq)
-        subseqs = np.array(subseqs)  # interval=36---> (300,36)
-        f1 = np.amax(subseqs, axis=1)
-        f2 = np.amin(subseqs, axis=1)
-        f3 = np.mean(subseqs, axis=1)
-        f4 = np.std(subseqs, axis=1)
-        f5 = np.median(subseqs, axis=1)
-        f6 = stats.skew(subseqs, axis=1)
-        f7 = stats.kurtosis(subseqs, axis=1)
-        sqr = subseqs**2
-        f8 = np.amax(sqr, axis=1)
-        f9 = np.amin(sqr, axis=1)
-        f10 = np.mean(sqr, axis=1)
-        f11 = np.std(sqr, axis=1)
-        f12 = np.median(sqr, axis=1)
-        f13 = stats.skew(sqr, axis=1)
-        f14 = stats.kurtosis(sqr, axis=1)
-        feats = np.vstack((f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14))
-        return feats.T
+        return get_wf_feats(seq, self.interval)
