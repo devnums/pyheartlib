@@ -129,7 +129,7 @@ def get_hrv_features(rri, features="all"):
 
     if "medianrr" in flist:
         ix = flist.index("medianrr")
-        features_arr[:, ix] = np.median(rri, axis=1)
+        features_arr[:, ix] = np.ma.median(rri, axis=1)
 
     if "rangerr" in flist:
         ix = flist.index("rangerr")

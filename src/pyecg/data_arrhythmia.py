@@ -135,7 +135,7 @@ class ECGSequence(Sequence):
         A list of lists. Each inner list is like [record_id, start_win, end_win, label].
         E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
     class_labels : list, optional
-        List of arrhythmia classes in the data, by default None
+        Arrhythmia types as a list such as ["(N", "(VT"], by default None
     batch_size : int, optional
         Batch size, by default 128
     raw : bool, optional
@@ -146,6 +146,8 @@ class ECGSequence(Sequence):
         If True shuffle the sample data, by default True
     denoise : bool, optional
         If True denoise the signals, by default False
+    rri_length : int, optional
+        Zeropadding rri as they have different length for each excerpt, by default 150
     """
     def __init__(
         self,
@@ -157,6 +159,7 @@ class ECGSequence(Sequence):
         interval=36,
         shuffle=True,
         denoise=False,
+        rri_length = 150
     ):
         self.shuffle = shuffle
         self.denoise = denoise
@@ -166,6 +169,7 @@ class ECGSequence(Sequence):
         self.data = data
         self.samples_info = samples_info
         self.class_labels = class_labels
+        self.rri_length = rri_length
         self.on_epoch_end()
 
     def __len__(self):
@@ -203,9 +207,10 @@ class ECGSequence(Sequence):
                 batch_seq.append(seq)
             rri = self.get_rri(rec_id, start, end)
             batch_rri.append(rri)
-        batch_rri_feat = self.compute_rri_features(np.array(batch_rri) * 1000)
+        batch_rri = np.array(batch_rri)
+        batch_rri_feat = self.compute_rri_features(batch_rri * 1000)
         # return np.array(batch_seq),np.array(batch_label)
-        return [np.array(batch_seq), np.array(batch_rri), batch_rri_feat], np.array(
+        return [np.array(batch_seq), batch_rri, batch_rri_feat], np.array(
             batch_label
         )
 
@@ -220,25 +225,27 @@ class ECGSequence(Sequence):
 
     def get_rri(self, rec_id, start, end):
         """Computes RR intervals"""
+        fs = 360
         r_locations = np.asarray(self.data[rec_id]["r_locations"])  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
-        rpeak_locs = list(r_locations[inds])
+        rpeak_locs = list(r_locations[inds]) #rpeak locs within start to end of excerpt
         rri = [
-            (rpeak_locs[i + 1] - rpeak_locs[i]) / 360.0
-            for i in range(0, len(rpeak_locs) - 1)
+            (rpeak_locs[i + 1] - rpeak_locs[i]) / float(fs)
+            for i in range(0, len(rpeak_locs) - 1)  #calculate rr intervals
         ]
-        # padding for 30sec---len=150
-        # print(rri)
-        rri_zeropadded = np.zeros(150)
+        # worst case senario for a 30sec with bpm of 300---rri len=150
+        rri_zeropadded = np.zeros(self.rri_length)
         rri_zeropadded[: len(rri)] = rri
-        # print(rri_zeropadded)
         rri_zeropadded = rri_zeropadded.tolist()
-        rri_zeropadded = rri_zeropadded[:20]  # TODO
         return rri_zeropadded
 
-    def compute_rri_features(self, arr):
-        # features = ['max','min']
-        return get_hrv_features(arr)
+    def compute_rri_features(self, rri_array):
+        """Computes some stat features for rr intervals"""
+        # mask zero padding in the array
+        import numpy.ma as ma
+        mask = np.invert(rri_array.astype(bool)) 
+        rri_masked = ma.masked_array(rri_array, mask=mask)
+        return get_hrv_features(rri_masked)
     
     def compute_wf_feats(self, seq):
         return get_wf_feats(seq, self.interval)
