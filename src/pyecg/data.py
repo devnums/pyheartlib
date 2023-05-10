@@ -125,6 +125,8 @@ class DataSeq(ABC):
             Contains ids of records, by default DS1
         file_name : str, optional
             Save file name, by default None
+        win_size : int, optional
+            Windows size
         stride : int, optional
             Stride of the moving windows, by default 36
 

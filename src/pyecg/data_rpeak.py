@@ -155,7 +155,7 @@ class ECGSequence(Sequence):
         [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
         eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
     class_labels : list, optional
-        the list of class labels to convert the output label list to integers, by default None
+        Class labels to convert the output label list to integers such as [0, "N", "V"], by default None
     batch_size : int, optional
         Batch size, by default 128
     binary : bool, optional
