@@ -66,9 +66,9 @@ class ArrhythmiaData(Data, DataSeq):
         list
             A list of signal and full_ann: [signal, full_ann].
 
-            First element is the original signal(1D ndarray).
+            First element is the original signal (1D ndarray).
 
-            Second element is a list that has the same size as the signal with
+            Second element is a list that has the same length as the original signal with
             arrhythmia types at each index:
             ['(N','(N', '(N','AFIB','AFIB','AFIB',...].
         """

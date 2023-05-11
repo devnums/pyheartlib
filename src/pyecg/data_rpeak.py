@@ -60,25 +60,32 @@ class RpeakData(Data, DataSeq):
         DataSeq.progress_bar = not progress_bar
 
     def full_annotate(self, record):
-        """fully annotate a single record signal.
+        """Fully annotate a signal.
 
         Parameters
         ----------
         record : dict
-            keys: signal,r_locations,r_labels,rhythms,rhythms_locations
+            Record as a dictionary with keys: 'signal', 'r_locations',
+            'r_labels', 'rhythms', 'rhythms_locations'.
+
         Returns
         -------
         list
-            a list of zeros. At any index with an rpeak the zero is changed to label.
+            A list of signal and full_ann: [signal, full_ann].
+
+            First element is the original signal (1D ndarray).
+
+            Second element is a list that has the same length as the original signal with
+            zero elements except at any rpeak index which has the rpeak annotation instead.
             [00000N00000000000000L00000...]
         """
 
         signal, r_locations, r_labels, _, _ = record.values()
-        full_seq = [0] * len(signal)
+        full_ann = [0] * len(signal)
         for i, loc in enumerate(r_locations):
-            full_seq[loc] = r_labels[i]
+            full_ann[loc] = r_labels[i]
 
-        record_full = [signal, full_seq]
+        record_full = [signal, full_ann]
         return record_full
 
     def make_samples_info(self, annotated_records, win_size=30 * 360, stride=256):
@@ -91,8 +98,6 @@ class RpeakData(Data, DataSeq):
         annotated_records: [[signal1, full_ann1],[signal2, full_ann2],...]
         win_size : the length of each extracted sample
         stride : the stride for extracted samples.
-        interval : the output interval for labels.
-        binary : if True 1 is replaced instead of labels
 
         Returns
         -------
@@ -103,6 +108,8 @@ class RpeakData(Data, DataSeq):
         """
         interval = 36  # not necessary, will be calculated in EXGSEQUENCE
         binary = False  # remove it and only do in ECGSEQUENCE
+        # interval : the output interval for labels. 
+        # binary : if True 1 is replaced instead of labels
 
         stride = int(stride)
         win_size = int(win_size)
