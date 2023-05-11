@@ -1,6 +1,3 @@
-import os
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,7 +10,6 @@ train_set = [201, 203]
 # test_set = [202, 210, 219, 221, 222]
 
 arrhythmia_data = ArrhythmiaData(base_path="./data", remove_bl=False, lowpass=False)
-
 annotated_records, samples_info = arrhythmia_data.save_samples(
     rec_list=train_set, file_name="train.arr", win_size=3600, stride=64
 )
