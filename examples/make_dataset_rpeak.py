@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from pyecg.io import load_data
 from pyecg.data_rpeak import RpeakData, ECGSequence
 

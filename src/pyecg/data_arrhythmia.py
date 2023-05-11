@@ -13,7 +13,7 @@ from pyecg.features import get_hrv_features, get_wf_feats
 
 class ArrhythmiaData(Data, DataSeq):
     """Provides signal data with single value annotations.
-    
+
     Parameters
     ----------
     base_path : str, optional
@@ -29,8 +29,7 @@ class ArrhythmiaData(Data, DataSeq):
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
-        Parameter of the low pass filter, by default 15 
-    
+        Parameter of the low pass filter, by default 15
     """
 
     def __init__(
@@ -59,14 +58,19 @@ class ArrhythmiaData(Data, DataSeq):
         Parameters
         ----------
         record : dict
-            Record as a dictionary with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations'.
+            Record as a dictionary with keys: 'signal', 'r_locations',
+            'r_labels', 'rhythms', 'rhythms_locations'.
 
         Returns
         -------
         list
-            A list of signal and full_ann: [signal,full_ann]. First element is the original signal(1D ndarray).
+            A list of signal and full_ann: [signal, full_ann].
+
+            First element is the original signal(1D ndarray).
+
             Second element is a list that has the same size as the signal with
-            arrhythmia types at each index: ['(N','(N','(N','(N','AFIB','AFIB','AFIB',...].
+            arrhythmia types at each index:
+            ['(N','(N', '(N','AFIB','AFIB','AFIB',...].
         """
 
         signal, _, _, rhythms, rhythms_locations = record.values()
@@ -80,14 +84,16 @@ class ArrhythmiaData(Data, DataSeq):
         return record_full
 
     def make_samples_info(self, annotated_records, win_size=30 * 360, stride=36):
-        """Creates a list of signal excerpts and their corresponding labels. For each excerpt, \ 
-        record id, onset, and offset point of it on the original signal is recorded.
+        """Creates a list of signal excerpts meta info and their corresponding annotation.
+
+        For each excerpt, record id, onset, and offset point of it on the original signal is recorded.
 
         Parameters
         ----------
         annotated_records : list
             A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
+            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels',
+            'rhythms', 'rhythms_locations', 'full_ann'.
         win_size : int, optional
             Windows size, by default 30*360
         stride : int, optional
@@ -96,7 +102,7 @@ class ArrhythmiaData(Data, DataSeq):
         Returns
         -------
         list
-            A list of lists. Each inner list is like [record_id, start_win, end_win, label].
+            A 2d list. Each inner list is like [record_id, start_win, end_win, Label].
             E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...]
         """
 
@@ -125,14 +131,16 @@ class ArrhythmiaData(Data, DataSeq):
 
 class ECGSequence(Sequence):
     """
-    Generates batches of data according to the meta information provided for each sample. 
-    Therefore it is memory efficent and there is no need to put large amount of data in the memory.
+    Generates batches of data according to the meta information provided for each sample.
+
+    It is memory efficent and there is no need to put large amount of data in the memory.
 
     Parameters
     ----------
     data : list
         A list containing a dict for each record, [rec1,rec2,....].
-        Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
+        Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels',
+        'rhythms', 'rhythms_locations', 'full_ann'.
     samples_info : list
         A list of lists. Each inner list is like [record_id, start_win, end_win, label].
         E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
@@ -151,6 +159,7 @@ class ECGSequence(Sequence):
     rri_length : int, optional
         Zeropadding rri as they have different length for each excerpt, by default 150
     """
+
     def __init__(
         self,
         data,
@@ -161,7 +170,7 @@ class ECGSequence(Sequence):
         interval=36,
         shuffle=True,
         denoise=False,
-        rri_length = 150
+        rri_length=150,
     ):
         self.shuffle = shuffle
         self.denoise = denoise
@@ -182,7 +191,13 @@ class ECGSequence(Sequence):
         Returns
         -------
         Tuple
-            Tuple of numpy arrays for sequences(or computed features) and labels for each batch.
+            Contains batch_x, batch_y, where batch_x is a list of numpy arrays
+            of batch_seq, batch_rri, batch_rri_feat.
+
+            If raw is False, batch_seq has the shape of (#batch,#segments,#features),
+            otherwise it has the shape of (#batch,seq_len).
+
+            batch_y has the shape of (#batch,1).
         """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
@@ -197,12 +212,12 @@ class ECGSequence(Sequence):
             end = sample[2]
             label = sample[3]
             labelm = label
-            if self.class_labels != None:
+            if self.class_labels is not None:
                 labelm = self.get_integer(label)
             batch_label.append(labelm)
             seq = self.data[rec_id]["signal"][start:end]
-            # compute signal waveform features for fragments 
-            if self.raw == False:
+            # compute signal waveform features for fragments
+            if self.raw is False:
                 seq = self.compute_wf_feats(seq)
                 batch_seq.append(list(seq))
             else:
@@ -212,9 +227,9 @@ class ECGSequence(Sequence):
         batch_rri = np.array(batch_rri)
         batch_rri_feat = self.compute_rri_features(batch_rri * 1000)
         # return np.array(batch_seq),np.array(batch_label)
-        return [np.array(batch_seq), batch_rri, batch_rri_feat], np.array(
-            batch_label
-        )
+        batch_x = [np.array(batch_seq), batch_rri, batch_rri_feat]
+        batch_y = np.array(batch_label)
+        return batch_x, batch_y
 
     def on_epoch_end(self):
         """After each epoch shuffles the samples."""
@@ -230,10 +245,12 @@ class ECGSequence(Sequence):
         fs = 360
         r_locations = np.asarray(self.data[rec_id]["r_locations"])  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
-        rpeak_locs = list(r_locations[inds]) #rpeak locs within start to end of excerpt
+        rpeak_locs = list(
+            r_locations[inds]
+        )  # rpeak locs within start to end of excerpt
         rri = [
             (rpeak_locs[i + 1] - rpeak_locs[i]) / float(fs)
-            for i in range(0, len(rpeak_locs) - 1)  #calculate rr intervals
+            for i in range(0, len(rpeak_locs) - 1)  # calculate rr intervals
         ]
         # worst case senario for a 30sec with bpm of 300---rri len=150
         rri_zeropadded = np.zeros(self.rri_length)
@@ -245,9 +262,10 @@ class ECGSequence(Sequence):
         """Computes some stat features for rr intervals"""
         # mask zero padding in the array
         import numpy.ma as ma
-        mask = np.invert(rri_array.astype(bool)) 
+
+        mask = np.invert(rri_array.astype(bool))
         rri_masked = ma.masked_array(rri_array, mask=mask)
         return get_hrv_features(rri_masked)
-    
+
     def compute_wf_feats(self, seq):
         return get_wf_feats(seq, self.interval)

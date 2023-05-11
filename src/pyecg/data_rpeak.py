@@ -22,7 +22,8 @@ class RpeakData(Data, DataSeq):
     data_path : str, optional
         Relative path of raw input data regarding to the base_path.
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+        If True removes the baseline from the raw signals before extracting
+        beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
     sampling_rate : int, optional
@@ -81,7 +82,10 @@ class RpeakData(Data, DataSeq):
         return record_full
 
     def make_samples_info(self, annotated_records, win_size=30 * 360, stride=256):
-        """
+        """Creates a list of signal excerpts meta info and their corresponding annotation.
+
+        For each excerpt, record id, onset, and offset point of it on the original signal is recorded.
+
         Parameters
         ----------
         annotated_records: [[signal1, full_ann1],[signal2, full_ann2],...]
@@ -93,10 +97,9 @@ class RpeakData(Data, DataSeq):
         Returns
         -------
         list
-            a 2d list. Each inner list: [record_no,start_win,end_win,label]
-            [[record_no,start_win,end_win,label],[record_no,start_win,end_win,label], ...]
-            label is a list. Elements are rpeak labels for each interval.
-            eg: [[10,500,800, [000000N00000000L00] ],[],...]
+            A 2d list. Each inner list is like [record_no, start_win, end_win, Label].
+            Label is a list and its elements are rpeak annotations for each interval.
+            E.g.: [[10,500,800,[000000N00000000L00]], ...]
         """
         interval = 36  # not necessary, will be calculated in EXGSEQUENCE
         binary = False  # remove it and only do in ECGSEQUENCE
@@ -144,18 +147,21 @@ class RpeakData(Data, DataSeq):
 class ECGSequence(Sequence):
     """
     Generates batches of data according to the meta information provided for each sample.
-    Therefore it is memory efficent and there is no need to put large amount of data in the memory.
+
+    It is memory efficent and there is no need to put large amount of data in the memory.
 
     Parameters
     ----------
     data: list
         A list containing a dict for each record, [rec1,rec2,....].
-        Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'.
+        Each rec is a dict with keys: 'signal','r_locations','r_labels',
+        'rhythms','rhythms_locations', 'full_ann'.
     samples_info: list
         [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
         eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
     class_labels : list, optional
-        Class labels to convert the output label list to integers such as [0, "N", "V"], by default None
+        Class labels to convert the output label list to integers 
+        such as [0, "N", "V"], by default None
     batch_size : int, optional
         Batch size, by default 128
     binary : bool, optional
@@ -163,7 +169,8 @@ class ECGSequence(Sequence):
     raw : bool, optional
         Whether to return the full waveform or the computed features, by default True
     interval : int, optional
-        interval for sub segmenting the waveform for feature and label computations, by default 36
+        interval for sub segmenting the waveform for feature and 
+        label computations, by default 36
     shuffle : bool, optional
         If True shuffle the sample data, by default True
     """
@@ -199,12 +206,15 @@ class ECGSequence(Sequence):
         Returns
         -------
         Tuple
-            Tuple of numpy arrays (batch_x,batch_y) for sequences(or computed features) and their labels.
-            batch_x: If raw is False: (batch,segments,features), otherwise (batch,seqs)
-            batch_y: (batch,label_list)
+            Contains batch_x, batch_y as numpy arrays.
+
+            batch_x has the shape of (#batch,#segments,#features) if raw is False,
+            otherwise it has the shape of (#batch,len_seq).
+
+            batch_y has the shape of (#batch,len_label_list)
         """
         batch_samples = self.samples_info[
-            idx * self.batch_size : (idx + 1) * self.batch_size
+            idx * self.batch_size: (idx + 1) * self.batch_size
         ]
         batch_x = []
         batch_y = []
@@ -219,12 +229,12 @@ class ECGSequence(Sequence):
             full_ann_seq = self.data[rec_id]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
             # compute signal waveform features for fragments 
-            if self.raw == False:
+            if self.raw is False:
                 seq = self.compute_wf_feats(seq)
                 batch_x.append(list(seq))
             else:
                 batch_x.append(seq)
-            if self.class_labels != None:
+            if self.class_labels is not None:
                 label = self.get_integer(label)
             if self.binary:
                 label = self.get_binary(label)
@@ -251,7 +261,7 @@ class ECGSequence(Sequence):
         labels_seq = []
         # each subsegment
         for i in range(0, len(seg), self.interval):
-            subseg = seg[i : i + self.interval]
+            subseg = seg[i: i + self.interval]
             if any(subseg):
                 nonzero = [l for l in subseg if l != 0]
                 lb = nonzero[0]
