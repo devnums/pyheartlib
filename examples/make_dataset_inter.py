@@ -2,7 +2,6 @@
 This example shows how to create the datasets inter-patient.
 """
 
-from pyecg.dataset_config import DS1, DS2
 from pyecg.data_beat import BeatData
 from pyecg.beat_info import BeatInfo
 
@@ -32,11 +31,11 @@ beatinfo.select_features(["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_
 
 # use the save_dataset_inter method to create the dataset file.
 # The file will be saved in the base data directory.
-beatdata.save_dataset_inter(DS1[17:18], beatinfo, file="train.beat")
+beatdata.save_dataset_inter(beatdata.config["DS1"][17:18], beatinfo, file="train.beat")
 
 # In a similar way for validation and test sets
-beatdata.save_dataset_inter(DS1[18:20], beatinfo, file="val.beat")
-beatdata.save_dataset_inter(DS2[1:2], beatinfo, file="test.beat")
+beatdata.save_dataset_inter(beatdata.config["DS1"][18:20], beatinfo, file="val.beat")
+beatdata.save_dataset_inter(beatdata.config["DS2"][1:2], beatinfo, file="test.beat")
 
 # Loading the sets
 train_ds = beatdata.load_data(file_name="train.beat")

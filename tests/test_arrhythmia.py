@@ -47,14 +47,14 @@ dmm.save(record_name="dummy102")
 
 @pytest.fixture
 def arrhythmiadata():
-    obj = ArrhythmiaData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     return obj
 
 
 def test_save_samples(arrhythmiadata):
     ann, sam = arrhythmiadata.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.arr",
+        file_name="tmp.arr",
         win_size=400,
         stride=200,
     )
@@ -65,10 +65,10 @@ def test_save_samples(arrhythmiadata):
 
 @pytest.fixture
 def seq_generator1():
-    obj = ArrhythmiaData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.arr",
+        file_name="tmp.arr",
         win_size=400,
         stride=200,
     )
@@ -107,10 +107,10 @@ def test_getitem1(seq_generator1):
 
 @pytest.fixture
 def seq_generator2():
-    obj = ArrhythmiaData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.arr",
+        file_name="tmp.arr",
         win_size=400,
         stride=200,
     )

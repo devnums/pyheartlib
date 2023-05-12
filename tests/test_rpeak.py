@@ -1,6 +1,5 @@
 import pytest
 import numpy
-import pandas
 from pyecg.data_rpeak import RpeakData, ECGSequence
 from pyecg.io import load_data
 import hashlib
@@ -61,14 +60,14 @@ dmm.save(record_name="dummy102")
 
 @pytest.fixture
 def rpeakdata():
-    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = RpeakData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     return obj
 
 
 def test_save_samples(rpeakdata):
     ann, sam = rpeakdata.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.rpeak",
+        file_name="tmp.rpeak",
         win_size=400,
         stride=200,
     )
@@ -79,10 +78,10 @@ def test_save_samples(rpeakdata):
 
 @pytest.fixture
 def seq_generator1():
-    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = RpeakData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.rpeak",
+        file_name="tmp.rpeak",
         win_size=400,
         stride=200,
     )
@@ -113,10 +112,10 @@ def test_getitem1(seq_generator1):
 
 @pytest.fixture
 def seq_generator2():
-    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = RpeakData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.rpeak",
+        file_name="tmp.rpeak",
         win_size=400,
         stride=200,
     )
@@ -147,10 +146,10 @@ def test_getitem2(seq_generator2):
 
 @pytest.fixture
 def seq_generator3():
-    obj = RpeakData(data_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = RpeakData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
-        file_name=test_data_dir + "/tmp.rpeak",
+        file_name="tmp.rpeak",
         win_size=400,
         stride=200,
     )

@@ -2,7 +2,6 @@
 This example shows how to create the datasets intra-patient.
 """
 
-from pyecg.dataset_config import DS1, DS2
 from pyecg.data_beat import BeatData
 from pyecg.beat_info import BeatInfo
 
@@ -24,14 +23,14 @@ def F_new_feature2(self):
     return post - pre
 
 new_features = [F_new_feature1, F_new_feature2]
-beatinfo.add_features(new_features)  
-print(beatinfo.available_features()) 
+beatinfo.add_features(new_features) 
+print(beatinfo.available_features())
 
 
 beatinfo.select_features(["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_feature1", "F_new_feature2"])
 
 # The file will be saved in the base data directory.
-beatdata.save_dataset_intra(DS1[17:21], beatinfo)
+beatdata.save_dataset_intra(beatdata.config["DS1"][17:21], beatinfo)
 
 # Loading the sets
 train_ds = beatdata.load_data(file_name="intra_train.beat")
@@ -43,7 +42,3 @@ stat_report = beatdata.report_stats_table(
 )
 print(stat_report)
 print(train_ds['beat_feats'].head(3)) 
-
-
-
-

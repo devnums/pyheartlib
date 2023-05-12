@@ -1,17 +1,14 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from pyecg.io import load_data
 from pyecg.data_rpeak import RpeakData, ECGSequence
-from pyecg.dataset_config import DS1, DS2
-
-
-train_set = DS1[:18]
-val_set = DS1[18:]
-test_set = DS2
 
 
 # create train, validation, and test sets
 rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
+
+train_set = rpeak_data.config["DS1"][:18]
+val_set = rpeak_data.config["DS1"][18:]
+test_set = rpeak_data.config["DS2"]
+
 annotated_records, samples_info = rpeak_data.save_samples(
     rec_list=train_set, file_name="train.rpeak", win_size=10 * 360, stride=1440
 )

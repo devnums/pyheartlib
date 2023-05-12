@@ -10,7 +10,7 @@ dmm.save(record_name="dummy101")
 
 
 beatdata = BeatData(
-    data_path=test_data_dir,
+    base_path=test_data_dir,
     win=[300, 200],
     num_pre_rr=2,
     num_post_rr=5,

@@ -7,7 +7,6 @@ import numpy as np
 from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
 from pyecg.data import Data, DataSeq
-from pyecg.config import config
 from pyecg.features import get_wf_feats
 
 
@@ -17,9 +16,7 @@ class RpeakData(Data, DataSeq):
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default os.getcwd()
-    data_path : str, optional
-        Relative path of raw input data regarding to the base_path.
+        Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
         If True removes the baseline from the raw signals before extracting
         beat excerpts, by default False
@@ -37,8 +34,7 @@ class RpeakData(Data, DataSeq):
 
     def __init__(
         self,
-        base_path=os.getcwd(),
-        data_path=config["DATA_DIR"],
+        base_path=None,
         remove_bl=False,
         lowpass=False,
         sampling_rate=360,
@@ -48,7 +44,6 @@ class RpeakData(Data, DataSeq):
     ):
         super().__init__(
             base_path,
-            data_path,
             remove_bl,
             lowpass,
             sampling_rate,
@@ -145,7 +140,7 @@ class RpeakData(Data, DataSeq):
 
                 samples_info.append([rec_id, start, end, labels_seq])
                 end += stride
-            time.sleep(3)
+            #time.sleep(3)
 
         return samples_info
 

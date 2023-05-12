@@ -1,16 +1,17 @@
 import pandas as pd
 import wfdb
 import pickle
-from pyecg.config import config
 
 
-def get_data(record_path, return_dict=True):
+def get_data(record_path, config, return_dict=True):
     """Loads a record and return its components.
 
     Parameters
     ----------
     record_path : str
         Path of the record.
+    config : dict
+        Config of the dataset.
     return_dict : bool
         If True returns as a dict, otherwise returns as a pandas dataframe.
 
@@ -19,7 +20,7 @@ def get_data(record_path, return_dict=True):
     dict or dataframe
         If return_dict is True, it returns a dictionary
         with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
-        
+
         If return_dict is False, it returns a dataframe containing the time, raw signal, and
         a list of equal size to the raw signal with None values except at anntations locations.
     """
@@ -35,7 +36,7 @@ def get_data(record_path, return_dict=True):
     r_locations = []
     rhythms = []
     rhythms_locations = []
-    syms = [k for k, v in config["MAP_AAMI"].items()]
+    syms = config["BEAT_TYPES"]
     for i in range(len(ann_locations)):
         if symbol[i] in syms:
             r_labels.append(symbol[i])

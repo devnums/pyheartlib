@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from pyecg.data import Data
-from pyecg.config import config
 from pyecg.io import save_data, load_data
 
 
@@ -15,9 +14,7 @@ class BeatData(Data):
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default os.getcwd()
-    data_path : str, optional
-        Relative path of raw input data regarding to the base_path.
+        Path of main directory for loading and saving data, by default None
     win : list, optional
         [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
     num_pre_rr : int, optional
@@ -56,8 +53,7 @@ class BeatData(Data):
 
     def __init__(
         self,
-        base_path=os.getcwd(),
-        data_path=config["DATA_DIR"],
+        base_path=None,
         win=[60, 120],
         num_pre_rr=10,
         num_post_rr=10,
@@ -70,14 +66,13 @@ class BeatData(Data):
     ):
         super().__init__(
             base_path,
-            data_path,
             remove_bl,
             lowpass,
             sampling_rate,
             cutoff,
             order,
         )
-        self.syms = [k for k, v in config["MAP_AAMI"].items()]
+        self.syms = self.config["BEAT_TYPES"]
         self.win = win
         self.num_pre_rr = num_pre_rr
         self.num_post_rr = num_post_rr
@@ -616,7 +611,7 @@ class BeatData(Data):
         x_aug = ds["waveforms"]
         r_aug = ds["beat_feats"]
         y_aug = ds["labels"].tolist()
-        for sym in list(config["MAP_AAMI"].keys()):
+        for sym in self.config["BEAT_TYPES"]:
             try:
                 _, ind_minor = self.search_type(ds["waveforms"], ds["labels"], sym=sym)
                 minority = np.take(ds["waveforms"], ind_minor, axis=0)

@@ -1,7 +1,7 @@
 import os
+import yaml
 from tqdm import tqdm
 from abc import ABC, abstractmethod
-from pyecg.config import config
 from pyecg.io import get_data, save_data
 from pyecg.processing import Processing
 
@@ -9,12 +9,17 @@ from pyecg.processing import Processing
 class Data:
     """Parent of other data classes.
 
+    Attributes
+    ----------
+    config : dict
+        Dataset config.
+    data_path : str
+        Path of the data directory.
+
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default os.getcwd()
-    data_path : str, optional
-        Relative path of raw input data regarding to the base_path.
+        Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
         If True removes the baseline from the raw signals before extracting beat excerpts, by default False
     lowpass : bool, optional
@@ -29,21 +34,28 @@ class Data:
 
     def __init__(
         self,
-        base_path=os.getcwd(),  # TODO look or create data dir
-        data_path=config["DATA_DIR"],
+        base_path=None,
         remove_bl=False,
         lowpass=False,
         sampling_rate=360,
         cutoff=45,
         order=15,
     ):
-        self.base_path = base_path
-        self.data_path = os.path.join(self.base_path, data_path)
         self.remove_bl = remove_bl
         self.lowpass = lowpass
         self.sampling_rate = sampling_rate
         self.cutoff = cutoff
         self.order = order
+
+        if base_path is None:
+            self.base_path = os.getcwd()
+            conf_path = os.path.join(self.base_path, "src", "pyecg", "config.yaml")
+        else:
+            self.base_path = base_path
+            conf_path = os.path.join(self.base_path, "config.yaml")
+        with open(conf_path) as f:
+            self.config = yaml.load(f, Loader=yaml.FullLoader)
+        self.data_path = os.path.join(self.base_path, self.config["DATA_DIR"])
 
     def get_ecg_record(self, record_id=106):
         """Loads a record and return its components.
@@ -64,7 +76,7 @@ class Data:
             a list of equal size to the raw signal with None values except at annotations locations.
         """
         record_path = os.path.join(self.data_path, str(record_id))
-        data_dict = get_data(record_path, return_dict=True)
+        data_dict = get_data(record_path, self.config, return_dict=True)
         data_dict["signal"] = Processing.denoise_signal(
             data_dict["signal"],
             remove_bl=self.remove_bl,
@@ -119,8 +131,8 @@ class DataSeq(ABC):
 
         Parameters
         ----------
-        rec_list : list, optional
-            Contains ids of records, by default DS1
+        rec_list : list
+            Contains ids of records
         file_name : str, optional
             Save file name, by default None
         win_size : int, optional
