@@ -3,13 +3,14 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from pyecg.data import Data
-from pyecg.dataset_config import DATA_DIR, DS1, MAP_AAMI, RECORDS
-from pyecg.io import get_data, save_data, load_data
+from pyecg.dataset_config import DATA_DIR, DS1, MAP_AAMI
+from pyecg.io import save_data, load_data
 
 
 class BeatData(Data):
     """
-    Processes the provided data and creates the dataset file containg waveforms, features, and labels.
+    Processes the provided data and creates the dataset file containg
+    waveforms, features, and labels.
 
     Parameters
     ----------
@@ -20,9 +21,9 @@ class BeatData(Data):
     win : list, optional
         [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
     num_pre_rr : int, optional
-        Number of previous rpeak locations must be returned by the function, by default 10
+        Number of previous rpeak locations to be included, by default 10
     num_post_rr : int, optional
-        Number of future rpeak locations must be returned by the function., by default 10
+        Number of future rpeak locations to be included, by default 10
     remove_bl : bool, optional
         If True removes the baseline from the raw signals before extracting beat excerpts, by default False
     lowpass : bool, optional
@@ -89,7 +90,8 @@ class BeatData(Data):
         r_locations=None,
         r_label=None,
     ):
-        """Fragments one signal into beats and returns the signal excerpts and corresponding labels.
+        """Fragments one signal into beats and returns the signal excerpts
+        and corresponding labels.
 
         Parameters
         ----------
@@ -151,13 +153,13 @@ class BeatData(Data):
         Returns
         -------
         dict
-            A dictionary with keys:
+            A dictionary containing:
                 'waveforms' : numpy.ndarray
-                    2D ndarray of beat waveforms.
+                    2D array of beat waveforms.
                 'beat_feats' : pd.DataFrame
                     DataFrame of beats' features.
                 'labels' : numpy.ndarray
-                    1D ndarray of beats' labels.
+                    1D array of beats' labels.
         """
         xds = []
         yds = []
@@ -206,7 +208,7 @@ class BeatData(Data):
         Parameters
         ----------
         data : dict
-            A dictionary with keys:
+            A dictionary containing:
                 'waveform' : list of waveforms
                 'rpeak_locs' : list of rpeak locations
                 'rec_ids' : list of record ids
@@ -249,7 +251,7 @@ class BeatData(Data):
         return features, labels
 
     def clean_irrelevant_data(self, ds):
-        """Removes data with irrelevant labels(symbols) which are not in the symbols list.
+        """Removes data with irrelevant labels (symbols) which are not in the symbols list.
 
         Parameters
         ----------
@@ -314,8 +316,8 @@ class BeatData(Data):
         Returns
         -------
         list
-            A list of dictionaries. One dictionary per one data set. keys are labels types(symbols) and
-            values are the counts of each specific symbol.
+            A list of dictionaries. One dictionary per one data set.
+            Keys are labels types(symbols) and values are the counts of each specific symbol.
         """
         res_list = []
         for yds in yds_list:
@@ -327,7 +329,7 @@ class BeatData(Data):
         return res_list
 
     def report_stats_table(self, yds_list, name_list=[]):
-        """Returns the number of samples for each label type in the data as a dataframe.
+        """Returns the number of samples for each label type in the data.
 
         Parameters
         ----------
@@ -395,7 +397,7 @@ class BeatData(Data):
             Name of the file to be saved, by default None
         """
         ds = self.make_dataset([record], beatinfo_obj)
-        if clean == True:
+        if clean is True:
             ds = self.clean_irrelevant_data(ds)
 
         # slice the dataset based on the split_ratio
@@ -418,7 +420,7 @@ class BeatData(Data):
             "labels": yarr_train,
         }
         ds_test = {"waveforms": xarr_test, "beat_feats": farr_test, "labels": yarr_test}
-        if file == None:
+        if file is None:
             file_train = str(record) + "_train" + ".beat"
             file_test = str(record) + "_test" + ".beat"
         else:
@@ -514,7 +516,7 @@ class BeatData(Data):
         Returns
         -------
         pandas.dataframe
-            Dataset as a dataframe. Keys are waveforms, beat_feats, and labels.
+            Dataset as a dataframe. Keys are "waveforms", "beat_feats", and "labels".
 
         Raises
         ------
@@ -551,7 +553,7 @@ class BeatData(Data):
             Contains count of each label type.
         """
 
-        if cols == None:
+        if cols is None:
             cols = self.syms
         ld = []
         for rec_id in rec_ids_list:
@@ -571,8 +573,7 @@ class BeatData(Data):
         return X
 
     def slice_data(self, ds, labels_list):
-        # only keep the labels in label_list
-        # ds = copy.copy(ds)
+        """Only holds the labels in the labels_list"""
         sliced_x = ds["waveforms"]
         sliced_r = ds["beat_feats"]
         sliced_y = ds["labels"]
@@ -583,12 +584,68 @@ class BeatData(Data):
         sliced_x = sliced_x[indexes_keep]
         sliced_r = sliced_r[indexes_keep]
         sliced_y = sliced_y[indexes_keep]
-        # sliced_y = [sliced_y[i] for i in indexes_keep]
-
         return {"waveforms": sliced_x, "beat_feats": sliced_r, "labels": sliced_y}
 
-    def binarize_labels(self, y, positive_label, pos=1, neg=-1):
-        # y a list of labels
-        # positive_label: positive class label
-        new_y = [pos if item == positive_label else neg for item in y]
+    def binarize_labels(self, labels_list, positive_label, pos=1, neg=-1):
+        new_y = [pos if item == positive_label else neg for item in labels_list]
         return new_y
+
+    def search_type(self, x, y, sym="N"):
+        """Search for a signal excerpt with a patricular type"""
+        indexes = [i for i, item in enumerate(y) if item == sym]
+        return x[indexes], indexes
+
+    def aug_decrease(self, ds, label="N", desired_size=21000):
+        """Simple data augmentation to decrease a particular type in the dataset."""
+        import random
+        import copy
+
+        ds = copy.deepcopy(ds)
+        xx = ds["waveforms"]
+        rr = ds["beat_feats"]
+        yy = ds["labels"]
+        _, ind = self.search_type(xx, yy, sym=label)
+        random.shuffle(ind)
+        nn = len(ind) - desired_size
+        ind_remove = ind[0:nn]
+        x_train_aug = np.delete(xx, ind_remove, axis=0)
+        r_train_aug = np.delete(rr, ind_remove, axis=0)
+        y_train_aug = np.delete(yy, ind_remove)
+        print(x_train_aug.shape, y_train_aug.shape)
+        return {
+            "waveforms": x_train_aug,
+            "beat_feats": r_train_aug,
+            "labels": y_train_aug,
+        }
+
+    def aug_increase(self, ds, desired_size=21000):
+        """Simple data augmentation to increase the number of minorities in the dataset."""
+        import copy
+
+        x_aug = ds["waveforms"]
+        r_aug = ds["beat_feats"]
+        y_aug = ds["labels"].tolist()
+        for sym in list(MAP_AAMI.keys()):
+            try:
+                _, ind_minor = self.search_type(ds["waveforms"], ds["labels"], sym=sym)
+                minority = np.take(ds["waveforms"], ind_minor, axis=0)
+                minority_r = np.take(ds["beat_feats"], ind_minor, axis=0)
+                minority_labels = [sym] * len(minority)
+                if len(minority) > 0 and len(ind_minor) < desired_size:
+                    times = desired_size // len(minority)
+                    if times > 0:
+                        arr = copy.deepcopy(minority)
+                        arr_r = copy.deepcopy(minority_r)
+                        list_appnd = copy.deepcopy(minority_labels)
+                        for i in range(times - 1):
+                            arr = np.append(arr, minority, axis=0)
+                            arr_r = np.append(arr_r, minority_r, axis=0)
+                            list_appnd = list_appnd + minority_labels
+                        x_aug = np.append(x_aug, arr, axis=0)
+                        r_aug = np.append(r_aug, arr_r, axis=0)
+                        y_aug = y_aug + list_appnd
+                    else:
+                        print(sym)
+            except:
+                print("label zero")
+        return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
