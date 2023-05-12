@@ -1,13 +1,13 @@
 import numpy as np
 from scipy import stats
 from scipy.fft import rfft, rfftfreq
-from pyecg.pqrst import PQRST
+from pyecg.extra.pqrst import PQRST
 import types
 
 
 class BeatInfo:
     """
-    Provides information and features for a single beat.   
+    Provides information and features for a single beat.
 
     Parameters
     ----------
@@ -16,7 +16,7 @@ class BeatInfo:
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True         
+        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True
 
     Attributes
     ----------
@@ -25,7 +25,7 @@ class BeatInfo:
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True  
+        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True
     whole_waveform : list
         Whole waveform.
     bwaveform : list
@@ -39,9 +39,10 @@ class BeatInfo:
     sdrri : list
         Successive RRI differences.
     avail_features : list
-        List of fetaure names(strings) already have a definition in the class.
+        List of fetaure names (strings) that already have a definition in the class.
     features : dict
-        Dictionary with keys(strings) equal to feature names and dict values equal to features values.
+        Dictionary with keys(strings) equal to feature names and dict values
+        equal to features values.
     """
 
     def __init__(self, beat_loc, fs=360, in_ms=True):
@@ -55,7 +56,7 @@ class BeatInfo:
         ----------
         data : dict
             A dict containing data about the beat with keys:
-            
+
             'waveform' : list
                 Waveform of the beat.
             'rpeak_locs' : list
@@ -122,7 +123,8 @@ class BeatInfo:
         Returns
         -------
         dict
-            Dictionary with keys(strings) equal to feature names and dict values equal to features values.
+            Dictionary with keys(strings) equal to feature names and dict values
+            equal to features values.
         """
         if (
             hasattr(self, "selected_features_names")
@@ -143,7 +145,7 @@ class BeatInfo:
         return feature_dict
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
-        # segment beat waveform according to the pre and post rri intervals.
+        """Segment beat waveform according to the pre and post rri intervals."""
         try:
             beat_rpeak_idx = self.rpeaks[self.beat_loc]
             prerri = self.rri_smpl[self.beat_loc - 1]
@@ -310,7 +312,7 @@ class BeatInfo:
             return self.sdrri[self.beat_loc]
         except:
             return None
-            
+
     def F_onbeat_sdrri(self):
         # on beat(postrri-prerri)
         return self.sdrri[self.beat_loc - 1]
@@ -377,12 +379,11 @@ class BeatInfo:
         return rms
 
     def pqrst(self):
-        """
-        120ms <Normal_PR< 220ms.
-        75ms  <Normal_QRS< 120ms
-        QRS region estimate 160ms.
-        Compute: QRS width,Q,R,S amplitudes.
-        """
+        # 120ms <Normal_PR< 220ms.
+        # 75ms  <Normal_QRS< 120ms
+        # QRS region estimate 160ms.
+        # Compute: QRS width,Q,R,S amplitudes.
+
         beat_pqrst = PQRST()
         beat_pqrst(self.bwaveform)
         p = beat_pqrst.pwave

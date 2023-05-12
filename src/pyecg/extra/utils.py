@@ -1,13 +1,10 @@
 from scipy.spatial import distance
 from fastdtw import fastdtw
 from sklearn.metrics import mean_squared_error
-import tensorflow as tf
 import numpy as np
-import pickle
 from pyecg.dataset_config import *
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
 
 def reset_seed(seed_value=22):
@@ -84,8 +81,9 @@ def plot_signal(data):
 
     fig = px.line(data, title="ECG", x="Time", y="Signal")
 
-    # fig = go.Figure()
     """
+    import plotly.graph_objects as go
+    fig = go.Figure()
 	fig.add_trace(
 		go.Scatter(
 			x=dfsignal['Index'],
@@ -121,7 +119,7 @@ def calc_class_weights(flag, y):
     else:
         return None
 
-
+import tensorflow as tf
 cosine_similarity = tf.keras.metrics.CosineSimilarity(axis=-1)
 
 

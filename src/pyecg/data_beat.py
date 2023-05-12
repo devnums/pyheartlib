@@ -567,13 +567,8 @@ class BeatData(Data):
         df = df[list(set(cols) & set(df.columns))]
         return df
 
-    def stndr(self, arr, mean, std):
-        X = arr.copy()
-        X = (X - np.mean(X)) / np.std(X)
-        return X
-
     def slice_data(self, ds, labels_list):
-        """Only holds the labels in the labels_list"""
+        """Only holds the data that their annotation is in the labels_list"""
         sliced_x = ds["waveforms"]
         sliced_r = ds["beat_feats"]
         sliced_y = ds["labels"]
@@ -585,10 +580,6 @@ class BeatData(Data):
         sliced_r = sliced_r[indexes_keep]
         sliced_y = sliced_y[indexes_keep]
         return {"waveforms": sliced_x, "beat_feats": sliced_r, "labels": sliced_y}
-
-    def binarize_labels(self, labels_list, positive_label, pos=1, neg=-1):
-        new_y = [pos if item == positive_label else neg for item in labels_list]
-        return new_y
 
     def search_type(self, x, y, sym="N"):
         """Search for a signal excerpt with a patricular type"""
@@ -649,3 +640,12 @@ class BeatData(Data):
             except:
                 print("label zero")
         return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
+
+    def stndr(self, arr, mean, std):
+        X = arr.copy()
+        X = (X - np.mean(X)) / np.std(X)
+        return X
+
+    def binarize_labels(self, labels_list, positive_label, pos=1, neg=-1):
+        new_y = [pos if item == positive_label else neg for item in labels_list]
+        return new_y

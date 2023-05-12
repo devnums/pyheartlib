@@ -64,6 +64,7 @@ def get_data(record_path, return_dict=True):
 
 
 def save_data(data, file_path):
+    """Saves data"""
     if file_path is None:
         raise ValueError("Save file path is not provided!")
     with open(file_path, "wb") as f:
@@ -72,6 +73,7 @@ def save_data(data, file_path):
 
 
 def load_data(file_path=None):
+    """Loads data"""
     if file_path is None:
         print("File path must be provided")
     with open(file_path, "rb") as f:
