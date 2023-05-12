@@ -1,7 +1,7 @@
 import pandas as pd
 import wfdb
 import pickle
-from pyecg.dataset_config import MAP_AAMI, RHYTHM_TYPES
+from pyecg.config import config
 
 
 def get_data(record_path, return_dict=True):
@@ -35,17 +35,17 @@ def get_data(record_path, return_dict=True):
     r_locations = []
     rhythms = []
     rhythms_locations = []
-    syms = [k for k, v in MAP_AAMI.items()]
+    syms = [k for k, v in config["MAP_AAMI"].items()]
     for i in range(len(ann_locations)):
         if symbol[i] in syms:
             r_labels.append(symbol[i])
             r_locations.append(ann_locations[i])
 
-        if aux[i] in RHYTHM_TYPES:
+        if aux[i] in config["RHYTHM_TYPES"]:
             rhythms.append(aux[i])
             rhythms_locations.append(ann_locations[i])
 
-    if return_dict == True:
+    if return_dict is True:
         return {
             "signal": signal,
             "r_locations": r_locations,

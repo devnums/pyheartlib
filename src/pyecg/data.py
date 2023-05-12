@@ -1,10 +1,8 @@
 import os
-import numpy as np
-import pandas as pd
 from tqdm import tqdm
 from abc import ABC, abstractmethod
-from pyecg.dataset_config import DATA_DIR
-from pyecg.io import get_data, save_data, load_data
+from pyecg.config import config
+from pyecg.io import get_data, save_data
 from pyecg.processing import Processing
 
 
@@ -32,7 +30,7 @@ class Data:
     def __init__(
         self,
         base_path=os.getcwd(),  # TODO look or create data dir
-        data_path=DATA_DIR,
+        data_path=config["DATA_DIR"],
         remove_bl=False,
         lowpass=False,
         sampling_rate=360,

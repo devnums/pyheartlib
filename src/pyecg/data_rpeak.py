@@ -7,8 +7,7 @@ import numpy as np
 from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
 from pyecg.data import Data, DataSeq
-from pyecg.dataset_config import DATA_DIR, DS1
-from scipy import stats
+from pyecg.config import config
 from pyecg.features import get_wf_feats
 
 
@@ -39,7 +38,7 @@ class RpeakData(Data, DataSeq):
     def __init__(
         self,
         base_path=os.getcwd(),
-        data_path=DATA_DIR,
+        data_path=config["DATA_DIR"],
         remove_bl=False,
         lowpass=False,
         sampling_rate=360,

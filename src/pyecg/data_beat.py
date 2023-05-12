@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from pyecg.data import Data
-from pyecg.dataset_config import DATA_DIR, DS1, MAP_AAMI
+from pyecg.config import config
 from pyecg.io import save_data, load_data
 
 
@@ -57,7 +57,7 @@ class BeatData(Data):
     def __init__(
         self,
         base_path=os.getcwd(),
-        data_path=DATA_DIR,
+        data_path=config["DATA_DIR"],
         win=[60, 120],
         num_pre_rr=10,
         num_post_rr=10,
@@ -77,7 +77,7 @@ class BeatData(Data):
             cutoff,
             order,
         )
-        self.syms = [k for k, v in MAP_AAMI.items()]
+        self.syms = [k for k, v in config["MAP_AAMI"].items()]
         self.win = win
         self.num_pre_rr = num_pre_rr
         self.num_post_rr = num_post_rr
@@ -537,13 +537,13 @@ class BeatData(Data):
         print()
         return ds
 
-    def per_record_stats(self, rec_ids_list=DS1, cols=None):
+    def per_record_stats(self, rec_ids_list=None, cols=None):
         """Returns a dataframe containing the number of each type in each record.
 
         Parameters
         ----------
         rec_ids_list : list, optional
-            List of record ids, by default DS1
+            List of record ids, by default None
         cols : list
             List of labels classes, by default None
 
@@ -616,7 +616,7 @@ class BeatData(Data):
         x_aug = ds["waveforms"]
         r_aug = ds["beat_feats"]
         y_aug = ds["labels"].tolist()
-        for sym in list(MAP_AAMI.keys()):
+        for sym in list(config["MAP_AAMI"].keys()):
             try:
                 _, ind_minor = self.search_type(ds["waveforms"], ds["labels"], sym=sym)
                 minority = np.take(ds["waveforms"], ind_minor, axis=0)

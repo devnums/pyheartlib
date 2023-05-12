@@ -152,3 +152,13 @@ RHYTHM_TYPES = [
     "(VFL",
     "(VT",
 ]
+
+config = {
+    "DATA_DIR": DATA_DIR,
+    "RECORDS": RECORDS,
+    "DS1": DS1,
+    "DS2": DS2,
+    "MAP_AAMI": MAP_AAMI,
+    "INT_MAP_DICT": INT_MAP_DICT,
+    "RHYTHM_TYPES": RHYTHM_TYPES,
+}
