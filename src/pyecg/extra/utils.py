@@ -2,7 +2,7 @@ from scipy.spatial import distance
 from fastdtw import fastdtw
 from sklearn.metrics import mean_squared_error
 import numpy as np
-from pyecg.dataset_config import *
+#from pyecg.dataset_config import *
 import pandas as pd
 import plotly.express as px
 
