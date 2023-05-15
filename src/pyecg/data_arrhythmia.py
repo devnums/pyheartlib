@@ -37,6 +37,7 @@ class ArrhythmiaData(Data, DataSeq):
         sampling_rate=360,
         cutoff=45,
         order=15,
+        progress_bar=True,
     ):
         super().__init__(
             base_path,
@@ -46,6 +47,7 @@ class ArrhythmiaData(Data, DataSeq):
             cutoff,
             order,
         )
+        DataSeq.progress_bar = not progress_bar
 
     def full_annotate(self, record):
         """Fully annotate a signal.
@@ -105,7 +107,7 @@ class ArrhythmiaData(Data, DataSeq):
         win_size = int(win_size)
 
         samples_info = []
-        for rec_id in tqdm(range(len(annotated_records))):
+        for rec_id in tqdm(range(len(annotated_records)), disable=DataSeq.progress_bar):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
@@ -120,7 +122,7 @@ class ArrhythmiaData(Data, DataSeq):
                     label = full_ann[start]
                     samples_info.append([rec_id, start, end, label])
                 end += stride
-            #time.sleep(3)
+            # time.sleep(3)
         return samples_info
 
 

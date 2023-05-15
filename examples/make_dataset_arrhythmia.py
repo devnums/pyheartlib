@@ -8,7 +8,9 @@ from pyecg.data_arrhythmia import ArrhythmiaData, ECGSequence
 train_set = [201, 203]
 # test_set = [202, 210, 219, 221, 222]
 
-arrhythmia_data = ArrhythmiaData(base_path="./data", remove_bl=False, lowpass=False)
+arrhythmia_data = ArrhythmiaData(
+    base_path="./data", remove_bl=False, lowpass=False, progress_bar=True
+)
 annotated_records, samples_info = arrhythmia_data.save_samples(
     rec_list=train_set, file_name="train.arr", win_size=3600, stride=64
 )

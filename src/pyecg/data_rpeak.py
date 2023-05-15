@@ -50,7 +50,6 @@ class RpeakData(Data, DataSeq):
             cutoff,
             order,
         )
-        self.progress_bar = not progress_bar
         DataSeq.progress_bar = not progress_bar
 
     def full_annotate(self, record):
@@ -102,7 +101,7 @@ class RpeakData(Data, DataSeq):
         """
         interval = 36  # not necessary, will be calculated in EXGSEQUENCE
         binary = False  # remove it and only do in ECGSEQUENCE
-        # interval : the output interval for labels. 
+        # interval : the output interval for labels.
         # binary : if True 1 is replaced instead of labels
 
         stride = int(stride)
@@ -112,7 +111,7 @@ class RpeakData(Data, DataSeq):
         samples_info = []
 
         # each record
-        for rec_id in tqdm(range(len(annotated_records)), disable=self.progress_bar):
+        for rec_id in tqdm(range(len(annotated_records)), disable=DataSeq.progress_bar):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
@@ -140,7 +139,7 @@ class RpeakData(Data, DataSeq):
 
                 samples_info.append([rec_id, start, end, labels_seq])
                 end += stride
-            #time.sleep(3)
+            # time.sleep(3)
 
         return samples_info
 
@@ -161,7 +160,7 @@ class ECGSequence(Sequence):
         [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
         eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
     class_labels : list, optional
-        Class labels to convert the output label list to integers 
+        Class labels to convert the output label list to integers
         such as [0, "N", "V"], by default None
     batch_size : int, optional
         Batch size, by default 128
@@ -170,7 +169,7 @@ class ECGSequence(Sequence):
     raw : bool, optional
         Whether to return the full waveform or the computed features, by default True
     interval : int, optional
-        interval for sub segmenting the waveform for feature and 
+        interval for sub segmenting the waveform for feature and
         label computations, by default 36
     shuffle : bool, optional
         If True shuffle the sample data, by default True
@@ -215,7 +214,7 @@ class ECGSequence(Sequence):
             batch_y has the shape of (#batch,len_label_list)
         """
         batch_samples = self.samples_info[
-            idx * self.batch_size: (idx + 1) * self.batch_size
+            idx * self.batch_size : (idx + 1) * self.batch_size
         ]
         batch_x = []
         batch_y = []
@@ -229,7 +228,7 @@ class ECGSequence(Sequence):
             seq = self.data[rec_id]["signal"][start:end]
             full_ann_seq = self.data[rec_id]["full_ann"][start:end]
             label = self.get_label(full_ann_seq)
-            # compute signal waveform features for fragments 
+            # compute signal waveform features for fragments
             if self.raw is False:
                 seq = self.compute_wf_feats(seq)
                 batch_x.append(list(seq))
@@ -262,7 +261,7 @@ class ECGSequence(Sequence):
         labels_seq = []
         # each subsegment
         for i in range(0, len(seg), self.interval):
-            subseg = seg[i: i + self.interval]
+            subseg = seg[i : i + self.interval]
             if any(subseg):
                 nonzero = [l for l in subseg if l != 0]
                 lb = nonzero[0]
