@@ -9,7 +9,7 @@
     examples/index
     autoapi/index
     changelog.md
-    acknowledgements.md
+    acknowledgements.rst
     Github <https://www.github.com>
 
 
