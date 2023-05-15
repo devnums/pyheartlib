@@ -145,7 +145,7 @@ class BeatInfo:
         return feature_dict
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
-        """Segment beat waveform according to the pre and post rri intervals."""
+        """Segment beat waveform according to the pre and post RR intervals."""
         try:
             beat_rpeak_idx = self.rpeaks[self.beat_loc]
             prerri = self.rri_smpl[self.beat_loc - 1]
@@ -203,7 +203,7 @@ class BeatInfo:
         Parameters
         ----------
         in_ms : bool
-            If True will be in time(miliseconds). If False will be in samples.
+            If True result will be in time(miliseconds), otherwise in samples.
 
         Returns
         -------
@@ -268,7 +268,7 @@ class BeatInfo:
         return rms
 
     def F_std_rri(self):
-        # std of rr intervals
+        # std of RR intervals
         return np.std(self.rri)
 
     def F_ratio_pre_rms(self):

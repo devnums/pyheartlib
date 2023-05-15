@@ -70,7 +70,7 @@ def get_hrv_features(rri, features="all"):
     ----------
     rri : numpy.array
         A 2D numpy array with shape (#samples,len_series).
-        Series are rr intervals in miliseconds(ms)
+        Series are rr intervals in milliseconds(ms)
     features : list
         A list of features to be computed.
 
@@ -182,9 +182,8 @@ def get_hrv_features(rri, features="all"):
 
 def get_wf_feats(sig, interval):
     """Computes features for the signal waveform
-    
-    The input signal is segmneted into subsignals based on the given interval parameter.
 
+    The input signal is segmented into sub-signals based on the given interval parameter.
     """
     b = int(len(sig) / interval)
     subseqs = []

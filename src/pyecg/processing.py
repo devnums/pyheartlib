@@ -64,7 +64,7 @@ class Processing:
         Parameters
         ----------
         signal : numpy.ndarray
-            A one dimensional signal.
+            A one-dimensional signal.
         cutoff : int, optional
             Filter parameter, by default 45
         sampling_rate : int, optional
@@ -87,16 +87,16 @@ class Processing:
     def denoise_signal(
         signal, remove_bl=True, lowpass=False, sampling_rate=360, cutoff=45, order=15
     ):
-        """Denoises the signal by removing the baseline wander and/or applying low pass filter.
+        """Denoises the signal by removing the baseline wander and/or applying a low pass filter.
 
         Parameters
         ----------
         signal : numpy.ndarray
-            A one dimensional signal.
+            A one-dimensional signal.
         remove_bl : bool, optional
-            If true remves baseline wander, by default True
+            If True, removes baseline wander, by default True
         lowpass : bool, optional
-            If True applies low pass filter, by default False
+            If True, applies a low pass filter, by default False
         sampling_rate : int, optional
             Sampling frequency, by default 360
         cutoff : int, optional
@@ -113,7 +113,7 @@ class Processing:
         if remove_bl and not lowpass:
             y = __class__.remove_baseline(signal, sampling_rate=sampling_rate)
         if lowpass and not remove_bl:
-            y= __class__.lowpass_filter_butter(
+            y = __class__.lowpass_filter_butter(
                 signal, cutoff=cutoff, sampling_rate=sampling_rate, order=order
             )
         if remove_bl and lowpass:
@@ -158,11 +158,11 @@ class STFT:
         numpy.ndarray
             3D array of transformed signals.
         """
-        if sampling_rate == None:
+        if sampling_rate is None:
             sampling_rate = 360
-        if nperseg == None:
+        if nperseg is None:
             nperseg = 64
-        if noverlap == None:
+        if noverlap is None:
             noverlap = int(nperseg / 2)
         list_all = []
         for i in tqdm(range(len(signals))):

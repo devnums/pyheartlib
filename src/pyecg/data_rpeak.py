@@ -18,7 +18,7 @@ class RpeakData(Data, DataSeq):
     base_path : str, optional
         Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before extracting
+        If True, the baseline is removed from the raw signals before extracting
         beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
@@ -29,7 +29,7 @@ class RpeakData(Data, DataSeq):
     order : int, optional
         Parameter of the low pass filter, by default 15
     progress_bar : bool, optional
-        If True shows a progress bar, by default True
+        If True, progress bar is shown, by default True
     """
 
     def __init__(
@@ -148,7 +148,7 @@ class ECGSequence(Sequence):
     """
     Generates batches of data according to the meta information provided for each sample.
 
-    It is memory efficent and there is no need to put large amount of data in the memory.
+    It is memory efficient and there is no need to put large amounts of data in the memory.
 
     Parameters
     ----------
@@ -161,18 +161,18 @@ class ECGSequence(Sequence):
         eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
     class_labels : list, optional
         Class labels to convert the output label list to integers
-        such as [0, "N", "V"], by default None
+        such as [0, "N", "V"] where "V" will be converted to 2, by default None
     batch_size : int, optional
         Batch size, by default 128
     binary : bool, optional
-        If True return will be 1 instead of riginal str label, by default True
+        If True, any non-zero item will be converted to one in the output annotation, by default True
     raw : bool, optional
         Whether to return the full waveform or the computed features, by default True
     interval : int, optional
-        interval for sub segmenting the waveform for feature and
+        Interval for sub-segmenting the waveform for feature and
         label computations, by default 36
     shuffle : bool, optional
-        If True shuffle the sample data, by default True
+        If True, after each epoch the samples are shuffled, by default True
     """
 
     def __init__(
@@ -189,8 +189,8 @@ class ECGSequence(Sequence):
         self.data = data
         self.samples_info = samples_info
         self.class_labels = class_labels
-        self.batch_size = batch_size
         self.binary = binary
+        self.batch_size = batch_size
         self.raw = raw
         self.interval = interval
         self.shuffle = shuffle

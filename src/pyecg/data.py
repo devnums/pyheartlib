@@ -12,16 +12,17 @@ class Data:
     Attributes
     ----------
     config : dict
-        Dataset config.
+        Dataset config loaded from config.yaml file.
     data_path : str
         Path of the data directory.
 
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default None
+        Path of the main directory for loading and saving data, by default None
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+        If True, the baseline is removed from the raw signals before extracting
+        beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
     sampling_rate : int, optional
@@ -58,7 +59,7 @@ class Data:
         self.data_path = os.path.join(self.base_path, self.config["DATA_DIR"])
 
     def get_ecg_record(self, record_id=106):
-        """Loads a record and return its components.
+        """Loads a record and returns its components.
 
         Parameters
         ----------
@@ -72,6 +73,7 @@ class Data:
         dict or dataframe
             If return_dict is True, it returns a dictionary
             with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations'.
+
             If return_dict is False, it returns a dataframe containing the time, raw signal, and
             a list of equal size to the raw signal with None values except at annotations locations.
         """
@@ -127,7 +129,7 @@ class DataSeq(ABC):
 
     def save_samples(self, rec_list, file_name, win_size, stride):
         """Returns and saves the signals and their full annotations along
-        with information neccesary for extracting signal excerpts.
+        with information necessary for extracting signal excerpts.
 
         Parameters
         ----------

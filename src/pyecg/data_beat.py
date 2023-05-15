@@ -8,7 +8,7 @@ from pyecg.io import save_data, load_data
 
 class BeatData(Data):
     """
-    Processes the provided data and creates the dataset file containg
+    Processes the provided data and creates the dataset file containing
     waveforms, features, and labels.
 
     Parameters
@@ -103,12 +103,12 @@ class BeatData(Data):
             signal_frags : numpy.ndarray
                 A 2D array containing extracted beat excerpts.
             beat_types : list
-                Contains the corersponding labels of each beat excerpt.
+                Contains the corresponding labels of each beat excerpt.
             r_locs : list
                 A list containing lists of previous, itself, and future rpeak locations
                 for each beat. Can be used for HRV calculations.
             s_idxs : list
-                Contains the starting point of each extracted beat excerpt on the origional signal.
+                Contains the starting point of each extracted beat excerpt on the original signal.
                 This is computed by subtracting the window onset from the rpeak location.
         """
         if not self.num_pre_rr < (len(r_locations) - self.num_post_rr):
@@ -358,7 +358,7 @@ class BeatData(Data):
         file : str
             Name of the file to be saved.
         clean : bool, optional
-            If True removes irrelavant label types, by default True
+            If True removes irrelevant label types, by default True
 
         Raises
         ------
@@ -385,7 +385,7 @@ class BeatData(Data):
         beatinfo_obj : instance of BeatInfo
             An instance of BeatInfo.
         clean : bool, optional
-            If True doesnt include irrelevant label classes, by default True
+            If True does not include irrelevant label classes, by default True
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file : str, optional
@@ -441,7 +441,7 @@ class BeatData(Data):
         beatinfo_obj : instance of BeatInfo
             An instance of BeatInfo.
         clean : bool, optional
-            If True doesnt include irrelevant label classes, by default True
+            If True does not include irrelevant label classes, by default True
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file_prefix : str, optional

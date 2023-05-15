@@ -18,7 +18,7 @@ class ArrhythmiaData(Data, DataSeq):
     base_path : str, optional
         Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+        If True, baseline will be removed from the raw signals before extracting beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
     sampling_rate : int, optional
@@ -130,7 +130,7 @@ class ECGSequence(Sequence):
     """
     Generates batches of data according to the meta information provided for each sample.
 
-    It is memory efficent and there is no need to put large amount of data in the memory.
+    It is memory efficient and there is no need to put large amount of data in the memory.
 
     Parameters
     ----------
@@ -148,13 +148,11 @@ class ECGSequence(Sequence):
     raw : bool, optional
         Whether to return the full waveform or the computed features, by default True
     interval : int, optional
-        interval for sub segmenting the signal for waveform feature computation, by default 36
+        interval for sub-segmenting the signal for waveform feature computation, by default 36
     shuffle : bool, optional
-        If True shuffle the sample data, by default True
-    denoise : bool, optional
-        If True denoise the signals, by default False
+        If True, after each epoch the samples are shuffled, by default True
     rri_length : int, optional
-        Zeropadding rri as they have different length for each excerpt, by default 150
+        Zero padding (right) rri as they have different length for each excerpt, by default 150
     """
 
     def __init__(
@@ -166,11 +164,9 @@ class ECGSequence(Sequence):
         raw=True,
         interval=36,
         shuffle=True,
-        denoise=False,
         rri_length=150,
     ):
         self.shuffle = shuffle
-        self.denoise = denoise
         self.batch_size = batch_size
         self.raw = raw
         self.interval = interval
@@ -192,7 +188,7 @@ class ECGSequence(Sequence):
             of batch_seq, batch_rri, batch_rri_feat.
 
             If raw is False, batch_seq has the shape of (#batch,#segments,#features),
-            otherwise it has the shape of (#batch,seq_len).
+            otherwise, it has the shape of (#batch,seq_len).
 
             batch_y has the shape of (#batch,1).
         """

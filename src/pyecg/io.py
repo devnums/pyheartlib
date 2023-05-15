@@ -4,7 +4,7 @@ import pickle
 
 
 def get_data(record_path, config, return_dict=True):
-    """Loads a record and return its components.
+    """Loads a record and returns its components.
 
     Parameters
     ----------
@@ -22,7 +22,7 @@ def get_data(record_path, config, return_dict=True):
         with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
 
         If return_dict is False, it returns a dataframe containing the time, raw signal, and
-        a list of equal size to the raw signal with None values except at anntations locations.
+        a list of equal size to the raw signal with None values except at annotations locations.
     """
     record = wfdb.rdrecord(record_path, channel_names=["MLII"])
     annotation = wfdb.rdann(record_path, "atr")
