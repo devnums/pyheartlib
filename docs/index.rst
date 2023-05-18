@@ -1,4 +1,4 @@
-.. include:: ../README.md
+.. include:: readme.md
     :parser: myst_parser.sphinx_
 
 .. toctree::
@@ -6,11 +6,12 @@
     :caption: PyyECG
     :titlesonly:
     
+    usage.md
     examples/index
     autoapi/index
     changelog.md
     acknowledgements.rst
-    Github <https://www.github.com>
+    Github <https://github.com/sadeghmdi/pyecg>
 
 
 

@@ -17,13 +17,16 @@ Check out the [documentation](https://pyecg.readthedocs.io) for more information
 
 Following examples demostrates dataset creation:
 
-[Inter-patient dataset](examples/make_dataset_inter.py)
-[Intra-patient dataset](examples/make_dataset_intra.py)
-[Rpeak dataset](examples/make_dataset_rpeak.py)
-[Arrhythmia dataset](examples/make_dataset_arrhythmia.py)
+{doc}`Inter-patient dataset <examples/dataset/inter_patient>` <br> 
+{doc}`Intra-patient dataset <examples/dataset/intra_patient>` <br> 
+{doc}`Rpeak dataset <examples/dataset/rpeak>` <br>    
+{doc}`Arrhythmia dataset <examples/dataset/arrhythmia>`
+
 
 
 Following example demonstrates a deep learning model designed using Keras library for the heartbeat detection task. As this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
 
-[Beat detection model](model/BEAT_DETECTION.md)
+{doc}`Beat detection model <examples/model/beat_detection_model>`
 
+
+![Hearbeat detection model](../model/misplot.png)
