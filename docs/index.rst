@@ -3,11 +3,12 @@
 
 .. toctree::
     :hidden:
-    :caption: PyyECG
     :titlesonly:
+    :maxdepth: 1
+    :caption: PyyECG
     
     usage.md
-    examples/index
+    examples/examples
     autoapi/index
     changelog.md
     acknowledgements.rst

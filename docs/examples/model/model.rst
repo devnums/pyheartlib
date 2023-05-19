@@ -2,7 +2,6 @@ Model
 =====
 
 .. toctree::
-    :titlesonly:
     :glob:
 
     *

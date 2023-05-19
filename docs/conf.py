@@ -6,9 +6,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u"pyecg"
-copyright = u"2023, Sadegh Mohammadi"
-author = u"Sadegh Mohammadi"
+project = "pyecg"
+copyright = "2023, Sadegh Mohammadi"
+author = "Sadegh Mohammadi"
 
 # -- General configuration ---------------------------------------------------
 
@@ -26,7 +26,7 @@ autoapi_dirs = ["../src"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/archs', '**/extra']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**/archs", "**/extra"]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -37,3 +37,17 @@ html_theme = "sphinx_rtd_theme"
 
 # -- MyST-NB -------------------------------------------------
 nb_execution_timeout = 180
+
+
+# -- Custom code -----------------------------------------------------
+print("\n***************\ndoc is running\n***************\n")
+import shutil
+
+files = [
+    ["../model/BEAT_DETECTION.rst", "examples/model/"],
+    ["../model/data_preparation.py", "examples/model/"],
+    ["../model/train.py", "examples/model/"],
+    ["../model/inference.py", "examples/model/"],
+]
+for f in files:
+    shutil.copy(f[0], f[1])
