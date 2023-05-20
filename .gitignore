@@ -106,13 +106,17 @@ dmypy.json
 # Extra
 .vscode
 *.dat
+*.atr
+*.hea
+*.arr
+*.rpeak
+*.beat
 *.history
 *.textt
 checkpoint/
 __pycache__/
 cLitECG/
 data/
-dummy_data/
 guides/
 **/__pycache__/
 .ipynb_checkpoints
