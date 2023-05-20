@@ -44,7 +44,6 @@ print("\n***************\ndoc is running\n***************\n")
 import shutil
 
 files = [
-    ["../model/BEAT_DETECTION.rst", "examples/model/"],
     ["../model/data_preparation.py", "examples/model/"],
     ["../model/train.py", "examples/model/"],
     ["../model/inference.py", "examples/model/"],
