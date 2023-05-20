@@ -9,7 +9,7 @@ loaded_model = tf.keras.models.load_model("model/checkpoint/keras.exp")
 
 # load test data
 annotated_records_test, samples_info_test = load_data("./data/test.rpeak")
-
+print(len(samples_info_test))
 from pyecg.data_rpeak import ECGSequence
 
 batch_size = 128
@@ -52,7 +52,9 @@ import matplotlib.pyplot as plt
 batch_size = 1
 labels_true = []
 labels_pred = []
-for i in tqdm(range(0, 80)):  # range(round(len(samples_info_test)/batch_size)):
+for i in tqdm(
+    range(4680, 4700)
+):  # range(round(len(samples_info_test)/batch_size)):
     test_generator = ECGSequence(
         annotated_records_test,
         [samples_info_test[i]],
