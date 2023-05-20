@@ -1,4 +1,4 @@
-# data_preparation.py
+# This file can be used to prepare data for the example model
 from pyecg.io import load_data
 from pyecg.data_rpeak import RpeakData, ECGSequence
 

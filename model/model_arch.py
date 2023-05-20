@@ -1,3 +1,4 @@
+# This file contains the architecture of the example model
 import tensorflow as tf
 from tensorflow.keras.layers import *
 from tensorflow.keras.activations import *

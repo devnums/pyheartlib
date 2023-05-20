@@ -1,9 +1,7 @@
-# train.py
-import numpy as np
+# This file can be used to train the example model
 import tensorflow as tf
-import matplotlib.pyplot as plt
 from pyecg.io import load_data
-from pyecg.utils import reset_seed
+from pyecg.extra.utils import reset_seed
 
 reset_seed()
 

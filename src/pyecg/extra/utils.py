@@ -1,10 +1,7 @@
 from scipy.spatial import distance
-from fastdtw import fastdtw
 from sklearn.metrics import mean_squared_error
 import numpy as np
-#from pyecg.dataset_config import *
 import pandas as pd
-import plotly.express as px
 
 
 def reset_seed(seed_value=22):
@@ -41,7 +38,6 @@ def plot_loss(model_history, p=False):
 
     if p == True:
         plt.style.use("plotstyle.txt")
-
     plt.plot(model_history.history["loss"])
     plt.plot(model_history.history["val_loss"], "--")
     plt.title("Training Loss")
@@ -73,12 +69,13 @@ def plot_spectogram(sig, sampling_rate=360, win=127, overlap=122):
 
 
 def plot_signal(data):
+    import plotly.express as px
+
     # data: 1d signal as a pandas dataframe, numpy array, or a list
     if isinstance(data, pd.DataFrame):
         pass
     elif isinstance(data, (np.ndarray, list)):
         data = pd.DataFrame({"Time": range(len(data)), "Signal": data})
-
     fig = px.line(data, title="ECG", x="Time", y="Signal")
 
     """
@@ -103,101 +100,101 @@ def plot_signal(data):
 			showlegend=False)
 	)
 	"""
-
     fig.update_xaxes(rangeslider_visible=True)
     fig.show()
 
 
-def calc_class_weights(flag, y):
-    if flag:
-        from sklearn.utils import class_weight
+# def calc_class_weights(flag, y):
+#     if flag:
+#         from sklearn.utils import class_weight
 
-        class_weights = class_weight.compute_class_weight("balanced", np.unique(y), y)
-        class_weights = dict(zip(np.unique(y), class_weights))
-        # dict(zip(FINAL_MAP_DICT, class_weights))
-        return class_weights
-    else:
-        return None
+#         class_weights = class_weight.compute_class_weight("balanced", np.unique(y), y)
+#         class_weights = dict(zip(np.unique(y), class_weights))
+#         # dict(zip(FINAL_MAP_DICT, class_weights))
+#         return class_weights
+#     else:
+#         return None
 
-import tensorflow as tf
-cosine_similarity = tf.keras.metrics.CosineSimilarity(axis=-1)
-
-
-def normalized_cross_corr(a, b):
-    if len(a.shape) == 1:
-        a = (a - np.mean(a)) / (np.std(a) * len(a))
-        b = (b - np.mean(b)) / (np.std(b))
-        cor = np.correlate(a, b)
-    elif len(a.shape) == 2:
-        cor = []
-        for i in range(a.shape[0]):
-            t = a[i]
-            q = b[i]
-            t = (t - np.mean(t)) / (np.std(t) * len(t))
-            q = (q - np.mean(q)) / (np.std(q))
-            c = np.correlate(t, q)
-            cor.append(c)
-        cor = np.array(cor)
-    return np.mean(cor)
+# import tensorflow as tf
+# cosine_similarity = tf.keras.metrics.CosineSimilarity(axis=-1)
 
 
-def sig_similarity_report(x_true, x_pred, y_true):
-    from pyecg.data_beat import BeatData
-
-    beatdata = BeatData()
-    mse = []
-    syms = []
-    corr = []
-    coss = []
-    dtww = []
-    for s in np.unique(y_true):
-        ind = beatdata.search_label(y_true, sym=s)
-        true = x_true[ind]
-        pred = x_pred[ind]
-        err = mean_squared_error(true, pred)
-        cor = normalized_cross_corr(true, pred)
-        cos = cosine_similarity(true, pred).numpy()  # mayb wrong
-        dtw = fastdtw(true, pred)[0] / len(true)
-        mse.append(err)
-        corr.append(cor)
-        coss.append(cos)
-        dtww.append(dtw)
-        syms.append(s)
-
-    dict_res_x = {"sym": syms, "mse_x": mse, "cor": corr, "cos": coss, "dtw": dtww}
-    df_x = pd.DataFrame(dict_res_x)
-    print(df_x.sort_values(by="cor"))
+# def normalized_cross_corr(a, b):
+#     if len(a.shape) == 1:
+#         a = (a - np.mean(a)) / (np.std(a) * len(a))
+#         b = (b - np.mean(b)) / (np.std(b))
+#         cor = np.correlate(a, b)
+#     elif len(a.shape) == 2:
+#         cor = []
+#         for i in range(a.shape[0]):
+#             t = a[i]
+#             q = b[i]
+#             t = (t - np.mean(t)) / (np.std(t) * len(t))
+#             q = (q - np.mean(q)) / (np.std(q))
+#             c = np.correlate(t, q)
+#             cor.append(c)
+#         cor = np.array(cor)
+#     return np.mean(cor)
 
 
-def sig_similarity_hist(x1, x2, y):
-    from pyecg.data_beat import BeatData
+# def sig_similarity_report(x_true, x_pred, y_true):
+#     from fastdtw import fastdtw
+#     from pyecg.data_beat import BeatData
 
-    beatdata = BeatData()
-    MSE = []
-    COR = []
-    COS = []
-    DTW = []
-    SYMS = []
-    for s in np.unique(y):
-        ind = beatdata.search_label(y, sym=s)
-        x1_selected = x1[ind]
-        x2_selected = x2[ind]
-        for i in range(len(x1_selected)):
-            s1 = x1_selected[i].reshape((1, -1))
-            s2 = x2_selected[i].reshape((1, -1))
-            mse = mean_squared_error(s1, s2)
-            cor = normalized_cross_corr(s1, s2)
-            cos = 1 - (distance.cosine(s1, s2))
-            dtw = fastdtw(s1, s2)[0]
-            MSE.append(mse)
-            COR.append(cor)
-            COS.append(cos)
-            DTW.append(dtw)
-            SYMS.append(s)
+#     beatdata = BeatData()
+#     mse = []
+#     syms = []
+#     corr = []
+#     coss = []
+#     dtww = []
+#     for s in np.unique(y_true):
+#         ind = beatdata.search_label(y_true, sym=s)
+#         true = x_true[ind]
+#         pred = x_pred[ind]
+#         err = mean_squared_error(true, pred)
+#         cor = normalized_cross_corr(true, pred)
+#         cos = cosine_similarity(true, pred).numpy()  # mayb wrong
+#         dtw = fastdtw(true, pred)[0] / len(true)
+#         mse.append(err)
+#         corr.append(cor)
+#         coss.append(cos)
+#         dtww.append(dtw)
+#         syms.append(s)
 
-    dict_res = {"SYM": SYMS, "MSE": MSE, "COR": COR, "COS": COS, "DTW": DTW}
-    df_res = pd.DataFrame(dict_res)
-    return df_res
+#     dict_res_x = {"sym": syms, "mse_x": mse, "cor": corr, "cos": coss, "dtw": dtww}
+#     df_x = pd.DataFrame(dict_res_x)
+#     print(df_x.sort_values(by="cor"))
+
+
+# def sig_similarity_hist(x1, x2, y):
+#     from pyecg.data_beat import BeatData
+
+#     beatdata = BeatData()
+#     MSE = []
+#     COR = []
+#     COS = []
+#     DTW = []
+#     SYMS = []
+#     for s in np.unique(y):
+#         ind = beatdata.search_label(y, sym=s)
+#         x1_selected = x1[ind]
+#         x2_selected = x2[ind]
+#         for i in range(len(x1_selected)):
+#             s1 = x1_selected[i].reshape((1, -1))
+#             s2 = x2_selected[i].reshape((1, -1))
+#             mse = mean_squared_error(s1, s2)
+#             cor = normalized_cross_corr(s1, s2)
+#             cos = 1 - (distance.cosine(s1, s2))
+#             dtw = fastdtw(s1, s2)[0]
+#             MSE.append(mse)
+#             COR.append(cor)
+#             COS.append(cos)
+#             DTW.append(dtw)
+#             SYMS.append(s)
+
+#     dict_res = {"SYM": SYMS, "MSE": MSE, "COR": COR, "COS": COS, "DTW": DTW}
+#     df_res = pd.DataFrame(dict_res)
+#     return df_res
 
 
 def get_var_size(var_type="all"):

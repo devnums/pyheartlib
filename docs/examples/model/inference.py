@@ -1,4 +1,4 @@
-# inference.py
+# This file can be used to do inference using the trained example model
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
@@ -33,20 +33,26 @@ labels_true = np.array(labels_true)
 labels_pred = np.array(labels_pred)
 assert labels_true.shape == labels_pred.shape
 
+# print classification_report and confusion_matrix
 from sklearn.metrics import confusion_matrix, classification_report
 
 true = labels_true.flatten()
 pre = labels_pred.flatten()
 print(classification_report(true, pre))
 print(confusion_matrix(true, pre))
+with open("model/result.txt", "w") as f:
+    print(classification_report(true, pre), file=f)
+    print("Confusion Matrix", file=f)
+    print(confusion_matrix(true, pre), file=f)
 
-# plot if misclassified
+
+# plot misclassified
 import matplotlib.pyplot as plt
 
 batch_size = 1
 labels_true = []
 labels_pred = []
-for i in tqdm(range(0, 20)):  # range(round(len(samples_info_test)/batch_size)):
+for i in tqdm(range(0, 80)):  # range(round(len(samples_info_test)/batch_size)):
     test_generator = ECGSequence(
         annotated_records_test,
         [samples_info_test[i]],
@@ -89,7 +95,7 @@ for i in tqdm(range(0, 20)):  # range(round(len(samples_info_test)/batch_size)):
         plt.scatter(0, 1.3, s=60, c="white")
         plt.legend(loc="lower left")
         # save fig
-        plt.title("Heartbeat Detection")
+        plt.title("Example: Heartbeat Detection")
         plt.rcParams.update({"font.size": 12})
         fig_path = "model/plots/mis_" + str(i) + ".png"
         plt.savefig(fig_path, dpi=300)

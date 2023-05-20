@@ -12,7 +12,7 @@ $ pip install pyecg
 
 # Requirements
 
-pyecg has been tested on Python 3.11 and the following packages.
+pyecg has been tested on Ubuntu, Python 3.11 and the depends on the packages.
 
 * numpy>=1.21.1
 * pandas>=1.3.1
@@ -32,4 +32,4 @@ Following examples demostrate dataset creation:
 
 As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
 
-* [Beat detection model](model/BEAT_DETECTION.md)
+* [Beat detection model](model/BEAT_DETECTION.rst)

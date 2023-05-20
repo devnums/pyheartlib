@@ -23,4 +23,4 @@ As an example, a deep learning model was designed using Keras library for the he
 
 * {doc}`Beat detection model <examples/model/BEAT_DETECTION>`
 
-![Hearbeat detection model](../model/misplot.png)
+![Example: heartbeat detection using deep learning.](examples/model/plots/mis.png)

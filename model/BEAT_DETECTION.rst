@@ -2,33 +2,40 @@
 Beat Detection
 ==============
 
-This directory contains the code for training a deep learning model for the heartbeat detection task. As the task is not complex, it can be trained with high accuracy on few samples.
+This directory contains the code for training a deep learning model for the heartbeat detection task.
+As the task is not complex, it can be trained with high accuracy on few samples.
 
-The ECG signals are segmented into 10 seconds ecxerpts. Each excerpt has a label of length 100 containing zeros and ones. For each 100ms segment the entry is one if it is a peak, otherwise it is zero.
+The ECG signals are segmented into 10 seconds ecxerpts.
+Each excerpt has a label of length 100 containing zeros and ones.
+For each 100ms segment the item is one if it is a peak, otherwise it is zero.
 
-The following steps prepares data and trains model.
+The following steps prepares data and trains the example model.
 
-Step 1: data_preparation.py
-===========================
+
+Data preparation
+================
 
 .. literalinclude:: data_preparation.py
   :language: python
 
-Step 2: train.py
-================
+Training
+========
 
 .. literalinclude:: train.py
   :language: python
 
-Step 3: inference.py
-====================
+Inference
+=========
 
 .. literalinclude:: inference.py
   :language: python
 
+Results
+=======
 
-```bash
-wget https://www.physionet.org/static/published-projects/mitdb/mit-bih-arrhythmia-database-1.0.0.zip
-```
+.. literalinclude:: result.txt
 
+.. image:: plots/mis.png
+  :width: 600
+  :alt: Example: heartbeat detection using deep learning
 

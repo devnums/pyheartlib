@@ -5,7 +5,7 @@
     :hidden:
     :titlesonly:
     :maxdepth: 1
-    :caption: PyyECG
+
     
     usage.md
     examples/examples
