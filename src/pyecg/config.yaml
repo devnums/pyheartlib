@@ -1,6 +1,6 @@
-# This file will be used if there is no config.yaml file in the data directory.
+# This file will be used if there is no config.yaml file in the base data directory.
 
-# Mandatory fields
+# Required fields
 DATA_DIR: "mit-bih-arrhythmia-database-1.0.0/"
 BEAT_TYPES: ['N', 'L', 'R', 'j', 'e', 'V', 'E', 'A', 'S', 'a', 'J', 'F', 'f', '/', 'Q']
 RHYTHM_TYPES: ['(AB', '(AFIB', '(AFL', '(B', '(BII', '(IVR', '(N', '(NOD', '(P', '(PREX', '(SBR', '(SVTA', '(T', '(VFL', '(VT']

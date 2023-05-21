@@ -2,14 +2,10 @@
 Beat Detection
 ==============
 
-This directory contains the code for training a deep learning model for the heartbeat detection task.
-As the task is not complex, it can be trained with high accuracy on few samples.
+This example contains the code for training a deep learning model for the heartbeat detection task. As the task is not complex, it can be trained with high accuracy on a small amount of data.
+In this example, the electrocardiogram signals are segmented into ten seconds ecxerpts. Each excerpt corresponds to an annotation list of length 100 containing zeros and ones. A subsegment with an R-peak corresponds to one in the annotation list.
 
-The ECG signals are segmented into 10 seconds ecxerpts.
-Each excerpt has a label of length 100 containing zeros and ones.
-For each 100ms segment the item is one if it is a peak, otherwise it is zero.
-
-The following steps prepares data and trains the example model.
+The following steps prepare the data and train the model.
 
 
 Data preparation
@@ -35,7 +31,10 @@ Results
 
 .. literalinclude:: result.txt
 
-.. image:: plots/mis.png
+.. figure:: plots/mis.png
   :width: 600
   :alt: Example: heartbeat detection using deep learning
+
+  Heartbeat detection using deep learning.
+
 

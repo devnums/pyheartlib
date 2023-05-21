@@ -7,7 +7,7 @@
     :maxdepth: 1
 
     
-    usage.md
+    quickstart.md
     examples/examples
     autoapi/index
     changelog.md
