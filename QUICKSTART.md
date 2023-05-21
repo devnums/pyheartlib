@@ -25,7 +25,4 @@ The next step is to install the package with pip:
 $ pip install pyecg
 ```
 
-Check out the example section of the [documentation](https://pyecg.readthedocs.io) for different use cases.
-
-
-
+Check out the examples section of the [documentation](https://pyecg.readthedocs.io) for different use cases.
