@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyecg"
 version = "0.1.0"
-description = "Processing, analysing, and modeling ECG recordings."
+description = "A Python package for processing and modeling electrocardiogram signals"
 authors = ["Sadegh Mohammadi"]
 license = "Proprietary"
 readme = "README.md"
