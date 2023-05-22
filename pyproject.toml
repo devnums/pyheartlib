@@ -26,6 +26,7 @@ sphinx-autoapi = "^2.0.1"
 sphinx-rtd-theme = "^1.1.1"
 third-party-license-file-generator = "^2022.3.1"
 flake8 = "^6.0.0"
+python-semantic-release = "^7.33.5"
 
 [tool.semantic_release]
 version_variable = "pyproject.toml:version" # version location
