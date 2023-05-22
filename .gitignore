@@ -123,3 +123,4 @@ guides/
 */.ipynb_checkpoints/*
 ..checkpoint
 trsh/
+**/archs/old/
