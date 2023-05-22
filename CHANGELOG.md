@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.2 (2023-05-22)
+
+
 ## v0.0.1 (2023-05-22)
 ### Fix
 * Readme file ([`f3f502b`](https://github.com/sadeghmdi/pybeatdetector/commit/f3f502bf938b3170aeb8994a6dde4751803def3d))

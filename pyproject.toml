@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyheartlib"
-version = "0.0.1"
+version = "0.0.2"
 description = "A Python package for processing and modeling electrocardiogram signals"
 authors = ["Sadegh Mohammadi"]
 license = "Proprietary"
