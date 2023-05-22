@@ -1,20 +1,3 @@
-# # Required
-# version: 2
-
-# # Image to use
-# build:
-#   image: testing
-
-# # Configuration
-# python:
-#   version: 3.10
-#   install:
-#     - requirements: docs/requirements.txt
-#     - method: pip
-#       path: .
-
-
-
 # .readthedocs.yaml
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
