@@ -1,6 +1,6 @@
 import pytest
 import numpy
-from pyecg.data_beat import BeatData
+from pyheartlib.data_beat import BeatData
 from dummy import DummyData
 
 

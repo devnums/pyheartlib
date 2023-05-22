@@ -6,8 +6,8 @@ import time
 import numpy as np
 from tensorflow.keras.utils import Sequence
 from tqdm import tqdm
-from pyecg.data import Data, DataSeq
-from pyecg.features import get_wf_feats
+from pyheartlib.data import Data, DataSeq
+from pyheartlib.features import get_wf_feats
 
 
 class RpeakData(Data, DataSeq):

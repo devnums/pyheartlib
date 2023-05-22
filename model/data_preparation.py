@@ -1,6 +1,6 @@
 # This file can be used to prepare data for the example model
-from pyecg.io import load_data
-from pyecg.data_rpeak import RpeakData, ECGSequence
+from pyheartlib.io import load_data
+from pyheartlib.data_rpeak import RpeakData, ECGSequence
 
 
 # create train, validation, and test sets

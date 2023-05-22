@@ -12,7 +12,7 @@
     autoapi/index
     changelog.md
     acknowledgements.rst
-    Github <https://github.com/sadeghmdi/pyecg>
+    Github <https://github.com/sadeghmdi/pyheartlib>
 
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from pyecg.io import load_data
-from pyecg.data_arrhythmia import ArrhythmiaData, ECGSequence
+from pyheartlib.io import load_data
+from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
 
 
 # AFIBs

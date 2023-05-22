@@ -1,5 +1,5 @@
 ---
-title: 'pyecg: A Python package for processing and modeling electrocardiogram signals'
+title: 'pyheartlib: A Python package for processing and modeling electrocardiogram signals'
 tags:
   - Python
   - electrocardiogram
@@ -20,7 +20,7 @@ Electrocardiogram (ECG) signals represent the electrical activity of the heart a
 
 # Statement of need
 
-This paper introduces `pyecg`, a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore traditional machine learning models and more advanced deep learning models can be used. The first release of this software supports Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries and MIT-BIH Arrhythmia Database format [@moody2001impact;@goldberger2000physiobank]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
+This paper introduces `pyheartlib`, a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore traditional machine learning models and more advanced deep learning models can be used. The first release of this software supports Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries and MIT-BIH Arrhythmia Database format [@moody2001impact;@goldberger2000physiobank]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
 
 # Example
 

@@ -6,7 +6,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "pyecg"
+project = "pyheartlib"
 copyright = "2023, Sadegh Mohammadi"
 author = "Sadegh Mohammadi"
 

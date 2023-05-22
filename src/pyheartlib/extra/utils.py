@@ -139,7 +139,7 @@ def plot_signal(data):
 
 # def sig_similarity_report(x_true, x_pred, y_true):
 #     from fastdtw import fastdtw
-#     from pyecg.data_beat import BeatData
+#     from pyheartlib.data_beat import BeatData
 
 #     beatdata = BeatData()
 #     mse = []
@@ -167,7 +167,7 @@ def plot_signal(data):
 
 
 # def sig_similarity_hist(x1, x2, y):
-#     from pyecg.data_beat import BeatData
+#     from pyheartlib.data_beat import BeatData
 
 #     beatdata = BeatData()
 #     MSE = []

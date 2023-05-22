@@ -22,7 +22,7 @@ RHYTHM_TYPES: ['(AB', '(AFIB', '(AFL', '(B', '(BII', '(IVR', '(N', '(NOD', '(P',
 The next step is to install the package with pip:
 
 ```bash
-$ pip install pyecg
+$ pip install pyheartlib
 ```
 
-Check out the examples section of the [documentation](https://pyecg.readthedocs.io) for different use cases.
+Check out the examples section of the [documentation](https://pyheartlib.readthedocs.io) for different use cases.

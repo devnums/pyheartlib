@@ -55,4 +55,4 @@
 
 ## v0.1.0 (01/02/2023)
 
-- First release of `pyecg`!
+- First release of `pyheartlib`!

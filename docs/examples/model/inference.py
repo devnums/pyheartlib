@@ -2,7 +2,7 @@
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
-from pyecg.io import load_data
+from pyheartlib.io import load_data
 
 # load trained model
 loaded_model = tf.keras.models.load_model("model/checkpoint/keras.exp")
@@ -10,7 +10,7 @@ loaded_model = tf.keras.models.load_model("model/checkpoint/keras.exp")
 # load test data
 annotated_records_test, samples_info_test = load_data("./data/test.rpeak")
 print(len(samples_info_test))
-from pyecg.data_rpeak import ECGSequence
+from pyheartlib.data_rpeak import ECGSequence
 
 batch_size = 128
 test_generator = ECGSequence(

@@ -1,8 +1,8 @@
 import pytest
 import numpy
 import pandas
-from pyecg.data_beat import BeatData
-from pyecg.beat_info import BeatInfo
+from pyheartlib.data_beat import BeatData
+from pyheartlib.beat_info import BeatInfo
 from dummy import DummyData
 
 test_data_dir = "./tests/dummy_data"

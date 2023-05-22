@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pyecg"
+name = "pyheartlib"
 version = "0.0.1"
 description = "A Python package for processing and modeling electrocardiogram signals"
 authors = ["Sadegh Mohammadi"]

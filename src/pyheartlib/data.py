@@ -2,8 +2,8 @@ import os
 import yaml
 from tqdm import tqdm
 from abc import ABC, abstractmethod
-from pyecg.io import get_data, save_data
-from pyecg.processing import Processing
+from pyheartlib.io import get_data, save_data
+from pyheartlib.processing import Processing
 
 
 class Data:
@@ -50,7 +50,7 @@ class Data:
 
         if base_path is None:
             self.base_path = os.getcwd()
-            conf_path = os.path.join(self.base_path, "src", "pyecg", "config.yaml")
+            conf_path = os.path.join(self.base_path, "src", "pyheartlib", "config.yaml")
         else:
             self.base_path = base_path
             conf_path = os.path.join(self.base_path, "config.yaml")

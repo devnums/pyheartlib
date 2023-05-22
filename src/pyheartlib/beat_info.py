@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import stats
 from scipy.fft import rfft, rfftfreq
-from pyecg.extra.pqrst import PQRST
+from pyheartlib.extra.pqrst import PQRST
 import types
 
 

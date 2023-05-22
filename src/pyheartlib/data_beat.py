@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from pyecg.data import Data
-from pyecg.io import save_data, load_data
+from pyheartlib.data import Data
+from pyheartlib.io import save_data, load_data
 
 
 class BeatData(Data):

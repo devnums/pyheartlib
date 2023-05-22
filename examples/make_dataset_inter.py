@@ -2,8 +2,8 @@
 This example shows how to create the datasets inter-patient.
 """
 
-from pyecg.data_beat import BeatData
-from pyecg.beat_info import BeatInfo
+from pyheartlib.data_beat import BeatData
+from pyheartlib.beat_info import BeatInfo
 
 
 # Inter-patient

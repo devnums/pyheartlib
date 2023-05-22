@@ -1,7 +1,7 @@
 import os
 import numpy
 import yaml
-from pyecg.io import get_data
+from pyheartlib.io import get_data
 from dummy import DummyData
 
 test_data_dir = "./tests/dummy_data"

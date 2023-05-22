@@ -1,7 +1,7 @@
 # This file can be used to train the example model
 import tensorflow as tf
-from pyecg.io import load_data
-from pyecg.extra.utils import reset_seed
+from pyheartlib.io import load_data
+from pyheartlib.extra.utils import reset_seed
 
 reset_seed()
 
@@ -64,7 +64,7 @@ batch_sleep = tf.keras.callbacks.LambdaCallback(
 callbacks = [early_stopping, model_checkpoint, reduce_lr]
 # callbacks = [batch_sleep]
 
-from pyecg.data_rpeak import ECGSequence
+from pyheartlib.data_rpeak import ECGSequence
 
 train_generator = ECGSequence(
     annotated_records,

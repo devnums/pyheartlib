@@ -1,7 +1,7 @@
 import pytest
 import numpy
-from pyecg.data_rpeak import RpeakData, ECGSequence
-from pyecg.io import load_data
+from pyheartlib.data_rpeak import RpeakData, ECGSequence
+from pyheartlib.io import load_data
 import hashlib
 
 

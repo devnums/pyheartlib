@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from pyecg.io import load_data
-from pyecg.data_rpeak import RpeakData, ECGSequence
+from pyheartlib.io import load_data
+from pyheartlib.data_rpeak import RpeakData, ECGSequence
 
 
 train_set = [201, 203]

@@ -1,7 +1,7 @@
 import pytest
 import numpy
 import pandas
-from pyecg.beat_info import BeatInfo
+from pyheartlib.beat_info import BeatInfo
 
 
 signal_frag = numpy.random.uniform(-1, 1, 300).tolist()

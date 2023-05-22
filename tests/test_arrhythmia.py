@@ -1,8 +1,8 @@
 import pytest
 import numpy
 import pandas
-from pyecg.data_arrhythmia import ArrhythmiaData, ECGSequence
-from pyecg.io import load_data
+from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
+from pyheartlib.io import load_data
 import hashlib
 
 
