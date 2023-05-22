@@ -7,7 +7,7 @@ license = "Proprietary"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10.4,<3.12"
+python = ">=3.10,<3.12"
 numpy = "^1.24.1"
 pandas = "^1.5.3"
 tqdm = "^4.64.1"
