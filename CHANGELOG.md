@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.3 (2023-05-23)
+### Documentation
+* Update from rtd docs ([`e40bb4f`](https://github.com/sadeghmdi/pyheartlib/commit/e40bb4ff9dd3665b7e55efee122d53f85f4c431d))
+* Update file ([`561bd28`](https://github.com/sadeghmdi/pyheartlib/commit/561bd287ee81e5c180439c6308e4c6cee5dd6c89))
+* Fix typo ([`6ea5537`](https://github.com/sadeghmdi/pyheartlib/commit/6ea55377633c7b666207e3c72885a78ba591c863))
+* Update file from rtd docs ([`91bf499`](https://github.com/sadeghmdi/pyheartlib/commit/91bf499d45ad693b8b7c3ed8b274a01bcb283774))
+* Change py version ([`9569ed3`](https://github.com/sadeghmdi/pyheartlib/commit/9569ed3437f565ded0f16bb0dfe5bb350ae6f521))
+* Change python version ([`9d9e24e`](https://github.com/sadeghmdi/pyheartlib/commit/9d9e24e3a9d9c4d66a0e981ea1086b04e70b39bc))
+
 ## v0.0.2 (2023-05-22)
 
 
