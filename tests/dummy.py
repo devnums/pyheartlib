@@ -23,7 +23,7 @@ class DummyData:
         self.save_ann()
 
     def save_sig(self):
-        signal, _ = self.gen_sig(cycles=5)
+        signal, _ = self.gen_sig(cycles=10)
         wfdb.wrsamp(
             self.record_name,
             fs=self.sampling_rate,
@@ -35,14 +35,72 @@ class DummyData:
         )
 
     def save_ann(self):
-        symbol = ["N", "N", "V", "N", "A"]
-        sample = [90, 450, 810, 1170, 1530]
+        symbol = [
+            "N",
+            "N",
+            "V",
+            "N",
+            "A",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+            "N",
+        ]
+        sample = [
+            90,
+            450,
+            810,
+            1170,
+            1530,
+            1600,
+            1730,
+            1810,
+            1930,
+            2230,
+            2430,
+            2550,
+            2610,
+            2750,
+            2970,
+            3150,
+            3400,
+        ]
+        # ["+", "N", "N", "V", "+", "N", "A"
+        # [+30, 90, 450, 810, +900, 1170, 1530
         sample.insert(0, 30)
         symbol.insert(0, "+")
-        sample.insert(3, 700)
-        symbol.insert(3, "+")
+        sample.insert(4, 900)
+        symbol.insert(4, "+")
         sample = np.array(sample)
-        aux_note = ["(N\x00", "", "(VT\x00", "", "", "", ""]
+        aux_note = [
+            "(N\x00",
+            "",
+            "",
+            "",
+            "(VT\x00",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        ]
 
         wfdb.wrann(
             self.record_name,

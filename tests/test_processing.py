@@ -1,5 +1,5 @@
 import pytest
-from pyecg.processing import Processing
+from pyheartlib.processing import Processing
 import numpy as np
 
 

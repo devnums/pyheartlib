@@ -8,8 +8,8 @@ echo $pythonpath
 poetry run python -m third_party_license_file_generator -r requirements.txt -p $pythonpath
 
 cat ext_licenses.textt >> THIRDPARTYLICENSES
-sed -i '10,$d' ACKNOWLEDGEMENTS.md
-cat THIRDPARTYLICENSES >> ACKNOWLEDGEMENTS.md
+sed -i '8,$d' ACKNOWLEDGEMENTS.txt
+cat THIRDPARTYLICENSES >> ACKNOWLEDGEMENTS.txt
 rm THIRDPARTYLICENSES
 
 

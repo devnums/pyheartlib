@@ -1,6 +1,7 @@
 import os
 import numpy
-from pyecg.io import get_data
+import yaml
+from pyheartlib.io import get_data
 from dummy import DummyData
 
 test_data_dir = "./tests/dummy_data"
@@ -8,11 +9,15 @@ record_name = "dummy101"
 dmm = DummyData(save_dir=test_data_dir)
 dmm.save(record_name="dummy101")
 
+conf_path = os.path.join(os.getcwd(), "tests/dummy_data/config.yaml")
+with open(conf_path) as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
 
 def test_get_data():
     # there must be a directory named data in the project dir.
     record_path = os.path.join(os.getcwd(), test_data_dir, record_name)
-    data = get_data(record_path)
+    data = get_data(record_path, config)
     assert isinstance(data, dict)
     expected_dict = {
         "signal": numpy.ndarray,
