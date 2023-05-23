@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.4 (2023-05-23)
+### Documentation
+* Fix path ([`d64dade`](https://github.com/sadeghmdi/pyheartlib/commit/d64dade9625586ea87a7e66cafe62215ce787a6e))
+
 ## v0.0.3 (2023-05-23)
 ### Documentation
 * Update from rtd docs ([`e40bb4f`](https://github.com/sadeghmdi/pyheartlib/commit/e40bb4ff9dd3665b7e55efee122d53f85f4c431d))
