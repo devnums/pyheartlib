@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.6 (2023-05-25)
+### Documentation
+* Small edit ([`517803f`](https://github.com/sadeghmdi/pyheartlib/commit/517803fab03e851fe2a59e338d95ec8461c44ed3))
+* Add new badge ([`04a7a6e`](https://github.com/sadeghmdi/pyheartlib/commit/04a7a6e094ac78ea7b4199c17b4b8b86c284d102))
+* Edit gen_license file and some texts ([`45cf77f`](https://github.com/sadeghmdi/pyheartlib/commit/45cf77f6c049686ffe2b417c0cd37584c39ccd42))
+* Edit gen_license file and some texts ([`99b9f3d`](https://github.com/sadeghmdi/pyheartlib/commit/99b9f3da758afdd78bdc446626c1c1231b2abaf3))
+
 ## v0.0.5 (2023-05-25)
 ### Documentation
 * Edit gen_license file and some texts ([`633c94b`](https://github.com/sadeghmdi/pyheartlib/commit/633c94b479c6a0e7a2fa448c8983628d6af2e921))
