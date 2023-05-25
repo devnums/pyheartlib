@@ -1,8 +1,9 @@
 # pyheartlib
 
 [![Documentation Status](https://readthedocs.org/projects/pyheartlib/badge/?version=latest)](https://pyheartlib.readthedocs.io/en/latest/?badge=latest)
-![PyPI](https://img.shields.io/pypi/v/pyheartlib?color=blue)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyheartlib)
 [![codecov](https://codecov.io/gh/sadeghmdi/pyheartlib/branch/main/graph/badge.svg?token=6IB18KL3E9)](https://codecov.io/gh/sadeghmdi/pyheartlib)
+![PyPI](https://img.shields.io/pypi/v/pyheartlib?color=blue)
 
 
 pyheartlib is a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore traditional machine learning models and more advanced deep learning models can be used. The first release of this software supports Keras and Tensorflow libraries, and MIT-BIH Arrhythmia Database format. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
@@ -15,10 +16,15 @@ The package can be installed with pip:
 $ pip install pyheartlib
 ```
 
-# Requirements
+# Dependencies
 
-* numpy>=1.21.1
-* pandas>=1.3.1
+* python = ">=3.10,<3.12"
+* numpy = ">=1.22.0"
+* wfdb = ">=4.0.0"
+* pandas = ">=1.4.0"
+* tqdm = ">=4.63.0"
+* scikit-learn = ">=1.1.0"
+* tensorflow = ">=2.8.0"
 
 # Documentation
 

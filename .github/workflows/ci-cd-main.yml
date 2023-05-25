@@ -1,8 +1,6 @@
 name: ci-cd-main
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request_target:
     branches: [ "main" ]
     types:
@@ -10,7 +8,7 @@ on:
 
 jobs:
   ci:
-    if: github.event.pull_request.merged == true ||	github.event_name == 'push'
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -89,8 +87,8 @@ jobs:
             --extra-index-url https://pypi.org/simple \
             pyheartlib
 
-#       - name: Publish to PyPI
-#         uses: pypa/gh-action-pypi-publish@release/v1
-#         with:
-#           user: __token__
-#           password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
