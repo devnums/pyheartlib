@@ -39,6 +39,6 @@ Following examples demostrate dataset creation:
 * [Rpeak dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_rpeak.py) <br>
 * [Arrhythmia dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_arrhythmia.py) <br>
 
-As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
+As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets. 
 
 * [Beat detection model](https://github.com/sadeghmdi/pyheartlib/blob/main/model/README.md)
