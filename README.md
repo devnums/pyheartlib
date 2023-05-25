@@ -1,9 +1,7 @@
 # pyheartlib
 
 [![Documentation Status](https://readthedocs.org/projects/pyheartlib/badge/?version=latest)](https://pyheartlib.readthedocs.io/en/latest/?badge=latest)
-
 ![PyPI](https://img.shields.io/pypi/v/pyheartlib?color=blue)
-
 [![codecov](https://codecov.io/gh/sadeghmdi/pyheartlib/branch/main/graph/badge.svg?token=6IB18KL3E9)](https://codecov.io/gh/sadeghmdi/pyheartlib)
 
 
