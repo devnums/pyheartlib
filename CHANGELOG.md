@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.5 (2023-05-25)
+### Documentation
+* Edit gen_license file and some texts ([`633c94b`](https://github.com/sadeghmdi/pyheartlib/commit/633c94b479c6a0e7a2fa448c8983628d6af2e921))
+* Edit changelog and add badge to readme ([`f782997`](https://github.com/sadeghmdi/pyheartlib/commit/f7829979099d8e590fefd541629d4e73c86ddf03))
+
 ## v0.0.4 (2023-05-23)
 ### Documentation
 * Fix path ([`d64dade`](https://github.com/sadeghmdi/pyheartlib/commit/d64dade9625586ea87a7e66cafe62215ce787a6e))
