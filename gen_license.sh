@@ -1,11 +1,11 @@
 #!/bin/bash
 
-poetry export -f requirements.txt --output requirements.txt
+poetry export -o requirements.textt --without-hashes
 pythonpath=$(poetry env info --path)
 pythonpath+=/bin/python
 echo $pythonpath
 
-poetry run python -m third_party_license_file_generator -r requirements.txt -p $pythonpath
+poetry run python -m third_party_license_file_generator -r requirements.textt -p $pythonpath
 
 cat ext_licenses.textt >> THIRDPARTYLICENSES
 sed -i '8,$d' ACKNOWLEDGEMENTS.txt
