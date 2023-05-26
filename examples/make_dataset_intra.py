@@ -41,4 +41,4 @@ stat_report = beatdata.report_stats_table(
     [train_ds["labels"], test_ds["labels"]], ["Train", "Test"]
 )
 print(stat_report)
-print(train_ds['beat_feats'].head(3)) 
+print(train_ds['beat_feats'].tail(3))
