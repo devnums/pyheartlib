@@ -1,6 +1,7 @@
 import pytest
 import numpy
 import pandas
+import os
 from pyheartlib.data_beat import BeatData
 from pyheartlib.beat_info import BeatInfo
 from dummy import DummyData
@@ -42,20 +43,21 @@ def test_make_frags(beatdata):
 
 
 def test_make_dataset(beatdata):
-    data = beatdata.make_dataset(records=["dummy101", "dummy102"])
-    assert isinstance(data, dict)
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101", "dummy102"], beatinfo)
+    assert isinstance(ds, dict)
     expected_dict = {
         "waveforms": numpy.ndarray,
         "beat_feats": pandas.DataFrame,
         "labels": numpy.ndarray,
     }
-    assert len(data.keys()) == len(expected_dict.keys())
-    assert set(data.keys()) == set(expected_dict.keys())
+    assert len(ds.keys()) == len(expected_dict.keys())
+    assert set(ds.keys()) == set(expected_dict.keys())
     for key in expected_dict.keys():
-        assert isinstance(data[key], expected_dict[key])
-        assert len(data[key]) > 0
-    assert len(data["waveforms"]) == len(data["labels"])
-    assert data["waveforms"].shape[1] == sum(beatdata.win)
+        assert isinstance(ds[key], expected_dict[key])
+        assert len(ds[key]) > 0
+    assert len(ds["waveforms"]) == len(ds["labels"])
+    assert ds["waveforms"].shape[1] == sum(beatdata.win)
 
 
 def test_beat_info_feat(beatdata):
@@ -83,12 +85,60 @@ def test_beat_info_feat(beatdata):
     assert len(labels) > 0
 
 
+def test_save_dataset_inter(beatdata):
+    file_name = "inter.beat"
+    tmpfile = os.path.join(test_data_dir, file_name)
+    if os.path.exists(tmpfile):
+        os.remove(tmpfile)
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatdata.save_dataset_inter(["dummy101", "dummy102"], beatinfo, file_name)
+    assert os.path.exists(tmpfile)
+
+
+def test_save_dataset_intra(beatdata):
+    file_train = "intra_train.beat"
+    tmpfiletrain = os.path.join(test_data_dir, file_train)
+    if os.path.exists(tmpfiletrain):
+        os.remove(tmpfiletrain)
+    file_test = "intra_test.beat"
+    tmpfiletest = os.path.join(test_data_dir, file_test)
+    if os.path.exists(tmpfiletest):
+        os.remove(tmpfiletest)
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatdata.save_dataset_intra(["dummy101", "dummy102"], beatinfo)
+    assert os.path.exists(tmpfiletrain)
+    assert os.path.exists(tmpfiletest)
+
+
+def test_save_dataset_single(beatdata):
+    file_train = "dummy101_train.beat"
+    tmpfiletrain = os.path.join(test_data_dir, file_train)
+    if os.path.exists(tmpfiletrain):
+        os.remove(tmpfiletrain)
+    file_test = "dummy101_test.beat"
+    tmpfiletest = os.path.join(test_data_dir, file_test)
+    if os.path.exists(tmpfiletest):
+        os.remove(tmpfiletest)
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatdata.save_dataset_single("dummy101", beatinfo)
+    assert os.path.exists(tmpfiletrain)
+    assert os.path.exists(tmpfiletest)
+
+
+def test_load_data(beatdata):
+    file_name = "load.beat"
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatdata.save_dataset_inter(["dummy101"], beatinfo, file_name)
+    ds = beatdata.load_data(file_name)
+    assert isinstance(ds, dict)
+    assert len(ds) == 3
+
+
 def test_report_stats(beatdata):
     train_labels = numpy.array(["N", "N", "V", "N", "A"])
     test_labels = numpy.array(["N", "V", "A", "V", "A", "V"])
     yds_list = [train_labels, test_labels]
     res = beatdata.report_stats(yds_list)
-
     assert isinstance(res, list)
     assert isinstance(res[0], dict)
     assert res[0]["N"] == 3
@@ -100,7 +150,6 @@ def test_report_stats_table(beatdata):
     test_labels = numpy.array(["N", "V", "A", "V", "A", "V"])
     yds_list = [train_labels, test_labels]
     res = beatdata.report_stats_table(yds_list, ["Train", "Test"])
-
     assert isinstance(res, pandas.DataFrame)
     assert res["N"]["Train"] == 3
     assert res["A"]["Test"] == 2
