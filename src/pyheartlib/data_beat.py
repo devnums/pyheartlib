@@ -245,107 +245,6 @@ class BeatData(Data):
             # time.sleep(0.3)
         return features, labels
 
-    def clean_irrelevant_data(self, ds):
-        """Removes data with irrelevant labels (symbols) which are not in the symbols list.
-
-        Parameters
-        ----------
-        ds : dict
-            Dataset as a dictionary containing waveforms, beat features, and labels.
-
-        Returns
-        -------
-        dict
-            Cleaned dataset
-        """
-
-        yds = ds["labels"]
-        xds = ds["waveforms"]
-        rds = ds["beat_feats"]
-        indexes_rm = [i for i, item in enumerate(yds) if item not in self.syms]
-        # indexes_rm = np.where(np.invert(np.isin(yds, self.syms)))[0]
-        xds = np.delete(xds, indexes_rm, axis=0)
-        rds = np.delete(rds, indexes_rm, axis=0)
-        yds = np.delete(yds, indexes_rm, axis=0)
-        # ydsc = [it for ind,it in enumerate(yds) if ind not in indexes_rm]
-        return {"waveforms": xds, "beat_feats": rds, "labels": yds}
-
-    def search_label(self, inp, sym="N"):
-        """Searches the provided data and returns the indexes for a patricular label.
-
-        Parameters
-        ----------
-        inp : dict or numpy.ndarray
-            Input can be a dictionary having a 'labels' key, or a 1D numpy array.
-        sym : str, optional
-            The label to be searched for in the dataset, by default 'N'
-
-        Returns
-        -------
-        list
-            A list of indexes corresponding to the searched label.
-
-        Raises
-        ------
-        TypeError
-            Input data must be a dictionary or a numpy array.
-        """
-
-        if isinstance(inp, dict):
-            yds = list(inp["labels"])
-        elif isinstance(inp, np.ndarray):
-            yds = inp
-        else:
-            raise TypeError("input must be a dictionary or a numpy array!")
-        indexes = [i for i, item in enumerate(yds) if item == sym]
-        return indexes
-
-    def report_stats(self, yds_list):
-        """Counts the number of samples for each label type in the data.
-
-        Parameters
-        ----------
-        yds_list : list
-            List containing several label data sets. e.g train,val,test.
-
-        Returns
-        -------
-        list
-            A list of dictionaries. One dictionary per one data set.
-            Keys are labels types(symbols) and values are the counts of each specific symbol.
-        """
-        res_list = []
-        for yds in yds_list:
-            res = {}
-            for sym in self.syms:
-                indexes = [i for i, item in enumerate(yds) if item == sym]
-                res[sym] = len(indexes)
-            res_list.append(res)
-        return res_list
-
-    def report_stats_table(self, yds_list, name_list=[]):
-        """Returns the number of samples for each label type in the data.
-
-        Parameters
-        ----------
-        yds_list : list
-            List containing several label data. e.g train,val,test.
-        name_list : list, optional
-            A list of strings as the name of label data e.g. train,val,test, by default []
-
-        Returns
-        -------
-        pandas.dataframe
-            A dataframe containing symbols and their counts.
-        """
-        if len(name_list) == len(yds_list):
-            indx = name_list
-        else:
-            indx = None
-        res_list = self.report_stats(yds_list)
-        df = pd.DataFrame(res_list, index=indx)
-        return df
-
     def save_dataset_inter(self, records, beatinfo_obj, file=None, clean=True):
         """Makes dataset and saves it in a file.
 
@@ -372,57 +271,6 @@ class BeatData(Data):
         if clean == True:
             ds = self.clean_irrelevant_data(ds)
         save_data(ds, file_path=os.path.join(self.base_path, file))
-
-    def save_dataset_single(
-        self, record, beatinfo_obj, clean=True, split_ratio=0.3, file=None
-    ):
-        """Saves the signal fragments and their labels into a file for a single record.
-
-        Parameters
-        ----------
-        record : str
-            Record id.
-        beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
-        clean : bool, optional
-            If True does not include irrelevant label classes, by default True
-        split_ratio : float, optional
-            Ratio of test set, by default 0.3
-        file : str, optional
-            Name of the file to be saved, by default None
-        """
-        ds = self.make_dataset([record], beatinfo_obj)
-        if clean is True:
-            ds = self.clean_irrelevant_data(ds)
-
-        # slice the dataset based on the split_ratio
-        xarr = ds["waveforms"]
-        farr = ds["beat_feats"]
-        yarr = ds["labels"]
-        print(xarr.shape[0])
-        print(len(xarr))
-        split_idx = int(split_ratio * xarr.shape[0])
-        xarr_train = xarr[:split_idx]
-        xarr_test = xarr[split_idx:]
-        farr_train = farr[:split_idx]
-        farr_test = farr[split_idx:]
-        yarr_train = yarr[:split_idx]
-        yarr_test = yarr[split_idx:]
-
-        ds_train = {
-            "waveforms": xarr_train,
-            "beat_feats": farr_train,
-            "labels": yarr_train,
-        }
-        ds_test = {"waveforms": xarr_test, "beat_feats": farr_test, "labels": yarr_test}
-        if file is None:
-            file_train = str(record) + "_train" + ".beat"
-            file_test = str(record) + "_test" + ".beat"
-        else:
-            file_train = file + "_train" + ".beat"
-            file_test = file + "_test" + ".beat"
-        save_data(ds_train, file_path=os.path.join(self.base_path, file_train))
-        save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
     def save_dataset_intra(
         self,
@@ -500,6 +348,55 @@ class BeatData(Data):
         file_test = file_prefix + "_test" + ".beat"
         save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
+    def save_dataset_single(
+        self, record, beatinfo_obj, clean=True, split_ratio=0.3, file=None
+    ):
+        """Saves the signal fragments and their labels into a file for a single record.
+
+        Parameters
+        ----------
+        record : str
+            Record id.
+        beatinfo_obj : instance of BeatInfo
+            An instance of BeatInfo.
+        clean : bool, optional
+            If True does not include irrelevant label classes, by default True
+        split_ratio : float, optional
+            Ratio of test set, by default 0.3
+        file : str, optional
+            Name of the file to be saved, by default None
+        """
+        ds = self.make_dataset([record], beatinfo_obj)
+        if clean is True:
+            ds = self.clean_irrelevant_data(ds)
+
+        # slice the dataset based on the split_ratio
+        xarr = ds["waveforms"]
+        farr = ds["beat_feats"]
+        yarr = ds["labels"]
+        split_idx = int(split_ratio * xarr.shape[0])
+        xarr_train = xarr[:split_idx]
+        xarr_test = xarr[split_idx:]
+        farr_train = farr[:split_idx]
+        farr_test = farr[split_idx:]
+        yarr_train = yarr[:split_idx]
+        yarr_test = yarr[split_idx:]
+
+        ds_train = {
+            "waveforms": xarr_train,
+            "beat_feats": farr_train,
+            "labels": yarr_train,
+        }
+        ds_test = {"waveforms": xarr_test, "beat_feats": farr_test, "labels": yarr_test}
+        if file is None:
+            file_train = str(record) + "_train" + ".beat"
+            file_test = str(record) + "_test" + ".beat"
+        else:
+            file_train = file + "_train" + ".beat"
+            file_test = file + "_test" + ".beat"
+        save_data(ds_train, file_path=os.path.join(self.base_path, file_train))
+        save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
+
     def load_data(self, file_name):
         """Loads a file containing a dataframe.
 
@@ -531,6 +428,106 @@ class BeatData(Data):
         print(self.report_stats_table([ds["labels"]], [file_name]))
         print()
         return ds
+
+    def clean_irrelevant_data(self, ds):
+        """Removes data with irrelevant labels (symbols) which are not in the symbols list.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset as a dictionary containing waveforms, beat features, and labels.
+
+        Returns
+        -------
+        dict
+            Cleaned dataset
+        """
+
+        yds = ds["labels"]
+        xds = ds["waveforms"]
+        fds = ds["beat_feats"]
+        indexes_rm = [i for i, item in enumerate(yds) if item not in self.syms]
+        # indexes_rm = np.where(np.invert(np.isin(yds, self.syms)))[0]
+        xds = np.delete(xds, indexes_rm, axis=0)
+        fds.drop(indexes_rm, axis=0, inplace=True)
+        yds = np.delete(yds, indexes_rm, axis=0)
+        return {"waveforms": xds, "beat_feats": fds, "labels": yds}
+
+    def search_label(self, inp, sym="N"):
+        """Searches the provided data and returns the indexes for a patricular label.
+
+        Parameters
+        ----------
+        inp : dict or numpy.ndarray
+            Input can be a dictionary having a 'labels' key, or a 1D numpy array.
+        sym : str, optional
+            The label to be searched for in the dataset, by default 'N'
+
+        Returns
+        -------
+        list
+            A list of indexes corresponding to the searched label.
+
+        Raises
+        ------
+        TypeError
+            Input data must be a dictionary or a numpy array.
+        """
+
+        if isinstance(inp, dict):
+            yds = list(inp["labels"])
+        elif isinstance(inp, np.ndarray):
+            yds = inp
+        else:
+            raise TypeError("input must be a dictionary or a numpy array!")
+        indexes = [i for i, item in enumerate(yds) if item == sym]
+        return indexes
+
+    def report_stats(self, yds_list):
+        """Counts the number of samples for each label type in the data.
+
+        Parameters
+        ----------
+        yds_list : list
+            List containing several label data sets. e.g train,val,test.
+
+        Returns
+        -------
+        list
+            A list of dictionaries. One dictionary per one data set.
+            Keys are labels types(symbols) and values are the counts of each specific symbol.
+        """
+        res_list = []
+        for yds in yds_list:
+            res = {}
+            for sym in self.syms:
+                indexes = [i for i, item in enumerate(yds) if item == sym]
+                res[sym] = len(indexes)
+            res_list.append(res)
+        return res_list
+
+    def report_stats_table(self, yds_list, name_list=[]):
+        """Returns the number of samples for each label type in the data.
+
+        Parameters
+        ----------
+        yds_list : list
+            List containing several label data. e.g train,val,test.
+        name_list : list, optional
+            A list of strings as the name of label data e.g. train,val,test, by default []
+
+        Returns
+        -------
+        pandas.dataframe
+            A dataframe containing symbols and their counts.
+        """
+        if len(name_list) == len(yds_list):
+            indx = name_list
+        else:
+            indx = None
+        res_list = self.report_stats(yds_list)
+        df = pd.DataFrame(res_list, index=indx)
+        return df
 
     def per_record_stats(self, rec_ids_list=None, cols=None):
         """Returns a dataframe containing the number of each type in each record.
