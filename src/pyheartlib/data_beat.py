@@ -142,19 +142,19 @@ class BeatData(Data):
         ----------
         records : list
             A list containing records ids.
-        beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
+        beatinfo_obj : instance of BeatInfo.
 
         Returns
         -------
         dict
-            A dictionary containing:
-                'waveforms' : numpy.ndarray
-                    2D array of beat waveforms.
-                'beat_feats' : pd.DataFrame
-                    DataFrame of beats' features.
-                'labels' : numpy.ndarray
-                    1D array of beats' labels.
+            Dictionary with keys:
+
+            'waveforms' : numpy.ndarray
+                2D array of beat waveforms.
+            'beat_feats' : pd.DataFrame
+                DataFrame of beats' features.
+            'labels' : numpy.ndarray
+                1D array of beats' labels.
         """
         xds = []
         yds = []
@@ -203,14 +203,21 @@ class BeatData(Data):
         Parameters
         ----------
         data : dict
-            A dictionary containing:
-                'waveform' : list of waveforms
-                'rpeak_locs' : list of rpeak locations
-                'rec_ids' : list of record ids
-                'start_idxs' : list of start_idxs of waveforms on the raw signal
-                'labels' : list of beat labels
-        beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
+
+            Dictionary with keys:
+
+            'waveform' : list
+                List of waveforms.
+            'rpeak_locs' : list
+                List of rpeak locations.
+            'rec_ids' : list
+                List of record ids.
+            'start_idxs' : list
+                List of start_idxs of waveforms on the raw signal.
+            'labels' : list
+                List of beat labels.
+        beatinfo_obj : Instance of BeatInfo
+
         Returns
         -------
         Tuple
@@ -245,7 +252,7 @@ class BeatData(Data):
             # time.sleep(0.3)
         return features, labels
 
-    def save_dataset_inter(self, records, beatinfo_obj, file=None, clean=True):
+    def save_dataset_inter(self, records, beatinfo_obj, file=None):
         """Makes dataset and saves it in a file.
 
         Parameters
@@ -253,30 +260,19 @@ class BeatData(Data):
         records : list
             A list containing records ids.
         beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
         file : str
             Name of the file to be saved.
-        clean : bool, optional
-            If True removes irrelevant label types, by default True
-
-        Raises
-        ------
-        ValueError
-            File path is not provided.
         """
 
         if file is None:
             raise ValueError("Save file path is not provided!")
         ds = self.make_dataset(records, beatinfo_obj)
-        if clean == True:
-            ds = self.clean_irrelevant_data(ds)
         save_data(ds, file_path=os.path.join(self.base_path, file))
 
     def save_dataset_intra(
         self,
         records,
         beatinfo_obj,
-        clean=True,
         split_ratio=0.3,
         file_prefix="intra",
     ):
@@ -287,9 +283,6 @@ class BeatData(Data):
         records : list, optional
             A list of record ids.
         beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
-        clean : bool, optional
-            If True does not include irrelevant label classes, by default True
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file_prefix : str, optional
@@ -303,8 +296,6 @@ class BeatData(Data):
         ydata_test = []
         for record in records:
             ds = self.make_dataset([record], beatinfo_obj)
-            if clean is True:
-                ds = self.clean_irrelevant_data(ds)
 
             # slice the dataset based on the split_ratio
             xarr = ds["waveforms"]
@@ -348,9 +339,7 @@ class BeatData(Data):
         file_test = file_prefix + "_test" + ".beat"
         save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
-    def save_dataset_single(
-        self, record, beatinfo_obj, clean=True, split_ratio=0.3, file=None
-    ):
+    def save_dataset_single(self, record, beatinfo_obj, split_ratio=0.3, file=None):
         """Saves the signal fragments and their labels into a file for a single record.
 
         Parameters
@@ -358,17 +347,12 @@ class BeatData(Data):
         record : str
             Record id.
         beatinfo_obj : instance of BeatInfo
-            An instance of BeatInfo.
-        clean : bool, optional
-            If True does not include irrelevant label classes, by default True
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file : str, optional
             Name of the file to be saved, by default None
         """
         ds = self.make_dataset([record], beatinfo_obj)
-        if clean is True:
-            ds = self.clean_irrelevant_data(ds)
 
         # slice the dataset based on the split_ratio
         xarr = ds["waveforms"]
@@ -409,11 +393,6 @@ class BeatData(Data):
         -------
         pandas.dataframe
             Dataset as a dataframe. Keys are "waveforms", "beat_feats", and "labels".
-
-        Raises
-        ------
-        ValueError
-            File name is not provided.
         """
 
         if file_name is None:
@@ -428,60 +407,6 @@ class BeatData(Data):
         print(self.report_stats_table([ds["labels"]], [file_name]))
         print()
         return ds
-
-    def clean_irrelevant_data(self, ds):
-        """Removes data with irrelevant labels (symbols) which are not in the symbols list.
-
-        Parameters
-        ----------
-        ds : dict
-            Dataset as a dictionary containing waveforms, beat features, and labels.
-
-        Returns
-        -------
-        dict
-            Cleaned dataset
-        """
-
-        yds = ds["labels"]
-        xds = ds["waveforms"]
-        fds = ds["beat_feats"]
-        indexes_rm = [i for i, item in enumerate(yds) if item not in self.syms]
-        # indexes_rm = np.where(np.invert(np.isin(yds, self.syms)))[0]
-        xds = np.delete(xds, indexes_rm, axis=0)
-        fds.drop(indexes_rm, axis=0, inplace=True)
-        yds = np.delete(yds, indexes_rm, axis=0)
-        return {"waveforms": xds, "beat_feats": fds, "labels": yds}
-
-    def search_label(self, inp, sym="N"):
-        """Searches the provided data and returns the indexes for a patricular label.
-
-        Parameters
-        ----------
-        inp : dict or numpy.ndarray
-            Input can be a dictionary having a 'labels' key, or a 1D numpy array.
-        sym : str, optional
-            The label to be searched for in the dataset, by default 'N'
-
-        Returns
-        -------
-        list
-            A list of indexes corresponding to the searched label.
-
-        Raises
-        ------
-        TypeError
-            Input data must be a dictionary or a numpy array.
-        """
-
-        if isinstance(inp, dict):
-            yds = list(inp["labels"])
-        elif isinstance(inp, np.ndarray):
-            yds = inp
-        else:
-            raise TypeError("input must be a dictionary or a numpy array!")
-        indexes = [i for i, item in enumerate(yds) if item == sym]
-        return indexes
 
     def report_stats(self, yds_list):
         """Counts the number of samples for each label type in the data.
@@ -561,6 +486,7 @@ class BeatData(Data):
 
     def slice_data(self, ds, labels_list):
         """Only holds the data that their annotation is in the labels_list"""
+
         sliced_x = ds["waveforms"]
         sliced_r = ds["beat_feats"]
         sliced_y = ds["labels"]
@@ -573,10 +499,35 @@ class BeatData(Data):
         sliced_y = sliced_y[indexes_keep]
         return {"waveforms": sliced_x, "beat_feats": sliced_r, "labels": sliced_y}
 
-    def search_type(self, x, y, sym="N"):
-        """Search for a signal excerpt with a patricular type"""
-        indexes = [i for i, item in enumerate(y) if item == sym]
-        return x[indexes], indexes
+    def search_label(self, inp, sym="N"):
+        """Searches the provided data and returns the indexes for a patricular label.
+
+        Parameters
+        ----------
+        inp : dict or numpy.ndarray
+            Input can be a dictionary having a 'labels' key, or a 1D numpy array.
+        sym : str, optional
+            The label to be searched for in the dataset, by default 'N'
+
+        Returns
+        -------
+        list
+            A list of indexes corresponding to the searched label.
+
+        Raises
+        ------
+        TypeError
+            Input data must be a dictionary or a numpy array.
+        """
+
+        if isinstance(inp, dict):
+            yds = list(inp["labels"])
+        elif isinstance(inp, np.ndarray):
+            yds = inp
+        else:
+            raise TypeError("input must be a dictionary or a 1D numpy array!")
+        indexes = [i for i, item in enumerate(yds) if item == sym]
+        return indexes
 
     def aug_decrease(self, ds, label="N", desired_size=21000):
         """Simple data augmentation to decrease a particular type in the dataset."""
@@ -587,7 +538,7 @@ class BeatData(Data):
         xx = ds["waveforms"]
         rr = ds["beat_feats"]
         yy = ds["labels"]
-        _, ind = self.search_type(xx, yy, sym=label)
+        ind = self.search_label(ds, sym=label)
         random.shuffle(ind)
         nn = len(ind) - desired_size
         ind_remove = ind[0:nn]
@@ -610,7 +561,7 @@ class BeatData(Data):
         y_aug = ds["labels"].tolist()
         for sym in self.config["BEAT_TYPES"]:
             try:
-                _, ind_minor = self.search_type(ds["waveforms"], ds["labels"], sym=sym)
+                ind_minor = self.search_label(ds, sym=sym)
                 minority = np.take(ds["waveforms"], ind_minor, axis=0)
                 minority_r = np.take(ds["beat_feats"], ind_minor, axis=0)
                 minority_labels = [sym] * len(minority)
@@ -633,11 +584,113 @@ class BeatData(Data):
                 print("label zero")
         return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
 
-    def stndr(self, arr, mean, std):
-        X = arr.copy()
-        X = (X - np.mean(X)) / np.std(X)
-        return X
+    def clean_inf_nan(self, ds):
+        """Cleans the dataset by removing samples with inf and nan in computed features.
 
-    def binarize_labels(self, labels_list, positive_label, pos=1, neg=-1):
-        new_y = [pos if item == positive_label else neg for item in labels_list]
-        return new_y
+        Parameters
+        ----------
+        ds : dict
+            Dataset as a dictionary.
+
+        Returns
+        -------
+        dict
+            Cleaned dataset.
+        """
+
+        yds = ds["labels"]
+        xds = ds["waveforms"]
+        fds = ds["beat_feats"]
+        indexes = []
+        # cleans feature array
+        indexes.extend(np.where(np.isinf(fds))[0])
+        indexes.extend(np.where(np.isnan(fds))[0])
+        fds.drop(indexes, axis=0, inplace=True)
+        xds = np.delete(xds, indexes, axis=0)
+        yds = np.delete(yds, indexes, axis=0)
+        return {"waveforms": xds, "beat_feats": fds, "labels": yds}
+
+    def clean_IQR(self, ds, factor=1.5, return_indexes=False):
+        """Cleans the dataset by removing outliers using IQR method.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset.
+        factor : float, optional
+            Parameter of IQR method, by default 1.5
+        return_indexes : bool, optional
+            If True returns indexes of outliers, otherwise returns cleaned dataset, by default False
+
+        Returns
+        -------
+        dict
+            Cleaned dataset.
+        """
+        yds = ds["labels"]
+        xds = ds["waveforms"]
+        fds = ds["beat_feats"]
+        # cleans a 2d array. Each column is a features, rows are samples. Only fds.
+        ind_outliers = []
+        for i in range(fds.shape[1]):
+            x = fds[:, i]
+            Q1 = np.quantile(x, 0.25, axis=0)
+            Q3 = np.quantile(x, 0.75, axis=0)
+            IQR = Q3 - Q1
+            inds = np.where((x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR)))[0]
+            ind_outliers.extend(inds)
+        fds.drop(ind_outliers, axis=0, inplace=True)
+        xds = np.delete(xds, ind_outliers, axis=0)
+        yds = np.delete(yds, ind_outliers, axis=0)
+        if return_indexes is False:
+            return {"waveforms": xds, "beat_feats": fds, "labels": yds}
+        else:
+            return ind_outliers
+
+    def append_ds(self, ds1, ds2):
+        """Appends two datasets together.
+
+        Parameters
+        ----------
+        ds1 : dict
+            Dataset one.
+        ds2 : dict
+            Dataset two.
+
+        Returns
+        -------
+        dict
+            Final dataset.
+        """
+        dss = dict()
+        dss["waveforms"] = np.vstack((ds1["waveforms"], ds2["waveforms"]))
+        # dss["beat_feats"] = np.vstack((ds1["beat_feats"], ds2["beat_feats"]))
+        dss["beat_feats"] = pd.concat([ds1["beat_feats"], ds2["beat_feats"]])
+        dss["labels"] = np.vstack(
+            (ds1["labels"].reshape(-1, 1), ds2["labels"].reshape(-1, 1))
+        ).flatten()
+        return dss
+
+    def clean_IQR_class(self, ds, factor=1.5):
+        """Cleans dataset by IQR method for every class separately.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset.
+        factor : float, optional
+            Parameter of IQR method, by default 1.5
+
+        Returns
+        -------
+        dict
+            Cleaned dataset.
+        """
+        for label in list(np.unique(ds["labels"])):
+            sliced = self.slice_data(ds, [label])
+            cleaned = self.clean_IQR(sliced, factor=factor)
+            try:
+                ds_all = append_ds(ds_all, cleaned)
+            except NameError:
+                ds_all = cleaned
+        return ds_all

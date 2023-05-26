@@ -7,7 +7,7 @@ from scipy.signal import butter, sosfilt, sosfreqz, sosfiltfilt
 
 
 class Processing:
-    """Methods for processing signals"""
+    """Methods for processing signals."""
 
     @staticmethod
     def apply(processors, signal):
@@ -128,7 +128,7 @@ class Processing:
 
 class STFT:
     """
-    Short time fourier transform.
+    Short Time Fourier Transform.
 
     Example
     -------
@@ -140,7 +140,7 @@ class STFT:
         pass
 
     def specgram(self, signals, sampling_rate=None, nperseg=None, noverlap=None):
-        """Applies Short time fourier transform on the signals.
+        """Applies Short Time Fourier Transform on the signals.
 
         Parameters
         ----------
@@ -197,120 +197,3 @@ class STFT:
         hdim = math.floor((samp - overlap) / (win - overlap))
         vdim = math.floor(win / 2 + 1)
         return hdim, vdim
-
-
-def clean_inf_nan(ds):
-    """Cleans the dataset by removing inf and nan.
-
-    Parameters
-    ----------
-    ds : dict
-        Dataset as a dictionary.
-
-    Returns
-    -------
-    dict
-        Cleaned dataset.
-    """
-
-    yds = ds["labels"]
-    xds = ds["waveforms"]
-    rds = ds["beat_feats"]
-    indexes = []
-    # cleans feature array
-    indexes.extend(np.where(np.isinf(rds))[0])
-    indexes.extend(np.where(np.isnan(rds))[0])
-    rds = np.delete(rds, indexes, axis=0)
-    xds = np.delete(xds, indexes, axis=0)
-    yds = np.delete(yds, indexes, axis=0)
-    # ydsc = [it for ind,it in enumerate(yds) if ind not in indexes]
-
-    return {"waveforms": xds, "beat_feats": rds, "labels": yds}
-
-
-def clean_IQR(ds, factor=1.5, return_indexes=False):
-    """Cleans the dataset by removing outliers using IQR method.
-
-    Parameters
-    ----------
-    ds : dict
-        Dataset.
-    factor : float, optional
-        Parameter of IQR method, by default 1.5
-    return_indexes : bool, optional
-        If True returns indexes of outliers, otherwise returns cleaned dataset, by default False
-
-    Returns
-    -------
-    dict
-        Cleaned dataset.
-    """
-    yds = ds["labels"]
-    xds = ds["waveforms"]
-    rds = ds["beat_feats"]
-    # cleans a 2d array. Each column is a features, rows are samples. Only r.
-    ind_outliers = []
-    for i in range(rds.shape[1]):
-        x = rds[:, i]
-        Q1 = np.quantile(x, 0.25, axis=0)
-        Q3 = np.quantile(x, 0.75, axis=0)
-        IQR = Q3 - Q1
-        inds = np.where((x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR)))[0]
-        # print(len(inds))
-        ind_outliers.extend(inds)
-    rds = np.delete(rds, ind_outliers, axis=0)
-    xds = np.delete(xds, ind_outliers, axis=0)
-    yds = np.delete(yds, ind_outliers, axis=0)
-    if return_indexes is False:
-        return {"waveforms": xds, "beat_feats": rds, "labels": yds}
-    else:
-        return ind_outliers
-
-
-def append_ds(ds1, ds2):
-    """Appends two datasets together.
-
-    Parameters
-    ----------
-    ds1 : dict
-        Dataset one.
-    ds2 : dict
-        Dataset two.
-
-    Returns
-    -------
-    dict
-        Final dataset.
-    """
-    dss = dict()
-    dss["waveforms"] = np.vstack((ds1["waveforms"], ds2["waveforms"]))
-    dss["beat_feats"] = np.vstack((ds1["beat_feats"], ds2["beat_feats"]))
-    dss["labels"] = np.vstack(
-        (ds1["labels"].reshape(-1, 1), ds2["labels"].reshape(-1, 1))
-    ).flatten()
-    return dss
-
-
-def clean_IQR_class(ds, factor=1.5):
-    """Cleans dataset by IQR method for every class separately.
-
-    Parameters
-    ----------
-    ds : dict
-        Dataset.
-    factor : float, optional
-        Parameter of IQR method, by default 1.5
-
-    Returns
-    -------
-    dict
-        Cleaned dataset.
-    """
-    for label in list(np.unique(ds["labels"])):
-        sliced = slice_data(ds, [label])
-        cleaned = clean_IQR(sliced, factor=factor)
-        try:
-            ds_all = append_ds(ds_all, cleaned)
-        except NameError:
-            ds_all = cleaned
-    return ds_all
