@@ -1,6 +1,5 @@
 import pytest
 import numpy
-import pandas
 from pyheartlib.beat_info import BeatInfo
 
 
