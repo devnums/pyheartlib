@@ -146,6 +146,7 @@ class BeatInfo:
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
         """Segment beat waveform according to the pre and post RR intervals."""
+
         try:
             beat_rpeak_idx = self.rpeaks[self.beat_loc]
             prerri = self.rri_smpl[self.beat_loc - 1]
@@ -232,72 +233,80 @@ class BeatInfo:
     # RRI features
     # ============================================================
     def F_post_rri(self):
+        """Post RR interval."""
         return self.rri[self.beat_loc]
 
     def F_pre_rri(self):
+        """Pre RR interval."""
         return self.rri[self.beat_loc - 1]
 
     def F_ratio_post_pre(self):
+        """Ratio of post and pre RR intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return post / pre
 
     def F_diff_post_pre(self):
+        """Difference of post and pre RR intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return post - pre
 
     def F_diff_post_pre_nr(self):
+        """Normalized difference of post and pre RR intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return (post - pre) / self.F_rms_rri()
 
     def F_median_rri(self):
-        # median of rri
+        """Median of RR intervals."""
         return np.median(self.rri)
 
     def F_mean_pre_rri(self):
-        # average of pre-rri
+        """Mean of pre RR intervals."""
         pre_rri = self.rri[: self.beat_loc]
         return np.mean(pre_rri)
 
     def F_rms_rri(self):
-        # rms of rri
+        """RMS of RR intervals."""
         rri = np.asarray(self.rri)
         rms = np.sqrt(np.mean(rri**2))
         return rms
 
     def F_std_rri(self):
-        # std of RR intervals
+        """STD of RR intervals."""
         return np.std(self.rri)
 
     def F_ratio_pre_rms(self):
-        # ratio of pre-rr interval to rms
+        """Ratio of pre RR interval to RMS of RR intervals."""
         return self.F_pre_rri() / self.F_rms_rri()
 
     def F_ratio_post_rms(self):
-        # ratio of post-rr interval to rms
+        """Ratio of post RR interval to RMS of RR intervals."""
         return self.F_post_rri() / self.F_rms_rri()
 
     def F_diff_pre_avg_nr(self):
-        # diff of pre-rr interval to local rr average
+        """Difference of pre RR interval and median of RR intervals, normalized by their RMS."""
         return (self.F_pre_rri() - self.F_median_rri()) / self.F_rms_rri()
 
     def F_diff_post_avg_nr(self):
-        # diff of post-rr interval to local rr average
+        """Difference of post RR interval and median of RR intervals, normalized by their RMS."""
         return (self.F_post_rri() - self.F_median_rri()) / self.F_rms_rri()
 
     def F_compensate_ratio(self):
+        """Compensation ratio."""
         postpre = self.F_post_rri() + self.F_pre_rri()
         _2t2ndpre = 2 * self.rri[self.beat_loc - 2]  # 2 times second pre rri
         return postpre / _2t2ndpre
 
     def F_compensate_diff_nr(self):
+        """Compensation diff normalized by RMS."""
         postpre = self.F_post_rri() + self.F_pre_rri()
         _2t2ndpre = 2 * self.rri[self.beat_loc - 2]  # 2 times second pre rri
         return (postpre - _2t2ndpre) / self.F_rms_rri()
 
     def F_heart_rate(self):
+        """Heart rate."""
         pre_rri = (
             self.rpeaks[self.beat_loc] - self.rpeaks[self.beat_loc - 1]
         ) / self.fs
@@ -307,41 +316,26 @@ class BeatInfo:
     # ============================================================
     # SDRRI features
     # ============================================================
-    def F_post_sdrri(self):
-        try:
-            return self.sdrri[self.beat_loc]
-        except:
-            return None
-
-    def F_onbeat_sdrri(self):
-        # on beat(postrri-prerri)
-        return self.sdrri[self.beat_loc - 1]
-
-    def F_pre_sdrri(self):
-        # pre beat
-        return self.sdrri[self.beat_loc - 2]
-
     def F_mean_sdrri(self):
-        # average of sdrri
+        """Mean of successive RRI differences."""
         return np.mean(self.sdrri)
 
     def F_absmean_sdrri(self):
-        # abs average of sdrri
+        """Mean of absolute successive RRI differences."""
         return np.mean(np.abs(self.sdrri))
 
     def F_mean_pre_sdrri(self):
-        # average of pre-rri
+        """Mean of pre successive RRI differences."""
         pre_sdrri = self.sdrri[: self.beat_loc - 1]
         return np.mean(pre_sdrri)
 
     def F_rms_sdrri(self):
-        # rms of rri
+        """RMS of successive RRI differences."""
         sdrri = np.asarray(self.sdrri)
-        rms = np.sqrt(np.mean(sdrri**2))
-        return rms
+        return np.sqrt(np.mean(sdrri**2))
 
     def F_std_sdrri(self):
-        # std of sdrri
+        """STD of successive RRI differences."""
         return np.std(self.sdrri)
 
     # ============================================================
@@ -351,32 +345,40 @@ class BeatInfo:
         return self.rpeaks[self.beat_loc] - self.wfpts["beat_onset_org"]
 
     def F_beat_max(self):
+        """Max value of heartbeat waveform."""
         return max(self.bwaveform)
 
     def F_beat_min(self):
+        """Min value of heartbeat waveform."""
         return min(self.bwaveform)
 
     def F_maxmin_diff(self):
+        """Difference of max and min values of heartbeat waveform."""
         return self.F_beat_max() - self.F_beat_min()
 
     def F_maxmin_diff_norm(self):
+        """Difference of max and min values of heartbeat waveform normalized by waveform RMS"""
         return self.F_maxmin_diff() / self.F_beat_rms()
 
     def F_beat_mean(self):
+        """Mean of heartbeat waveform."""
         return np.mean(self.bwaveform)
 
     def F_beat_std(self):
+        """STD of heartbeat waveform."""
         return np.std(self.bwaveform)
 
     def F_beat_skewness(self):
+        """Skewness of heartbeat waveform."""
         return stats.skew(self.bwaveform)
 
     def F_beat_kurtosis(self):
+        """Kurtosis of heartbeat waveform."""
         return stats.kurtosis(self.bwaveform)
 
     def F_beat_rms(self):
-        rms = np.sqrt(np.mean(self.bwaveform**2))
-        return rms
+        """RMS of heartbeat waveform."""
+        return np.sqrt(np.mean(self.bwaveform**2))
 
     def pqrst(self):
         # 120ms <Normal_PR< 220ms.
@@ -394,57 +396,6 @@ class BeatInfo:
         qs = beat_pqrst.qs_interval
         return {"p": p, "q": q, "r": r, "s": s, "pr": pr, "qs": qs}
 
-    def pqrst_segs(self):
-        # splits the beat waveform into 3-segments using q and s points in the middle
-        pqrst = self.pqrst_dict
-        points = [0, pqrst["q"][0], pqrst["s"][0], len(self.bwaveform)]
-
-        lmax = []
-        lmin = []
-        lmean = []
-        lmedian = []
-        std = []
-        lskewness = []
-        lkurtosis = []
-        lrms = []
-
-        try:
-            for i in range(3):
-                s_ix = int(points[i])
-                e_ix = int(points[i + 1])
-                seg = self.bwaveform[s_ix:e_ix]
-                lmax.append(max(seg))
-                lmin.append(min(seg))
-                lmean.append(np.mean(seg))
-                lmedian.append(np.median(seg))
-                std.append(np.std(seg))
-                lskewness.append(stats.skew(seg))
-                lkurtosis.append(stats.kurtosis(seg))
-                lrms.append(np.sqrt(np.mean(seg**2)))
-
-            res = [lmax, lmin, lmean, lmedian, std, lskewness, lkurtosis, lrms]
-
-            # agg results
-            mean_res = []
-            std_res = []
-            rms_res = []
-            for mtrc in res:
-                mtrc = np.asarray(mtrc)
-                mean_res.append(np.mean(mtrc))
-                std_res.append(np.std(mtrc))
-                rms_res.append(np.sqrt(np.mean(mtrc**2)))
-
-            aggs = [mean_res, std_res, rms_res]
-            return res, aggs
-        except ValueError:
-            # print('pqrst segs error!')
-            # print('rec_id={}, sindex={}'.format(
-            # 					self.data['rec_id'],
-            # 					self.data['start_idx']))
-            res = [[np.nan] * 3] * 8
-            aggs = [[np.nan] * 8] * 3
-            return res, aggs
-
     def pr_interval(self):
         # pr interval in ms
         pr = self.pqrst_dict["pr"]
@@ -460,14 +411,19 @@ class BeatInfo:
         qs = self.pqrst_dict["qs"]
         return qs / self.rms_rri()
 
-    def pflag(self):
-        if self.label == "N":
-            return 1
-        else:
-            return 0
+    def nsampels(self, n_samples=10):
+        """Gives equally spaced samples of the trimmed heartbeat waveform.
 
-    def nsampels(self, n_samples=50):
-        # get samples of the waveform
+        Parameters
+        ----------
+        n_samples : int, optional
+            Number of samples, by default 10
+
+        Returns
+        -------
+        list
+            Waveform sample values.
+        """
         dt = int(len(self.bwaveform) / n_samples)
         samples = []
         for i in range(n_samples):
@@ -517,12 +473,17 @@ class BeatInfo:
     # Spectral features of the beat waveform
     # ============================================================
     def fft_features(self):
-        # return fft of each beat bwaveform as a list.
+        """Returns FFT of each heartbeat trimmed waveform.
+
+        Returns
+        -------
+        list
+        """
+
         sig = self.bwaveform
-        num_samples = sig.size
+        # num_samples = sig.size
         # xf = rfftfreq(num_samples, 1 / self.fs)
         yf = np.abs(rfft(sig))
-
         return list(yf)
 
     # ============================================================
@@ -531,7 +492,6 @@ class BeatInfo:
     def plot_wf(self):
         from matplotlib import figure
 
-        # fig = figure.Figure()
         fig = figure.Figure(figsize=(8, 4), dpi=170)
         ax = fig.add_subplot(111)
         ax.plot(self.whole_waveform)
