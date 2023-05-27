@@ -69,8 +69,8 @@ def get_hrv_features(rri, features="all"):
     Parameters
     ----------
     rri : numpy.array
-        A 2D numpy array with shape (#samples,len_series).
-        Series are rr intervals in milliseconds(ms)
+        A 2D numpy array with shape (#samples, len_series).
+        Series are rr intervals in milliseconds(ms).
     features : list
         A list of features to be computed.
 
@@ -181,9 +181,21 @@ def get_hrv_features(rri, features="all"):
 
 
 def get_wf_feats(sig, interval):
-    """Computes features for the signal waveform
+    """Computes features for the signal waveform.
 
     The input signal is segmented into sub-signals based on the given interval parameter.
+
+    Parameters
+    ----------
+    sig : numpy.array
+        A 1D numpy array.
+    interval : int
+        Length of subsegments.
+
+    Returns
+    -------
+    features_arr : numpy.array
+        A 2D numpy array with the shape (#subsegments, #features).
     """
     b = int(len(sig) / interval)
     subseqs = []
@@ -206,5 +218,7 @@ def get_wf_feats(sig, interval):
     f12 = np.median(sqr, axis=1)
     f13 = stats.skew(sqr, axis=1)
     f14 = stats.kurtosis(sqr, axis=1)
-    feats = np.vstack((f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14))
-    return feats.T
+    features_arr = np.vstack(
+        (f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14)
+    )
+    return features_arr.T
