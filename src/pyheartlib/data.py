@@ -9,13 +9,6 @@ from pyheartlib.processing import Processing
 class Data:
     """Parent of other data classes.
 
-    Attributes
-    ----------
-    config : dict
-        Dataset config loaded from config.yaml file.
-    data_path : str
-        Path of the data directory.
-
     Parameters
     ----------
     base_path : str, optional
@@ -31,6 +24,14 @@ class Data:
         Parameter of the low pass filter, by default 45
     order : int, optional
         Parameter of the low pass filter, by default 15
+
+    Attributes
+    ----------
+    config : dict
+        Dataset config loaded from config.yaml file.
+    data_path : str
+        Path of the data directory.
+
     """
 
     def __init__(
@@ -66,13 +67,14 @@ class Data:
         record_id : str
             Record id.
         return_dict : bool
-            If True returns a dictionary, otherwise returns a pandas dataframe.
+            If True the method returns a dictionary, otherwise returns a pandas dataframe.
 
         Returns
         -------
         dict or dataframe
             If return_dict is True, it returns a dictionary
-            with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations'.
+            with keys: *signal*, *r_locations*, *r_labels*, *rhythms*,
+            *rhythms_locations*.
 
             If return_dict is False, it returns a dataframe containing the time, raw signal, and
             a list of equal size to the raw signal with None values except at annotations locations.
@@ -111,7 +113,8 @@ class DataSeq(ABC):
         -------
         list
             A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
+            Each rec is a dictionary with keys: *signal*, *r_locations*,
+            *r_labels*, *rhythms*, *rhythms_locations*, *full_ann*.
         """
 
         all_recs = []
@@ -145,9 +148,12 @@ class DataSeq(ABC):
         Returns
         -------
         list
-            The list contains two elements. First element is a list containing a dict for each record, [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations', 'full_ann'. Second element is
-            a list of lists. Each inner list is like [record_no, start_win, end_win, label]. E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
+            The list contains two elements. First element is a list containing
+            a dict for each record, [rec1,rec2,....].
+            Each rec is a dict with keys: *signal*, *r_locations*, *r_labels*,
+            *rhythms*, *rhythms_locations*, *full_ann*. Second element is a nested list.
+            Each inner list is like [record_no, start_win, end_win, label].
+            E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
         """
 
         annotated_records = self.get_all_annotated_records(rec_list)
