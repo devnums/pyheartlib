@@ -1,14 +1,12 @@
 name: ci-cd-main
 
 on:
-  pull_request_target:
+  push:
     branches: [ "main" ]
-    types:
-      - closed
 
 jobs:
   ci:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true ||	github.event_name == 'push'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
