@@ -30,7 +30,7 @@ print(beatinfo.available_features())
 beatinfo.select_features(["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_feature1", "F_new_feature2"])
 
 # The file will be saved in the base data directory.
-beatdata.save_dataset_intra(beatdata.config["DS1"][17:21], beatinfo)
+beatdata.save_dataset_intra([209, 215], beatinfo)
 
 # Loading the sets
 train_ds = beatdata.load_data(file_name="intra_train.beat")
