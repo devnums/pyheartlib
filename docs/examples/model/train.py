@@ -1,12 +1,22 @@
 # This file can be used to train the example model
+import os
 import tensorflow as tf
 from pyheartlib.io import load_data
 from pyheartlib.extra.utils import reset_seed
 
+
+cdir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(cdir)
+print("Current directory changed to:\n", cdir)
+data_dir = "../../data"
+train_data = os.path.join(data_dir, "train.rpeak")
+val_data = os.path.join(data_dir, "val.rpeak")
+mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
+
 reset_seed()
 
 # load train data
-annotated_records, samples_info = load_data("./data/train.rpeak")
+annotated_records, samples_info = load_data(train_data)
 print("Train data loaded, number of sampels:", str(len(samples_info)))
 
 labels = []
@@ -50,7 +60,7 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
     min_lr=0.0001,
 )
 model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
-    "model/checkpoint/keras.exp",
+    mdl_checkpoint,
     monitor="val_loss",
     save_best_only=True,
     verbose=1,
@@ -79,7 +89,7 @@ print("train_generator.shape: ", str(train_generator.__getitem__(0)[0].shape))
 print(train_generator.__getitem__(0)[0].shape, train_generator.__getitem__(0)[1].shape)
 
 # load validation data
-annotated_records_val, samples_info_val = load_data("./data/val.rpeak")
+annotated_records_val, samples_info_val = load_data(val_data)
 
 validation_generator = ECGSequence(
     annotated_records_val,
