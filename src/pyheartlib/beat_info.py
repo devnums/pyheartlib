@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import stats
 from scipy.fft import rfft, rfftfreq
+import matplotlib.pyplot as plt
 from pyheartlib.extra.pqrst import PQRST
 import types
 
@@ -190,8 +191,6 @@ class BeatInfo:
                     self.data["rec_id"], self.data["start_idx"]
                 )
             )
-            import matplotlib.pyplot as plt
-
             plt.plot(self.whole_waveform)
             plt.plot(bwaveform)
             plt.scatter(beat_onset, self.whole_waveform[beat_onset], color="yellow")
