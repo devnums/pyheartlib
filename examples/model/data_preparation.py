@@ -1,10 +1,14 @@
 # This file can be used to prepare data for the example model
+import os
 from pyheartlib.io import load_data
 from pyheartlib.data_rpeak import RpeakData, ECGSequence
 
-
+cdir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(cdir)
+print("Current directory changed to:\n", cdir)
+data_dir = "../../data"
 # create train, validation, and test sets
-rpeak_data = RpeakData(base_path="./data", remove_bl=False, lowpass=False)
+rpeak_data = RpeakData(base_path=data_dir, remove_bl=False, lowpass=False)
 
 train_set = rpeak_data.config["DS1"][:18]
 val_set = rpeak_data.config["DS1"][18:]
@@ -21,7 +25,8 @@ annotated_records, samples_info = rpeak_data.save_samples(
 )
 
 # for verfication
-annotated_records, samples_info = load_data("./data/train.rpeak")
+train_data = os.path.join(data_dir, "train.rpeak")
+annotated_records, samples_info = load_data(train_data)
 print("number of generated sampels:", str(len(samples_info)))
 
 training_generator = ECGSequence(

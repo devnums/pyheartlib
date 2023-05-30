@@ -1,14 +1,25 @@
 # This file can be used to do inference using the trained example model
+import os
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 from pyheartlib.io import load_data
 
+
+
+cdir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(cdir)
+print("Current directory changed to:\n", cdir)
+
+data_dir = "../../data"
+test_data = os.path.join(data_dir, "test.rpeak")
+mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
+
 # load trained model
-loaded_model = tf.keras.models.load_model("model/checkpoint/keras.exp")
+loaded_model = tf.keras.models.load_model(mdl_checkpoint)
 
 # load test data
-annotated_records_test, samples_info_test = load_data("./data/test.rpeak")
+annotated_records_test, samples_info_test = load_data(test_data)
 print(len(samples_info_test))
 from pyheartlib.data_rpeak import ECGSequence
 
@@ -40,7 +51,7 @@ true = labels_true.flatten()
 pre = labels_pred.flatten()
 print(classification_report(true, pre))
 print(confusion_matrix(true, pre))
-with open("model/result.txt", "w") as f:
+with open("./result.txt", "w") as f:
     print(classification_report(true, pre), file=f)
     print("Confusion Matrix", file=f)
     print(confusion_matrix(true, pre), file=f)
@@ -99,5 +110,5 @@ for i in tqdm(
         # save fig
         plt.title("Example: Heartbeat Detection")
         plt.rcParams.update({"font.size": 12})
-        fig_path = "model/plots/mis_" + str(i) + ".png"
+        fig_path = "./plots/mis_" + str(i) + ".png"
         plt.savefig(fig_path, dpi=300)
