@@ -44,11 +44,11 @@ print("\n***************\ndoc is running\n***************\n")
 import shutil
 
 files = [
-    ["../model/data_preparation.py", "examples/model/"],
-    ["../model/train.py", "examples/model/"],
-    ["../model/inference.py", "examples/model/"],
-    ["../model/result.txt", "examples/model/"],
-    ["../model/plots/mis.png", "examples/model/plots/mis.png"],
+    ["../examples/model/data_preparation.py", "examples/model/"],
+    ["../examples/model/train.py", "examples/model/"],
+    ["../examples/model/inference.py", "examples/model/"],
+    ["../examples/model/result.txt", "examples/model/"],
+    ["../examples/model/plots/mis.png", "examples/model/plots/mis.png"],
 ]
 for f in files:
     shutil.copy(f[0], f[1])

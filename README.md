@@ -25,6 +25,8 @@ $ pip install pyheartlib
 * tqdm = ">=4.63.0"
 * scikit-learn = ">=1.1.0"
 * tensorflow = ">=2.8.0"
+* pyyaml = ">=6.0"
+* matplotlib = ">=3.5.2"
 
 # Documentation
 
@@ -34,11 +36,11 @@ Check out the [documentation](https://pyheartlib.readthedocs.io) for more inform
 
 Following examples demostrate dataset creation:
 
-* [Inter-patient dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_inter.py) <br>
-* [Intra-patient dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_intra.py) <br>
-* [Rpeak dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_rpeak.py) <br>
-* [Arrhythmia dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/make_dataset_arrhythmia.py) <br>
+* [Inter-patient dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/dataset/make_dataset_inter.py) <br>
+* [Intra-patient dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/dataset/make_dataset_intra.py) <br>
+* [Rpeak dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/dataset/make_dataset_rpeak.py) <br>
+* [Arrhythmia dataset](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/dataset/make_dataset_arrhythmia.py) <br>
 
 As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets. 
 
-* [Beat detection model](https://github.com/sadeghmdi/pyheartlib/blob/main/model/README.md)
+* [Beat detection model](https://github.com/sadeghmdi/pyheartlib/blob/main/examples/model/README.md)
