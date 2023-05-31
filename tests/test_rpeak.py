@@ -127,8 +127,8 @@ def seq_generator2():
 
 def test_getitem2(seq_generator2):
     batch = 0
-    seq = seq_generator2.__getitem__(batch)[0]  # excerpt values
-    label = seq_generator2.__getitem__(batch)[1]  # excerpt label
+    seq = seq_generator2[batch][0]  # excerpt values
+    label = seq_generator2[batch][1]  # excerpt label
     assert seq.shape == (7, 400)
     assert label.shape == (7, 6)
     assert label[0][0] == 0

@@ -129,8 +129,8 @@ def seq_generator2():
 
 def test_getitem2(seq_generator2):
     batch = 0
-    batch_label = seq_generator2.__getitem__(batch)[1]  # excerpt label
-    batch_seq = seq_generator2.__getitem__(batch)[0][0]  # excerpt values
+    batch_label = seq_generator2[batch][1]  # excerpt label
+    batch_seq = seq_generator2[batch][0][0]  # excerpt values
     batch_rri = seq_generator2.__getitem__(batch)[0][1]  # rr intervals
     batch_rri_feat = seq_generator2.__getitem__(batch)[0][2]  # calculated rri features
     assert batch_label.shape == (23,)
