@@ -29,12 +29,12 @@ train_data = os.path.join(data_dir, "train.rpeak")
 annotated_records, samples_info = load_data(train_data)
 print("number of generated sampels:", str(len(samples_info)))
 
-training_generator = ECGSequence(
+trainseq = ECGSequence(
     annotated_records, samples_info, binary=True, batch_size=1, raw=True, interval=36
 )
 
 i = 0
-label = training_generator.__getitem__(i)[1]  # excerpt label
-seq = training_generator.__getitem__(i)[0]  # excerpt values
+label = trainseq[i][1]  # excerpt label
+seq = trainseq[i][0]  # excerpt values
 
 print("len label:", len(label[0]), "len seq:", len(seq[0]))

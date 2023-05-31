@@ -1,6 +1,6 @@
 # Quickstart
 
-To use this software, the first step is to place the raw data in a base data directory. Since the package supports MIT-BIH format, the MIT-BIH Arrhythmia Database can be used. It can be downloaded by runnig the following commands:
+To use this software, the first step is to place the raw data in a base data directory. Since the package supports WFDB format, the MIT-BIH Arrhythmia Database can be used. This dataset can be downloaded by runnig the following commands:
 
 ```
 $ mkdir data

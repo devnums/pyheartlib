@@ -76,7 +76,7 @@ callbacks = [early_stopping, model_checkpoint, reduce_lr]
 
 from pyheartlib.data_rpeak import ECGSequence
 
-train_generator = ECGSequence(
+trainseq = ECGSequence(
     annotated_records,
     samples_info,
     binary=True,
@@ -85,13 +85,13 @@ train_generator = ECGSequence(
     interval=36,
 )
 
-print("train_generator.shape: ", str(train_generator.__getitem__(0)[0].shape))
-print(train_generator.__getitem__(0)[0].shape, train_generator.__getitem__(0)[1].shape)
+print("trainseq.shape: ", str(trainseq[0][0].shape))
+print(trainseq[0][0].shape, trainseq[0][1].shape)
 
 # load validation data
 annotated_records_val, samples_info_val = load_data(val_data)
 
-validation_generator = ECGSequence(
+validationseq = ECGSequence(
     annotated_records_val,
     samples_info_val,
     binary=True,
@@ -102,8 +102,8 @@ validation_generator = ECGSequence(
 
 # train model
 model_history = mymodel.fit(
-    x=train_generator,
-    validation_data=validation_generator,
+    x=trainseq,
+    validation_data=validationseq,
     use_multiprocessing=True,
     # workers=2,
     epochs=params_train["epochs"],

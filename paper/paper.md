@@ -1,5 +1,5 @@
 ---
-title: 'pyheartlib: A Python package for processing and modeling electrocardiogram signals'
+title: 'pyheartlib: A Python package for processing electrocardiogram signals'
 tags:
   - Python
   - electrocardiogram
@@ -9,7 +9,7 @@ tags:
 authors:
   - name: Sadegh Mohammadi
     orcid: 0000-0001-9763-4963
-date: 4 May 2023
+date: 7 June 2023
 bibliography: paper.bib
 ---
 
@@ -17,10 +17,9 @@ bibliography: paper.bib
 
 Electrocardiogram (ECG) signals represent the electrical activity of the heart as a graph of voltage versus time. These signals have significant importance in healthcare and contain valuable information. Therefore they can be analyzed for diagnosis and early detection of various cardiac conditions. 
 
-
 # Statement of need
 
-This paper introduces `pyheartlib`, a Python package for processing and modeling electrocardiogram signals. This package facilitates processing signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package supports both raw signals and computed features for model building. Therefore traditional machine learning models and more advanced deep learning models can be used. The first release of this software supports Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries and MIT-BIH Arrhythmia Database format [@moody2001impact;@goldberger2000physiobank]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
+`pyheartlib` is a Python package for processing electrocardiogram signals. This software facilitates working with signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package provides datasets containing processed raw signals and computed features which can be further utilized to train various machine learning models. Advanced deep learning models can be trained by taking advantage of Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries. The first release of this software supports WFDB format [@moody2001impact;@goldberger2000physiobank;@wfdb-python;@wfdb-software-package]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
 
 # Example
 
