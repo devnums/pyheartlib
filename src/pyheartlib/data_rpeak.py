@@ -208,10 +208,10 @@ class ECGSequence(Sequence):
         Tuple
             Contains batch_x, batch_y as numpy arrays.
 
-            batch_x has the shape of (#batch,#segments,#features) if raw is False,
-            otherwise it has the shape of (#batch,len_seq).
+            batch_x has the shape of (batch_size,#sub-segments,#features) if raw is False,
+            otherwise it has the shape of (batch_size,len_seq).
 
-            batch_y has the shape of (#batch,len_label_list)
+            batch_y has the shape of (batch_size,len_label_list)
         """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size

@@ -187,10 +187,10 @@ class ECGSequence(Sequence):
             Contains batch_x, batch_y, where batch_x is a list of numpy arrays
             of batch_seq, batch_rri, batch_rri_feat.
 
-            If raw is False, batch_seq has the shape of (#batch,#segments,#features),
-            otherwise, it has the shape of (#batch,seq_len).
+            If raw is False, batch_seq has the shape of (batch_size,#sub-segments,#features),
+            otherwise, it has the shape of (batch_size,seq_len).
 
-            batch_y has the shape of (#batch,1).
+            batch_y has the shape of (batch_size,1).
         """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
