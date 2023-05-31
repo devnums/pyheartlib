@@ -6,7 +6,6 @@ from tqdm import tqdm
 from pyheartlib.io import load_data
 
 
-
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
 print("Current directory changed to:\n", cdir)
@@ -24,7 +23,7 @@ print(len(samples_info_test))
 from pyheartlib.data_rpeak import ECGSequence
 
 batch_size = 128
-test_generator = ECGSequence(
+testseq = ECGSequence(
     annotated_records_test,
     samples_info_test,
     binary=True,
@@ -36,7 +35,7 @@ test_generator = ECGSequence(
 labels_true = []
 labels_pred = []
 for i in tqdm(range(round(len(samples_info_test) / batch_size))):
-    samples = test_generator.__getitem__(i)
+    samples = testseq[i]
     labels_true.extend(samples[1])
     probs = loaded_model.predict(samples[0], verbose=0)  # predict
     labels_pred.extend(list(np.argmax(probs, axis=-1)))
@@ -63,10 +62,8 @@ import matplotlib.pyplot as plt
 batch_size = 1
 labels_true = []
 labels_pred = []
-for i in tqdm(
-    range(4680, 4700)
-):  # range(round(len(samples_info_test)/batch_size)):
-    test_generator = ECGSequence(
+for i in tqdm(range(4680, 4700)):  # range(round(len(samples_info_test)/batch_size)):
+    testseq = ECGSequence(
         annotated_records_test,
         [samples_info_test[i]],
         binary=True,
@@ -75,7 +72,7 @@ for i in tqdm(
         interval=36,
         shuffle=False,
     )
-    samples = test_generator.__getitem__(0)
+    samples = testseq[0]
     labels_true = samples[1]
     probs = loaded_model.predict(samples[0], verbose=0)
     labels_pred = np.argmax(probs, axis=-1)

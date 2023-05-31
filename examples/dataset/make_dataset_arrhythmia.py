@@ -25,14 +25,14 @@ print(df)
 class_labels = list(np.unique(labels))
 
 # if raw=True
-training_generator = ECGSequence(
+trainseq = ECGSequence(
     annotated_records, samples_info, class_labels=None, batch_size=3, raw=True
 )
-bt = 0
-batch_label = training_generator.__getitem__(bt)[1]  # excerpt label
-batch_seq = training_generator.__getitem__(bt)[0][0]  # excerpt values
-batch_rri = training_generator.__getitem__(bt)[0][1]  # rr intervals
-batch_rri_feat = training_generator.__getitem__(bt)[0][2]  # calculated rri features
+bt = 0  # batch number
+batch_label = trainseq[bt][1]  # excerpt label
+batch_seq = trainseq[bt][0][0]  # excerpt values
+batch_rri = trainseq[bt][0][1]  # rr intervals
+batch_rri_feat = trainseq[bt][0][2]  # calculated rri features
 print("batch_label shape:", batch_label.shape)
 print(
     "batch_seq shape:",
@@ -44,14 +44,14 @@ print(
 )
 
 # if raw=False
-training_generator = ECGSequence(
+trainseq = ECGSequence(
     annotated_records, samples_info, class_labels=None, batch_size=3, raw=False
 )
-i = 0
-batch_label = training_generator.__getitem__(bt)[1]  # excerpt label
-batch_seq = training_generator.__getitem__(bt)[0][0]  # excerpt values
-batch_rri = training_generator.__getitem__(bt)[0][1]  # rr intervals
-batch_rri_feat = training_generator.__getitem__(bt)[0][2]  # calculated rri features
+bt = 0  # batch number
+batch_label = trainseq[bt][1]  # excerpt label
+batch_seq = trainseq[bt][0][0]  # excerpt values
+batch_rri = trainseq[bt][0][1]  # rr intervals
+batch_rri_feat = trainseq[bt][0][2]  # calculated rri features
 print("batch_label shape:", batch_label.shape)
 print(
     "batch_seq shape:",
