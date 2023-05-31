@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.10 (2023-05-31)
+### Documentation
+
+* Update description ([`c3c4573`](https://github.com/sadeghmdi/pyheartlib/commit/c3c4573be6c674eb9f4ea809490bb00dbf7164bb))
+* Update ([`08b14e6`](https://github.com/sadeghmdi/pyheartlib/commit/08b14e6f55ebc4bb9d6f23335e6b31d5e89af057))
+
 ## v0.0.9 (2023-05-30)
 ### Documentation
 
