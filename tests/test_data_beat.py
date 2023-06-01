@@ -153,3 +153,88 @@ def test_report_stats_table(beatdata):
     assert isinstance(res, pandas.DataFrame)
     assert res["N"]["Train"] == 3
     assert res["A"]["Test"] == 2
+
+
+def test_per_record_stats(beatdata):
+    df = beatdata.per_record_stats(rec_ids_list=["dummy101", "dummy101"])
+    assert df["N"][0] == 15
+    assert df["V"][0] == 1
+    assert df["A"][0] == 1
+
+
+def test_slice_data(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101", "dummy102"], beatinfo)
+    lbs = ["N", "V"]
+    res = beatdata.slice_data(ds, lbs)
+    assert ds.keys() == res.keys()
+    for key in ds.keys():
+        assert isinstance(ds[key], type(res[key]))
+    res_ls, res_cnt = numpy.unique(res["labels"], return_counts=True)
+    ds_ls, ds_cnt = numpy.unique(ds["labels"], return_counts=True)
+    res_dict = dict(zip(list(res_ls), list(res_cnt)))
+    ds_dict = dict(zip(list(ds_ls), list(ds_cnt)))
+    assert list(res_ls) == lbs
+    for lb in lbs:
+        assert res_dict[lb] == ds_dict[lb]
+
+
+def test_search_label(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101"], beatinfo)
+    indexes = beatdata.search_label(ds, "A")
+    assert indexes == [2]
+    indexes = beatdata.search_label(ds, "N")
+    assert indexes == [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+
+def test_clean_inf_nan(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101"], beatinfo)
+    ds["beat_feats"].iloc[2, 0] = numpy.inf
+    ds["beat_feats"].iloc[3, 1] = numpy.nan
+    clean_ds = beatdata.clean_inf_nan(ds)
+    assert ds.keys() == clean_ds.keys()
+    assert clean_ds["labels"].shape == tuple(numpy.subtract(ds["labels"].shape, (2,)))
+    assert clean_ds["waveforms"].shape == tuple(
+        numpy.subtract(ds["waveforms"].shape, (2, 0))
+    )
+    assert clean_ds["beat_feats"].shape == tuple(
+        numpy.subtract(ds["beat_feats"].shape, (2, 0))
+    )
+
+
+def test_clean_IQR(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101"], beatinfo)
+    clean_ds = beatdata.clean_IQR(ds)
+    assert ds.keys() == clean_ds.keys()
+    assert clean_ds["waveforms"].shape[0] == clean_ds["labels"].shape[0]
+    assert clean_ds["beat_feats"].shape[0] == clean_ds["labels"].shape[0]
+
+
+def test_clean_IQR_class(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101"], beatinfo)
+    clean_ds = beatdata.clean_IQR_class(ds)
+    assert ds.keys() == clean_ds.keys()
+    assert clean_ds["waveforms"].shape[0] == clean_ds["labels"].shape[0]
+    assert clean_ds["beat_feats"].shape[0] == clean_ds["labels"].shape[0]
+
+
+def test_append_ds(beatdata):
+    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    ds = beatdata.make_dataset(["dummy101"], beatinfo)
+    res = beatdata.append_ds(ds, ds)
+    assert ds.keys() == res.keys()
+    assert res["labels"].shape == tuple(numpy.multiply(ds["labels"].shape, (2,)))
+    assert res["waveforms"].shape == tuple(
+        numpy.multiply(ds["waveforms"].shape, (2, 1))
+    )
+    assert res["beat_feats"].shape == tuple(
+        numpy.multiply(ds["beat_feats"].shape, (2, 1))
+    )
+    wshape = ds["waveforms"].shape
+    assert res["waveforms"][wshape[0], 3] == ds["waveforms"][0, 3]
+    fshape = ds["beat_feats"].shape
+    assert res["waveforms"][fshape[0] + 2, 5] == ds["waveforms"][2, 5]
