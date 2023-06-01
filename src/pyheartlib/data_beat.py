@@ -391,8 +391,8 @@ class BeatData(Data):
 
         Returns
         -------
-        pandas.dataframe
-            Dataset as a dataframe. Keys are "waveforms", "beat_feats", and "labels".
+        dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
         """
 
         if file_name is None:
@@ -484,20 +484,34 @@ class BeatData(Data):
         df = df[list(set(cols) & set(df.columns))]
         return df
 
-    def slice_data(self, ds, labels_list):
-        """Only holds the data that their annotation is in the labels_list"""
+    def slice_data(self, ds, labels):
+        """Returns the data according to the provided annotation list.
 
-        sliced_x = ds["waveforms"]
-        sliced_r = ds["beat_feats"]
+        Parameters
+        ----------
+        ds : dics
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+        labels : list
+            List of labels to be kept in the output.
+
+        Returns
+        -------
+        dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+
+        """
+
         sliced_y = ds["labels"]
+        sliced_x = ds["waveforms"]
+        sliced_f = ds["beat_feats"]
         indexes_keep = []
-        for sym in labels_list:
+        for sym in labels:
             inds = [i for i, item in enumerate(sliced_y) if item == sym]
             indexes_keep.extend(inds)
-        sliced_x = sliced_x[indexes_keep]
-        sliced_r = sliced_r[indexes_keep]
         sliced_y = sliced_y[indexes_keep]
-        return {"waveforms": sliced_x, "beat_feats": sliced_r, "labels": sliced_y}
+        sliced_x = sliced_x[indexes_keep]
+        sliced_f = sliced_f.iloc[indexes_keep]
+        return {"waveforms": sliced_x, "beat_feats": sliced_f, "labels": sliced_y}
 
     def search_label(self, inp, sym="N"):
         """Searches the provided data and returns the indexes for a patricular label.
@@ -505,7 +519,7 @@ class BeatData(Data):
         Parameters
         ----------
         inp : dict or numpy.ndarray
-            Input can be a dictionary having a 'labels' key, or a 1D numpy array.
+            Input can be a dictionary having a 'labels' key, or a 1D numpy array containing labels.
         sym : str, optional
             The label to be searched for in the dataset, by default 'N'
 
@@ -529,8 +543,125 @@ class BeatData(Data):
         indexes = [i for i, item in enumerate(yds) if item == sym]
         return indexes
 
-    def aug_decrease(self, ds, label="N", desired_size=21000):
-        """Simple data augmentation to decrease a particular type in the dataset."""
+    def clean_inf_nan(self, ds):
+        """Cleans the dataset by removing samples (rows) with inf or nan in computed features.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+
+        Returns
+        -------
+        dict
+            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels".
+
+        """
+
+        yds = ds["labels"]
+        xds = ds["waveforms"]
+        fds = ds["beat_feats"]
+        indexes = []
+        # cleans feature array
+        indexes.extend(np.where(np.isinf(fds))[0])
+        indexes.extend(np.where(np.isnan(fds))[0])
+        fds = fds.drop(indexes, axis=0, inplace=False)
+        xds = np.delete(xds, indexes, axis=0)
+        yds = np.delete(yds, indexes, axis=0)
+        return {"waveforms": xds, "beat_feats": fds, "labels": yds}
+
+    def clean_IQR(self, ds, factor=1.5, return_indexes=False):
+        """Cleans the dataset by removing outliers using IQR method.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+        factor : float, optional
+            Parameter of IQR method, by default 1.5
+        return_indexes : bool, optional
+            If True returns indexes of outliers, otherwise returns cleaned dataset, by default False
+
+        Returns
+        -------
+        dict or list
+            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels", or indexes of outliers.
+
+        """
+
+        yds = ds["labels"]
+        xds = ds["waveforms"]
+        fds = ds["beat_feats"]
+        fds.reset_index(drop=True, inplace=True)
+        # cleans a 2d array. Each column is a features, rows are samples. Only fds.
+        ind_outliers = []
+        for i in range(fds.shape[1]):
+            x = fds.iloc[:, i]
+            Q1 = np.quantile(x, 0.25, axis=0)
+            Q3 = np.quantile(x, 0.75, axis=0)
+            IQR = Q3 - Q1
+            inds = np.where((x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR)))[0]
+            ind_outliers.extend(inds)
+        ind_outliers = list(np.unique(ind_outliers))
+        fds = fds.drop(ind_outliers, axis=0, inplace=False)
+        xds = np.delete(xds, ind_outliers, axis=0)
+        yds = np.delete(yds, ind_outliers, axis=0)
+        if return_indexes is False:
+            return {"waveforms": xds, "beat_feats": fds, "labels": yds}
+        else:
+            return ind_outliers
+
+    def clean_IQR_class(self, ds, factor=1.5):
+        """Cleans dataset by IQR method for every class separately.
+
+        Parameters
+        ----------
+        ds : dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+        factor : float, optional
+            Parameter of IQR method, by default 1.5
+
+        Returns
+        -------
+        dict
+            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels".
+
+        """
+
+        for label in list(np.unique(ds["labels"])):
+            sliced = self.slice_data(ds, [label])
+            cleaned = self.clean_IQR(sliced, factor=factor)
+            try:
+                ds_all = self.append_ds(ds_all, cleaned)
+            except NameError:
+                ds_all = cleaned
+        return ds_all
+
+    def append_ds(self, ds1, ds2):
+        """Appends two datasets together.
+
+        Parameters
+        ----------
+        ds1, ds2 : dict
+            Datasets with keys: "waveforms", "beat_feats", and "labels".
+
+        Returns
+        -------
+        dict
+            Dataset with keys: "waveforms", "beat_feats", and "labels".
+
+        """
+
+        dss = dict()
+        dss["waveforms"] = np.vstack((ds1["waveforms"], ds2["waveforms"]))
+        dss["beat_feats"] = pd.concat([ds1["beat_feats"], ds2["beat_feats"]])
+        dss["labels"] = np.vstack(
+            (ds1["labels"].reshape(-1, 1), ds2["labels"].reshape(-1, 1))
+        ).flatten()
+        return dss
+
+    def __aug_decrease(self, ds, label="N", desired_size=21000):
+        # """Simple data augmentation to decrease a particular type in the dataset."""
         import random
         import copy
 
@@ -552,8 +683,8 @@ class BeatData(Data):
             "labels": y_train_aug,
         }
 
-    def aug_increase(self, ds, desired_size=21000):
-        """Simple data augmentation to increase the number of minorities in the dataset."""
+    def __aug_increase(self, ds, desired_size=21000):
+        # """Simple data augmentation to increase the number of minorities in the dataset."""
         import copy
 
         x_aug = ds["waveforms"]
@@ -583,114 +714,3 @@ class BeatData(Data):
             except:
                 print("label zero")
         return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
-
-    def clean_inf_nan(self, ds):
-        """Cleans the dataset by removing samples with inf and nan in computed features.
-
-        Parameters
-        ----------
-        ds : dict
-            Dataset as a dictionary.
-
-        Returns
-        -------
-        dict
-            Cleaned dataset.
-        """
-
-        yds = ds["labels"]
-        xds = ds["waveforms"]
-        fds = ds["beat_feats"]
-        indexes = []
-        # cleans feature array
-        indexes.extend(np.where(np.isinf(fds))[0])
-        indexes.extend(np.where(np.isnan(fds))[0])
-        fds.drop(indexes, axis=0, inplace=True)
-        xds = np.delete(xds, indexes, axis=0)
-        yds = np.delete(yds, indexes, axis=0)
-        return {"waveforms": xds, "beat_feats": fds, "labels": yds}
-
-    def clean_IQR(self, ds, factor=1.5, return_indexes=False):
-        """Cleans the dataset by removing outliers using IQR method.
-
-        Parameters
-        ----------
-        ds : dict
-            Dataset.
-        factor : float, optional
-            Parameter of IQR method, by default 1.5
-        return_indexes : bool, optional
-            If True returns indexes of outliers, otherwise returns cleaned dataset, by default False
-
-        Returns
-        -------
-        dict
-            Cleaned dataset.
-        """
-        yds = ds["labels"]
-        xds = ds["waveforms"]
-        fds = ds["beat_feats"]
-        # cleans a 2d array. Each column is a features, rows are samples. Only fds.
-        ind_outliers = []
-        for i in range(fds.shape[1]):
-            x = fds[:, i]
-            Q1 = np.quantile(x, 0.25, axis=0)
-            Q3 = np.quantile(x, 0.75, axis=0)
-            IQR = Q3 - Q1
-            inds = np.where((x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR)))[0]
-            ind_outliers.extend(inds)
-        fds.drop(ind_outliers, axis=0, inplace=True)
-        xds = np.delete(xds, ind_outliers, axis=0)
-        yds = np.delete(yds, ind_outliers, axis=0)
-        if return_indexes is False:
-            return {"waveforms": xds, "beat_feats": fds, "labels": yds}
-        else:
-            return ind_outliers
-
-    def append_ds(self, ds1, ds2):
-        """Appends two datasets together.
-
-        Parameters
-        ----------
-        ds1 : dict
-            Dataset one.
-        ds2 : dict
-            Dataset two.
-
-        Returns
-        -------
-        dict
-            Final dataset.
-        """
-        dss = dict()
-        dss["waveforms"] = np.vstack((ds1["waveforms"], ds2["waveforms"]))
-        # dss["beat_feats"] = np.vstack((ds1["beat_feats"], ds2["beat_feats"]))
-        dss["beat_feats"] = pd.concat([ds1["beat_feats"], ds2["beat_feats"]])
-        dss["labels"] = np.vstack(
-            (ds1["labels"].reshape(-1, 1), ds2["labels"].reshape(-1, 1))
-        ).flatten()
-        return dss
-
-    def clean_IQR_class(self, ds, factor=1.5):
-        """Cleans dataset by IQR method for every class separately.
-
-        Parameters
-        ----------
-        ds : dict
-            Dataset.
-        factor : float, optional
-            Parameter of IQR method, by default 1.5
-
-        Returns
-        -------
-        dict
-            Cleaned dataset.
-        """
-        for label in list(np.unique(ds["labels"])):
-            sliced = self.slice_data(ds, [label])
-            cleaned = self.clean_IQR(sliced, factor=factor)
-            try:
-                ds_all = append_ds(ds_all, cleaned)
-            except NameError:
-                ds_all = cleaned
-        return ds_all

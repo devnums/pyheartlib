@@ -84,7 +84,7 @@ class BeatInfo:
             self.pqrst_dict = self.pqrst()
         if self.label == "V":
             pass
-            # self.plot_wf() #plot for debug
+            # self.__plot_wf() #plot for debug
 
     def available_features(self):
         """Returns availble features that can be computed.
@@ -488,7 +488,7 @@ class BeatInfo:
     # ============================================================
     # helper functions
     # ============================================================
-    def plot_wf(self):
+    def __plot_wf(self):
         from matplotlib import figure
 
         fig = figure.Figure(figsize=(8, 4), dpi=170)
