@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.11 (2023-06-01)
+### Fix
+
+* Fix methods ([`b29b63c`](https://github.com/sadeghmdi/pyheartlib/commit/b29b63c638bdd8a8160e9a51475aab731f8a15c8))
+
+### Documentation
+
+* New config options ([`5f873b6`](https://github.com/sadeghmdi/pyheartlib/commit/5f873b61fab2594b452c76750514b82cc50e06e4))
+
 ## v0.0.10 (2023-05-31)
 ### Documentation
 
