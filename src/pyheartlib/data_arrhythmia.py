@@ -21,8 +21,6 @@ class ArrhythmiaData(Data, DataSeq):
         If True, baseline will be removed from the raw signals before extracting beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
-    sampling_rate : int, optional
-        Sampling rate of the signals, by default 360
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -34,7 +32,6 @@ class ArrhythmiaData(Data, DataSeq):
         base_path=None,
         remove_bl=False,
         lowpass=False,
-        sampling_rate=360,
         cutoff=45,
         order=15,
         progress_bar=True,
@@ -43,7 +40,6 @@ class ArrhythmiaData(Data, DataSeq):
             base_path,
             remove_bl,
             lowpass,
-            sampling_rate,
             cutoff,
             order,
         )
@@ -235,14 +231,14 @@ class ECGSequence(Sequence):
 
     def get_rri(self, rec_id, start, end):
         """Computes RR intervals"""
-        fs = 360
+        sampling_rate = ArrhythmiaData.sampling_rate
         r_locations = np.asarray(self.data[rec_id]["r_locations"])  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
         rpeak_locs = list(
             r_locations[inds]
         )  # rpeak locs within start to end of excerpt
         rri = [
-            (rpeak_locs[i + 1] - rpeak_locs[i]) / float(fs)
+            (rpeak_locs[i + 1] - rpeak_locs[i]) / float(sampling_rate)
             for i in range(0, len(rpeak_locs) - 1)  # calculate rr intervals
         ]
         # worst case senario for a 30sec with bpm of 300---rri len=150

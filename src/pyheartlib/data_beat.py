@@ -25,8 +25,6 @@ class BeatData(Data):
         If True removes the baseline from the raw signals before extracting beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
-    sampling_rate : int, optional
-        Sampling rate of the signals, by default 360
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -38,7 +36,7 @@ class BeatData(Data):
     --------
     >>> beatdata = BeatData(base_path="./data", win=[200, 200], remove_bl=False, lowpass=False, progress_bar=True)
     >>> # create a BeatInfo object
-    >>> beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    >>> beatinfo = BeatInfo()
     >>> # save the dataset file
     >>> beatdata.save_dataset_inter(DS1[17:18], beatinfo, file="train.beat")
     >>> # load the dataset from file
@@ -59,7 +57,6 @@ class BeatData(Data):
         num_post_rr=10,
         remove_bl=False,
         lowpass=False,
-        sampling_rate=360,
         cutoff=45,
         order=15,
         progress_bar=True,
@@ -68,7 +65,6 @@ class BeatData(Data):
             base_path,
             remove_bl,
             lowpass,
-            sampling_rate,
             cutoff,
             order,
         )
@@ -228,6 +224,8 @@ class BeatData(Data):
         """
         features = []
         labels = []
+        beatinfo_obj.fs = self.sampling_rate
+        beatinfo_obj.beat_loc = self.beat_loc
         # beats loop
         for i in tqdm(range(len(data["rpeak_locs"])), disable=self.progress_bar):
             beatinfo_obj(

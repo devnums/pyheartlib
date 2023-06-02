@@ -46,7 +46,7 @@ class BeatInfo:
         equal to features values.
     """
 
-    def __init__(self, beat_loc, fs=360, in_ms=True):
+    def __init__(self, beat_loc=10, fs=360, in_ms=True):
         self.fs = fs
         self.beat_loc = beat_loc
         self.in_ms = in_ms
@@ -385,7 +385,7 @@ class BeatInfo:
         # QRS region estimate 160ms.
         # Compute: QRS width,Q,R,S amplitudes.
 
-        beat_pqrst = PQRST()
+        beat_pqrst = PQRST(fs=self.fs)
         beat_pqrst(self.bwaveform)
         p = beat_pqrst.pwave
         q = beat_pqrst.qwave

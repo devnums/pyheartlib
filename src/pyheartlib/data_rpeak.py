@@ -22,8 +22,6 @@ class RpeakData(Data, DataSeq):
         beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
-    sampling_rate : int, optional
-        Sampling rate of the signals, by default 360
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -37,7 +35,6 @@ class RpeakData(Data, DataSeq):
         base_path=None,
         remove_bl=False,
         lowpass=False,
-        sampling_rate=360,
         cutoff=45,
         order=15,
         progress_bar=True,
@@ -46,7 +43,6 @@ class RpeakData(Data, DataSeq):
             base_path,
             remove_bl,
             lowpass,
-            sampling_rate,
             cutoff,
             order,
         )

@@ -18,8 +18,6 @@ class Data:
         beat excerpts, by default False
     lowpass : bool, optional
         Whether to apply low pass filtering to the raw signals, by default False
-    sampling_rate : int, optional
-        Sampling rate of the signals, by default 360
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -31,21 +29,25 @@ class Data:
         Dataset config loaded from config.yaml file.
     data_path : str
         Path of the data directory.
+    sampling_rate : int
+        Sampling rate of the signals, by default 360
 
     """
+
+    config = dict()
+    data_path = ""
+    sampling_rate = 360
 
     def __init__(
         self,
         base_path=None,
         remove_bl=False,
         lowpass=False,
-        sampling_rate=360,
         cutoff=45,
         order=15,
     ):
         self.remove_bl = remove_bl
         self.lowpass = lowpass
-        self.sampling_rate = sampling_rate
         self.cutoff = cutoff
         self.order = order
 
@@ -56,8 +58,9 @@ class Data:
             self.base_path = base_path
             conf_path = os.path.join(self.base_path, "config.yaml")
         with open(conf_path) as f:
-            self.config = yaml.load(f, Loader=yaml.FullLoader)
-        self.data_path = os.path.join(self.base_path, self.config["DATA_DIR"])
+            __class__.config = yaml.load(f, Loader=yaml.FullLoader)
+        __class__.data_path = os.path.join(self.base_path, self.config["DATA_DIR"])
+        __class__.sampling_rate = int(self.config["SAMPLING_RATE"])
 
     def get_ecg_record(self, record_id=106):
         """Loads a record and returns its components.
