@@ -43,7 +43,7 @@ def test_make_frags(beatdata):
 
 
 def test_make_dataset(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101", "dummy102"], beatinfo)
     assert isinstance(ds, dict)
     expected_dict = {
@@ -68,7 +68,7 @@ def test_beat_info_feat(beatdata):
     )
     rec_ids_list = [100] * len(s_idxs)
 
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     beat_feats, labels = beatdata.beat_info_feat(
         {
             "waveforms": signal_frags.tolist(),
@@ -90,7 +90,7 @@ def test_save_dataset_inter(beatdata):
     tmpfile = os.path.join(test_data_dir, file_name)
     if os.path.exists(tmpfile):
         os.remove(tmpfile)
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     beatdata.save_dataset_inter(["dummy101", "dummy102"], beatinfo, file_name)
     assert os.path.exists(tmpfile)
 
@@ -104,7 +104,7 @@ def test_save_dataset_intra(beatdata):
     tmpfiletest = os.path.join(test_data_dir, file_test)
     if os.path.exists(tmpfiletest):
         os.remove(tmpfiletest)
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     beatdata.save_dataset_intra(["dummy101", "dummy102"], beatinfo)
     assert os.path.exists(tmpfiletrain)
     assert os.path.exists(tmpfiletest)
@@ -119,7 +119,7 @@ def test_save_dataset_single(beatdata):
     tmpfiletest = os.path.join(test_data_dir, file_test)
     if os.path.exists(tmpfiletest):
         os.remove(tmpfiletest)
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     beatdata.save_dataset_single("dummy101", beatinfo)
     assert os.path.exists(tmpfiletrain)
     assert os.path.exists(tmpfiletest)
@@ -127,7 +127,7 @@ def test_save_dataset_single(beatdata):
 
 def test_load_data(beatdata):
     file_name = "load.beat"
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     beatdata.save_dataset_inter(["dummy101"], beatinfo, file_name)
     ds = beatdata.load_data(file_name)
     assert isinstance(ds, dict)
@@ -163,7 +163,7 @@ def test_per_record_stats(beatdata):
 
 
 def test_slice_data(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101", "dummy102"], beatinfo)
     lbs = ["N", "V"]
     res = beatdata.slice_data(ds, lbs)
@@ -180,7 +180,7 @@ def test_slice_data(beatdata):
 
 
 def test_search_label(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     indexes = beatdata.search_label(ds, "A")
     assert indexes == [2]
@@ -189,7 +189,7 @@ def test_search_label(beatdata):
 
 
 def test_clean_inf_nan(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     ds["beat_feats"].iloc[2, 0] = numpy.inf
     ds["beat_feats"].iloc[3, 1] = numpy.nan
@@ -205,7 +205,7 @@ def test_clean_inf_nan(beatdata):
 
 
 def test_clean_IQR(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     clean_ds = beatdata.clean_IQR(ds)
     assert ds.keys() == clean_ds.keys()
@@ -214,7 +214,7 @@ def test_clean_IQR(beatdata):
 
 
 def test_clean_IQR_class(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     clean_ds = beatdata.clean_IQR_class(ds)
     assert ds.keys() == clean_ds.keys()
@@ -223,7 +223,7 @@ def test_clean_IQR_class(beatdata):
 
 
 def test_append_ds(beatdata):
-    beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+    beatinfo = BeatInfo()
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     res = beatdata.append_ds(ds, ds)
     assert ds.keys() == res.keys()
