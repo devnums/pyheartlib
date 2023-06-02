@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.13 (2023-06-02)
+
+### Fix
+
+* Move sampling rate to config ([`4439a48`](https://github.com/sadeghmdi/pyheartlib/commit/4439a48583ad86dca015f9b1bd9bd9f083570c24))
+
+### Documentation
+
+* Modify docs and examples ([`43b93d2`](https://github.com/sadeghmdi/pyheartlib/commit/43b93d28d4d2626780c041ab4933aa6a82d67bc5))
+
 ## v0.0.12 (2023-06-01)
 
 
