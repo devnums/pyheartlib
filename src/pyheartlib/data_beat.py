@@ -660,57 +660,57 @@ class BeatData(Data):
         ).flatten()
         return dss
 
-    def __aug_decrease(self, ds, label="N", desired_size=21000):
-        # """Simple data augmentation to decrease a particular type in the dataset."""
-        import random
-        import copy
+    # def __aug_decrease(self, ds, label="N", desired_size=21000):
+    #     # """Simple data augmentation to decrease a particular type in the dataset."""
+    #     import random
+    #     import copy
 
-        ds = copy.deepcopy(ds)
-        xx = ds["waveforms"]
-        rr = ds["beat_feats"]
-        yy = ds["labels"]
-        ind = self.search_label(ds, sym=label)
-        random.shuffle(ind)
-        nn = len(ind) - desired_size
-        ind_remove = ind[0:nn]
-        x_train_aug = np.delete(xx, ind_remove, axis=0)
-        r_train_aug = np.delete(rr, ind_remove, axis=0)
-        y_train_aug = np.delete(yy, ind_remove)
-        print(x_train_aug.shape, y_train_aug.shape)
-        return {
-            "waveforms": x_train_aug,
-            "beat_feats": r_train_aug,
-            "labels": y_train_aug,
-        }
+    #     ds = copy.deepcopy(ds)
+    #     xx = ds["waveforms"]
+    #     rr = ds["beat_feats"]
+    #     yy = ds["labels"]
+    #     ind = self.search_label(ds, sym=label)
+    #     random.shuffle(ind)
+    #     nn = len(ind) - desired_size
+    #     ind_remove = ind[0:nn]
+    #     x_train_aug = np.delete(xx, ind_remove, axis=0)
+    #     r_train_aug = np.delete(rr, ind_remove, axis=0)
+    #     y_train_aug = np.delete(yy, ind_remove)
+    #     print(x_train_aug.shape, y_train_aug.shape)
+    #     return {
+    #         "waveforms": x_train_aug,
+    #         "beat_feats": r_train_aug,
+    #         "labels": y_train_aug,
+    #     }
 
-    def __aug_increase(self, ds, desired_size=21000):
-        # """Simple data augmentation to increase the number of minorities in the dataset."""
-        import copy
+    # def __aug_increase(self, ds, desired_size=21000):
+    #     # """Simple data augmentation to increase the number of minorities in the dataset."""
+    #     import copy
 
-        x_aug = ds["waveforms"]
-        r_aug = ds["beat_feats"]
-        y_aug = ds["labels"].tolist()
-        for sym in self.config["BEAT_TYPES"]:
-            try:
-                ind_minor = self.search_label(ds, sym=sym)
-                minority = np.take(ds["waveforms"], ind_minor, axis=0)
-                minority_r = np.take(ds["beat_feats"], ind_minor, axis=0)
-                minority_labels = [sym] * len(minority)
-                if len(minority) > 0 and len(ind_minor) < desired_size:
-                    times = desired_size // len(minority)
-                    if times > 0:
-                        arr = copy.deepcopy(minority)
-                        arr_r = copy.deepcopy(minority_r)
-                        list_appnd = copy.deepcopy(minority_labels)
-                        for i in range(times - 1):
-                            arr = np.append(arr, minority, axis=0)
-                            arr_r = np.append(arr_r, minority_r, axis=0)
-                            list_appnd = list_appnd + minority_labels
-                        x_aug = np.append(x_aug, arr, axis=0)
-                        r_aug = np.append(r_aug, arr_r, axis=0)
-                        y_aug = y_aug + list_appnd
-                    else:
-                        print(sym)
-            except:
-                print("label zero")
-        return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
+    #     x_aug = ds["waveforms"]
+    #     r_aug = ds["beat_feats"]
+    #     y_aug = ds["labels"].tolist()
+    #     for sym in self.config["BEAT_TYPES"]:
+    #         try:
+    #             ind_minor = self.search_label(ds, sym=sym)
+    #             minority = np.take(ds["waveforms"], ind_minor, axis=0)
+    #             minority_r = np.take(ds["beat_feats"], ind_minor, axis=0)
+    #             minority_labels = [sym] * len(minority)
+    #             if len(minority) > 0 and len(ind_minor) < desired_size:
+    #                 times = desired_size // len(minority)
+    #                 if times > 0:
+    #                     arr = copy.deepcopy(minority)
+    #                     arr_r = copy.deepcopy(minority_r)
+    #                     list_appnd = copy.deepcopy(minority_labels)
+    #                     for i in range(times - 1):
+    #                         arr = np.append(arr, minority, axis=0)
+    #                         arr_r = np.append(arr_r, minority_r, axis=0)
+    #                         list_appnd = list_appnd + minority_labels
+    #                     x_aug = np.append(x_aug, arr, axis=0)
+    #                     r_aug = np.append(r_aug, arr_r, axis=0)
+    #                     y_aug = y_aug + list_appnd
+    #                 else:
+    #                     print(sym)
+    #         except:
+    #             print("label zero")
+    #     return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}

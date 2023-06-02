@@ -1,7 +1,7 @@
-from scipy.spatial import distance
-from sklearn.metrics import mean_squared_error
-import numpy as np
-import pandas as pd
+# from scipy.spatial import distance
+# from sklearn.metrics import mean_squared_error
+# import numpy as np
+# import pandas as pd
 
 
 def reset_seed(seed_value=22):
@@ -17,91 +17,91 @@ def reset_seed(seed_value=22):
     os.environ["PYTHONHASHSEED"] = str(seed_value)
 
 
-def integer_mapping(y, map, inverse=False):
-    y = list(y)
-    if not inverse:
-        out = [map[i] for i in y]
-    else:
-        invmap = {v: k for k, v in map.items()}
-        out = [invmap[i] for i in y]
-    return np.array(out)
+# def integer_mapping(y, map, inverse=False):
+#     y = list(y)
+#     if not inverse:
+#         out = [map[i] for i in y]
+#     else:
+#         invmap = {v: k for k, v in map.items()}
+#         out = [invmap[i] for i in y]
+#     return np.array(out)
 
 
-def mapping_AAMI(y, map):
-    out = [map[i] for i in y]
-    return out
+# def mapping_AAMI(y, map):
+#     out = [map[i] for i in y]
+#     return out
 
 
-def plot_loss(model_history, p=False):
-    # Plot training & validation loss
-    import matplotlib.pyplot as plt
+# def plot_loss(model_history, p=False):
+#     # Plot training & validation loss
+#     import matplotlib.pyplot as plt
 
-    if p == True:
-        plt.style.use("plotstyle.txt")
-    plt.plot(model_history.history["loss"])
-    plt.plot(model_history.history["val_loss"], "--")
-    plt.title("Training Loss")
-    plt.ylabel("Loss")
-    plt.xlabel("Epoch")
-    plt.legend(["Train", "Validation"], loc="upper right")
-    plt.show()
-
-
-def plot_spectogram(sig, sampling_rate=360, win=127, overlap=122):
-    import matplotlib.pyplot as plt
-    from scipy import signal
-
-    # f,t,Sxx= signal.spectrogram(sig, fs=sampling_rate, nperseg=win,nfft=win, noverlap=overlap, mode='psd')
-    # Sxx_log = 10*np.log10(Sxx)
-    # plt.pcolormesh(t, f, Sxx_log)
-    # plt.ylabel('Frequency [Hz]')
-    # plt.xlabel('Time [sec]')
-    # plt.show()
-
-    import matplotlib.pyplot as plt
-
-    Pxx, freqs, bins, im = plt.specgram(
-        sig, Fs=sampling_rate, NFFT=win, noverlap=overlap, mode="psd"
-    )
-    print(Pxx.shape)
-    expected = (len(sig) - overlap) / (win - overlap)
-    print("Expexted:" + str(expected))
+#     if p == True:
+#         plt.style.use("plotstyle.txt")
+#     plt.plot(model_history.history["loss"])
+#     plt.plot(model_history.history["val_loss"], "--")
+#     plt.title("Training Loss")
+#     plt.ylabel("Loss")
+#     plt.xlabel("Epoch")
+#     plt.legend(["Train", "Validation"], loc="upper right")
+#     plt.show()
 
 
-def plot_signal(data):
-    import plotly.express as px
+# def plot_spectogram(sig, sampling_rate=360, win=127, overlap=122):
+#     import matplotlib.pyplot as plt
+#     from scipy import signal
 
-    # data: 1d signal as a pandas dataframe, numpy array, or a list
-    if isinstance(data, pd.DataFrame):
-        pass
-    elif isinstance(data, (np.ndarray, list)):
-        data = pd.DataFrame({"Time": range(len(data)), "Signal": data})
-    fig = px.line(data, title="ECG", x="Time", y="Signal")
+#     # f,t,Sxx= signal.spectrogram(sig, fs=sampling_rate, nperseg=win,nfft=win, noverlap=overlap, mode='psd')
+#     # Sxx_log = 10*np.log10(Sxx)
+#     # plt.pcolormesh(t, f, Sxx_log)
+#     # plt.ylabel('Frequency [Hz]')
+#     # plt.xlabel('Time [sec]')
+#     # plt.show()
 
-    """
-    import plotly.graph_objects as go
-    fig = go.Figure()
-	fig.add_trace(
-		go.Scatter(
-			x=dfsignal['Index'],
-			y=dfsignal['Signal'],
-			#text=R_types,
-			mode="lines",
-			line=go.scatter.Line(color="black"),
-			showlegend=False)
-	)
-	fig.add_trace(
-		go.Scatter(
-			x=R_locations,
-			y=signal[R_locations],
-			text=R_types,
-			mode="markers",
-			line=go.scatter.Line(color="red"),
-			showlegend=False)
-	)
-	"""
-    fig.update_xaxes(rangeslider_visible=True)
-    fig.show()
+#     import matplotlib.pyplot as plt
+
+#     Pxx, freqs, bins, im = plt.specgram(
+#         sig, Fs=sampling_rate, NFFT=win, noverlap=overlap, mode="psd"
+#     )
+#     print(Pxx.shape)
+#     expected = (len(sig) - overlap) / (win - overlap)
+#     print("Expexted:" + str(expected))
+
+
+# def plot_signal(data):
+#     import plotly.express as px
+
+#     # data: 1d signal as a pandas dataframe, numpy array, or a list
+#     if isinstance(data, pd.DataFrame):
+#         pass
+#     elif isinstance(data, (np.ndarray, list)):
+#         data = pd.DataFrame({"Time": range(len(data)), "Signal": data})
+#     fig = px.line(data, title="ECG", x="Time", y="Signal")
+
+#     """
+#     import plotly.graph_objects as go
+#     fig = go.Figure()
+# 	fig.add_trace(
+# 		go.Scatter(
+# 			x=dfsignal['Index'],
+# 			y=dfsignal['Signal'],
+# 			#text=R_types,
+# 			mode="lines",
+# 			line=go.scatter.Line(color="black"),
+# 			showlegend=False)
+# 	)
+# 	fig.add_trace(
+# 		go.Scatter(
+# 			x=R_locations,
+# 			y=signal[R_locations],
+# 			text=R_types,
+# 			mode="markers",
+# 			line=go.scatter.Line(color="red"),
+# 			showlegend=False)
+# 	)
+# 	"""
+#     fig.update_xaxes(rangeslider_visible=True)
+#     fig.show()
 
 
 # def calc_class_weights(flag, y):
@@ -197,18 +197,18 @@ def plot_signal(data):
 #     return df_res
 
 
-def get_var_size(var_type="all"):
-    print("hhh")
-    if var_type == "all":
-        varss = set(dir())
-    elif var_type == "local":
-        varss = set(locals())
-    elif var_type == "global":
-        varss = set(globals())
+# def get_var_size(var_type="all"):
+#     print("hhh")
+#     if var_type == "all":
+#         varss = set(dir())
+#     elif var_type == "local":
+#         varss = set(locals())
+#     elif var_type == "global":
+#         varss = set(globals())
 
-    import sys
+#     import sys
 
-    ob = {}
-    for var in varss:
-        ob[var] = sys.getsizeof(var)
-    return ob
+#     ob = {}
+#     for var in varss:
+#         ob[var] = sys.getsizeof(var)
+#     return ob

@@ -20,9 +20,6 @@ class PQRST:
         self.pr_interval = self._comp_pr_interval()
         self.qs_interval = self._comp_qs_interval()
 
-    def _smoothed_wave(self):
-        pass
-
     def _comp_r_wave(self):
         # R Wave Peak
         r_x = np.argmax(self.beatwave)
@@ -49,10 +46,10 @@ class PQRST:
             return [q_x, q_y]
         except:
             return [np.nan, np.nan]
-            import matplotlib.pyplot as plt
+            # import matplotlib.pyplot as plt
 
-            plt.plot(self.beatwave)
-            plt.plot(seg)
+            # plt.plot(self.beatwave)
+            # plt.plot(seg)
 
     def _comp_p_wave(self):
         # P Wave Peak (+,-)
@@ -100,24 +97,10 @@ class PQRST:
             return [s_x, s_y]
         except:
             return [np.nan, np.nan]
-            import matplotlib.pyplot as plt
+            # import matplotlib.pyplot as plt
 
-            plt.plot(self.beatwave)
-            plt.plot(seg)
-
-    def twave(self):
-        # T wave Peak
-        pass
-
-    # P wave Onset
-    def _comp_p_onset(self):
-        # First zero slope point from right
-        # seg = self.beatwave[:self.pwave[0]]
-        # self.grd[:self.pwave[0]-3]
-        pass
-
-    # T wave Onset
-    # T wave Offset
+            # plt.plot(self.beatwave)
+            # plt.plot(seg)
 
     def _comp_pr_interval(self):
         # PR Interval in ms
@@ -128,5 +111,3 @@ class PQRST:
         # PR Interval in ms
         qs_inerval = self.swave[0] - self.qwave[0]
         return qs_inerval / self.fs * 1000
-
-    # QRS Width
