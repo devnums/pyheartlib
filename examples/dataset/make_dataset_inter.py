@@ -17,7 +17,7 @@ beatdata = BeatData(
 )
 
 # Create a BeatInfo object for features calculations.
-beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+beatinfo = BeatInfo()
 
 
 def F_new_feature1(self):

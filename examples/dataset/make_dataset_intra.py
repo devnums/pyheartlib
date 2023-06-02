@@ -8,26 +8,36 @@ from pyheartlib.beat_info import BeatInfo
 
 # Intra-patient
 # Lets create a BeatData object.the train set by creating
-beatdata = BeatData(base_path="./data", win=[200, 200], remove_bl=False, lowpass=False, progress_bar=True)
+beatdata = BeatData(
+    base_path="./data",
+    win=[200, 200],
+    remove_bl=False,
+    lowpass=False,
+    progress_bar=True,
+)
 
 # Create a BeatInfo object for features calculations.
-beatinfo = BeatInfo(beat_loc=beatdata.beat_loc)
+beatinfo = BeatInfo()
 
 
 def F_new_feature1(self):
     return 1.07
+
 
 def F_new_feature2(self):
     post = beatinfo.F_post_rri()
     pre = beatinfo.F_pre_rri()
     return post - pre
 
+
 new_features = [F_new_feature1, F_new_feature2]
-beatinfo.add_features(new_features) 
+beatinfo.add_features(new_features)
 print(beatinfo.available_features())
 
 
-beatinfo.select_features(["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_feature1", "F_new_feature2"])
+beatinfo.select_features(
+    ["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_feature1", "F_new_feature2"]
+)
 
 # The file will be saved in the base data directory.
 beatdata.save_dataset_intra([209, 215], beatinfo)
@@ -41,4 +51,4 @@ stat_report = beatdata.report_stats_table(
     [train_ds["labels"], test_ds["labels"]], ["Train", "Test"]
 )
 print(stat_report)
-print(train_ds['beat_feats'].tail(3))
+print(train_ds["beat_feats"].tail(3))
