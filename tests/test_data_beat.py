@@ -190,6 +190,7 @@ def test_search_label(beatdata):
 
 def test_clean_inf_nan(beatdata):
     beatinfo = BeatInfo()
+    beatinfo.select_features(["F_beat_max", "F_beat_min"])
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     ds["beat_feats"].iloc[2, 0] = numpy.inf
     ds["beat_feats"].iloc[3, 1] = numpy.nan
