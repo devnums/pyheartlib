@@ -379,6 +379,67 @@ class BeatInfo:
         """RMS of heartbeat waveform."""
         return np.sqrt(np.mean(self.bwaveform**2))
 
+    def F_nsampels(self, n_samples=10):
+        """Gives equally spaced samples of the trimmed heartbeat waveform.
+
+        Parameters
+        ----------
+        n_samples : int, optional
+            Number of samples, by default 10
+
+        Returns
+        -------
+        dict
+            Waveform sample values.
+        """
+
+        dt = int(len(self.bwaveform) / n_samples)
+        samples = []
+        for i in range(n_samples):
+            samples.append(self.bwaveform[int(i * dt)])
+        samples_dict = {}
+        for i, sampl in enumerate(samples):
+            key = "sample_" + str(i + 1)
+            samples_dict[key] = sampl
+        return samples_dict
+
+    def F_subsegs(self, n_subsegs=3, ftr="max"):
+        """Computes a feature for equal-length subsegments of the beat waveform."""
+
+        def func(arg, ftr):
+            if ftr == "max":
+                f = max(arg)
+            elif ftr == "min":
+                f = min(arg)
+            elif ftr == "mean":
+                f = np.mean(arg)
+            elif ftr == "std":
+                f = np.std(arg)
+            elif ftr == "median":
+                f = np.median(arg)
+            elif ftr == "skewness":
+                f = stats.skew(arg)
+            elif ftr == "kurtosis":
+                f = stats.kurtosis(arg)
+            elif ftr == "rms":
+                f = np.sqrt(np.mean(arg**2))
+            return f
+
+        ret_dict = {}
+        for i in range(n_subsegs):
+            s_ix = int(i / n_subsegs * len(self.bwaveform))
+            e_ix = int((i + 1) / n_subsegs * len(self.bwaveform))
+            subseg = self.bwaveform[s_ix:e_ix]
+            key = f"seg[{str(i+1)}]_"
+            ret_dict[key + ftr] = func(subseg, ftr)
+        # agg results
+        ls = [v for k, v in ret_dict.items()]
+        arr = np.asarray(ls)
+        ret_dict["agg_mean_" + ftr] = np.mean(arr)
+        ret_dict["agg_std_" + ftr] = np.std(arr)
+        ret_dict["agg_rms_" + ftr] = np.sqrt(np.mean(arr**2))
+        return ret_dict
+
     def pqrst(self):
         # 120ms <Normal_PR< 220ms.
         # 75ms  <Normal_QRS< 120ms
@@ -410,134 +471,81 @@ class BeatInfo:
         qs = self.pqrst_dict["qs"]
         return qs / self.rms_rri()
 
-    def nsampels(self, n_samples=10):
-        """Gives equally spaced samples of the trimmed heartbeat waveform.
-
-        Parameters
-        ----------
-        n_samples : int, optional
-            Number of samples, by default 10
-
-        Returns
-        -------
-        list
-            Waveform sample values.
-        """
-        dt = int(len(self.bwaveform) / n_samples)
-        samples = []
-        for i in range(n_samples):
-            samples.append(self.bwaveform[int(i * dt)])
-        return samples
-
-    def sub_segs(self, n_subsegs=10):
-        # splits the beat waveform into sub-segments of equal length
-        lmax = []
-        lmin = []
-        lmean = []
-        lmedian = []
-        std = []
-        lskewness = []
-        lkurtosis = []
-        lrms = []
-
-        for i in range(n_subsegs):
-            s_ix = int(i / n_subsegs * len(self.bwaveform))
-            e_ix = int((i + 1) / n_subsegs * len(self.bwaveform))
-            seg = self.bwaveform[s_ix:e_ix]
-            lmax.append(max(seg))
-            lmin.append(min(seg))
-            lmean.append(np.mean(seg))
-            lmedian.append(np.median(seg))
-            std.append(np.std(seg))
-            lskewness.append(stats.skew(seg))
-            lkurtosis.append(stats.kurtosis(seg))
-            lrms.append(np.sqrt(np.mean(seg**2)))
-
-        res = [lmax, lmin, lmean, lmedian, std, lskewness, lkurtosis, lrms]
-
-        # agg results
-        mean_res = []
-        std_res = []
-        rms_res = []
-        for mtrc in res:
-            mtrc = np.asarray(mtrc)
-            mean_res.append(np.mean(mtrc))
-            std_res.append(np.std(mtrc))
-            rms_res.append(np.sqrt(np.mean(mtrc**2)))
-
-        aggs = [mean_res, std_res, rms_res]
-        return res, aggs
-
     # ============================================================
     # Spectral features of the beat waveform
     # ============================================================
-    def fft_features(self):
+    def F_fft_features(self):
         """Returns FFT of each heartbeat trimmed waveform.
 
         Returns
         -------
-        list
+        dict
+
         """
 
         sig = self.bwaveform
         # num_samples = sig.size
         # xf = rfftfreq(num_samples, 1 / self.fs)
         yf = np.abs(rfft(sig))
-        return list(yf)
+        ret_dict = {}
+        for i, ret in enumerate(list(yf)):
+            key = "fft_" + str(i + 1)
+            ret_dict[key] = ret
+        return ret_dict
 
     # ============================================================
     # helper functions
     # ============================================================
-    def __plot_wf(self):
-        from matplotlib import figure
+    # def __plot_wf(self):
+    #     from matplotlib import figure
 
-        fig = figure.Figure(figsize=(8, 4), dpi=170)
-        ax = fig.add_subplot(111)
-        ax.plot(self.whole_waveform)
-        # plt.plot(bwaveform)
-        beat_rpeak_idx = self.rpeaks[self.beat_loc]
-        beat_onset = self.wfpts["beat_onset"]
-        beat_offset = self.wfpts["beat_offset"]
-        ax.scatter(
-            beat_onset,
-            self.whole_waveform[beat_onset],
-            color="deeppink",
-            marker=">",
-            s=40,
-        )
-        ax.scatter(
-            beat_offset,
-            self.whole_waveform[beat_offset],
-            color="deeppink",
-            marker="<",
-            s=40,
-        )
-        rpk = beat_rpeak_idx - self.data["start_idx"]
-        ax.scatter(rpk, self.whole_waveform[rpk], color="red")
-        try:
-            p = (self.pqrst_dict["p"][0]) + beat_onset
-            q = (self.pqrst_dict["q"][0]) + beat_onset
-            r = (self.pqrst_dict["r"][0]) + beat_onset
-            s = (self.pqrst_dict["s"][0]) + beat_onset
-            ax.scatter(p, self.whole_waveform[p], color="cyan")
-            ax.scatter(q, self.whole_waveform[q], color="magenta")
-            ax.scatter(r, self.whole_waveform[r], color="violet", marker="x")
-            ax.scatter(s, self.whole_waveform[s], color="lime")
-        except:
-            pass
-        ax.set_title(self.label)
-        ax.set_ylim(-1, 2)
-        ptnt = str(self.data["rec_id"])
-        fldr = "../wvplots/{}".format(ptnt)
-        try:
-            import os
+    #     fig = figure.Figure(figsize=(8, 4), dpi=170)
+    #     ax = fig.add_subplot(111)
+    #     ax.plot(self.whole_waveform)
+    #     # plt.plot(bwaveform)
+    #     beat_rpeak_idx = self.rpeaks[self.beat_loc]
+    #     beat_onset = self.wfpts["beat_onset"]
+    #     beat_offset = self.wfpts["beat_offset"]
+    #     ax.scatter(
+    #         beat_onset,
+    #         self.whole_waveform[beat_onset],
+    #         color="deeppink",
+    #         marker=">",
+    #         s=40,
+    #     )
+    #     ax.scatter(
+    #         beat_offset,
+    #         self.whole_waveform[beat_offset],
+    #         color="deeppink",
+    #         marker="<",
+    #         s=40,
+    #     )
+    #     rpk = beat_rpeak_idx - self.data["start_idx"]
+    #     ax.scatter(rpk, self.whole_waveform[rpk], color="red")
+    #     try:
+    #         p = (self.pqrst_dict["p"][0]) + beat_onset
+    #         q = (self.pqrst_dict["q"][0]) + beat_onset
+    #         r = (self.pqrst_dict["r"][0]) + beat_onset
+    #         s = (self.pqrst_dict["s"][0]) + beat_onset
+    #         ax.scatter(p, self.whole_waveform[p], color="cyan")
+    #         ax.scatter(q, self.whole_waveform[q], color="magenta")
+    #         ax.scatter(r, self.whole_waveform[r], color="violet", marker="x")
+    #         ax.scatter(s, self.whole_waveform[s], color="lime")
+    #     except:
+    #         pass
+    #     ax.set_title(self.label)
+    #     ax.set_ylim(-1, 2)
+    #     ptnt = str(self.data["rec_id"])
+    #     fldr = "../wvplots/{}".format(ptnt)
+    #     try:
+    #         import os
 
-            os.makedirs(fldr, exist_ok=True)
-        except OSError as err:
-            print("Folder can not be created!")
-        fig.savefig(
-            "{}/{}_{}_{}.jpg".format(
-                fldr, ptnt, str(self.data["start_idx"]), self.label
-            )
-        )
-        fig.clear()
+    #         os.makedirs(fldr, exist_ok=True)
+    #     except OSError as err:
+    #         print("Folder can not be created!")
+    #     fig.savefig(
+    #         "{}/{}_{}_{}.jpg".format(
+    #             fldr, ptnt, str(self.data["start_idx"]), self.label
+    #         )
+    #     )
+    #     fig.clear()
