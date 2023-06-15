@@ -1,6 +1,6 @@
 # Quickstart
 
-To use this software, the first step is to place the raw data in a base data directory. Since the package supports WFDB format, the MIT-BIH Arrhythmia Database can be used. This dataset can be downloaded by runnig the following commands:
+To use this software, the first step is to place the raw data in a base data directory. Since the package supports WFDB format, the [MIT-BIH Arrhythmia Database](https://www.physionet.org/content/mitdb/1.0.0/) can be used. This dataset can be downloaded by runnig the following commands:
 
 ```
 $ mkdir data
@@ -15,6 +15,7 @@ A *config.yaml* file must be created in the base data directory. This file conta
 # Required fields:
 
 DATA_DIR: "mit-bih-arrhythmia-database-1.0.0/"
+SAMPLING_RATE: 360
 BEAT_TYPES: ['N', 'L', 'R', 'j', 'e', 'V', 'E', 'A', 'S', 'a', 'J', 'F', 'f', '/', 'Q']
 RHYTHM_TYPES: ['(AB', '(AFIB', '(AFL', '(B', '(BII', '(IVR', '(N', '(NOD', '(P', '(PREX', '(SBR', '(SVTA', '(T', '(VFL', '(VT']
 ```
@@ -25,4 +26,4 @@ The next step is to install the package with pip:
 $ pip install pyheartlib
 ```
 
-Check out the examples section of the [documentation](https://pyheartlib.readthedocs.io) for different use cases.
+Check out the [examples](https://pyheartlib.readthedocs.io/en/latest/examples/examples.html) section of the documentation for different use cases.

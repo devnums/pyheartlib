@@ -7,7 +7,7 @@ from pyheartlib.beat_info import BeatInfo
 
 
 # Intra-patient
-# Lets create a BeatData object.the train set by creating
+# Lets create a BeatData object.
 beatdata = BeatData(
     base_path="./data",
     win=[200, 200],
@@ -20,6 +20,7 @@ beatdata = BeatData(
 beatinfo = BeatInfo()
 
 
+# Define custom features
 def F_new_feature1(self):
     return 1.07
 
@@ -27,22 +28,27 @@ def F_new_feature1(self):
 def F_new_feature2(self):
     post = beatinfo.F_post_rri()
     pre = beatinfo.F_pre_rri()
-    return post - pre
+    ret = {"Post": post, "Pre": pre}
+    return ret
 
 
+# Add custom features
 new_features = [F_new_feature1, F_new_feature2]
 beatinfo.add_features(new_features)
+
+# Get a list of available features
 print(beatinfo.available_features())
 
-
+# Select the desired features
 beatinfo.select_features(
-    ["F_beat_max", "F_beat_min", "F_beat_skewness", "F_new_feature1", "F_new_feature2"]
+    ["F_beat_max", "F_beat_skewness", "F_new_feature1", "F_new_feature2"]
 )
 
+# Use the save_dataset_intra method to create the dataset file.
 # The file will be saved in the base data directory.
 beatdata.save_dataset_intra([209, 215], beatinfo)
 
-# Loading the sets
+# Load processed datasets
 train_ds = beatdata.load_data(file_name="intra_train.beat")
 test_ds = beatdata.load_data(file_name="intra_test.beat")
 

@@ -12,7 +12,4 @@
     autoapi/index
     changelog.md
     acknowledgements.rst
-    Github <https://github.com/sadeghmdi/pyheartlib>
-
-
-
+    Github <https://github.com/devnums/pyheartlib>

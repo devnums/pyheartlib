@@ -1,6 +1,6 @@
 # pyheartlib
 
-pyheartlib is a Python package for processing electrocardiogram signals. This software facilitates working with signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package provides datasets containing processed raw signals and computed features which can be further utilized to train various machine learning models. Advanced deep learning models can be trained by taking advantage of Keras and Tensorflow libraries. The first release of this software supports WFDB format. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
+pyheartlib is a Python package for processing electrocardiogram signals. This software facilitates working with signals for tasks such as heartbeat detection, heartbeat classification, and arrhythmia classification. Using it, researchers can focus on these tasks without the burden of designing data processing modules. The package transforms original data into processed signal excerpts and their computed features which can be further utilized to train various machine learning models. Advanced deep learning models can be trained by taking advantage of Keras and Tensorflow libraries. The first release of this software supports WFDB format. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
 
 # Installation
 

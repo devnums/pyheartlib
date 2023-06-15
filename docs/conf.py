@@ -5,10 +5,12 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Project information -----------------------------------------------------
+from pyheartlib import __version__
 
 project = "pyheartlib"
-copyright = "2023, Sadegh Mohammadi"
-author = "Sadegh Mohammadi"
+copyright = "2023, devnums"
+author = "devnums" 
+version = __version__
 
 # -- General configuration ---------------------------------------------------
 
