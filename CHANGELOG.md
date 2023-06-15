@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.18 (2023-06-15)
+
+### Documentation
+
+* Run ipynb files ([`c58214d`](https://github.com/devnums/pyheartlib/commit/c58214dc0ec8d730157aae01e1572316bfabf302))
+
 ## v0.0.17 (2023-06-15)
 
 ### Documentation
