@@ -2,7 +2,7 @@
 name = "pyheartlib"
 version = "0.0.14"
 description = "A Python package for processing electrocardiogram signals"
-authors = ["devnums <https://github.com/devnums>"]
+authors = ["devnums"]
 license = "Proprietary"
 readme = "README.md"
 repository = "https://github.com/devnums/pyheartlib"
