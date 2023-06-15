@@ -5,12 +5,10 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Project information -----------------------------------------------------
-from pyheartlib import __version__
 
 project = "pyheartlib"
 copyright = "2023, devnums"
-author = "devnums" 
-version = __version__
+author = "devnums"
 
 # -- General configuration ---------------------------------------------------
 
@@ -31,10 +29,10 @@ autoapi_dirs = ["../src"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**/archs", "**/extra"]
 
 autodoc_default_options = {
-    'members': True,
-    'undoc-members': False,
-    'private-members': False,
-    'special-members': False,
+    "members": True,
+    "undoc-members": False,
+    "private-members": False,
+    "special-members": False,
 }
 
 # -- Options for HTML output -------------------------------------------------
