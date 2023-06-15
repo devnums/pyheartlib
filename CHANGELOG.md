@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.17 (2023-06-15)
+
+### Documentation
+
+* Fix a problem ([`96dfccb`](https://github.com/devnums/pyheartlib/commit/96dfccbd6b228876af9578573a53595737aef52f))
+
 ## v0.0.16 (2023-06-15)
 
 
