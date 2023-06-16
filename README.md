@@ -1,6 +1,8 @@
 # pyheartlib
 
 [![Documentation Status](https://readthedocs.org/projects/pyheartlib/badge/?version=latest)](https://pyheartlib.readthedocs.io/en/latest/?badge=latest)
+![Workflow](https://github.com/devnums/pyheartlib/actions/workflows/ci-cd-main.yml/badge.svg?branch=main)
+![Workflow](https://github.com/devnums/pyheartlib/actions/workflows/ci-dev.yml/badge.svg?branch=dev)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyheartlib)
 [![codecov](https://codecov.io/gh/devnums/pyheartlib/branch/main/graph/badge.svg?token=6IB18KL3E9)](https://codecov.io/gh/devnums/pyheartlib)
 ![PyPI](https://img.shields.io/pypi/v/pyheartlib?color=blue)
