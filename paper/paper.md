@@ -9,7 +9,7 @@ tags:
 authors:
   - name: Sadegh Mohammadi
     orcid: 0000-0001-9763-4963
-date: 7 June 2023
+date: 19 June 2023
 bibliography: paper.bib
 ---
 
@@ -19,11 +19,11 @@ Electrocardiogram (ECG) signals represent the electrical activity of the heart a
 
 # Statement of need
 
-`pyheartlib` is a Python package for processing electrocardiogram signals. This software facilitates working with signals for the task such as heartbeat detection, heartbeat classification, and arrhythmia classification. By using it, researchers can focus on these tasks without the burden of designing data processing modules. The package provides datasets containing processed raw signals and computed features which can be further utilized to train various machine learning models. Advanced deep learning models can be trained by taking advantage of Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries. The first release of this software supports WFDB format [@moody2001impact;@goldberger2000physiobank;@wfdb-python;@wfdb-software-package]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
+pyheartlib is a Python package for processing electrocardiogram signals. This software facilitates working with signals for tasks such as heartbeat detection, heartbeat classification, and arrhythmia classification. Using it, researchers can focus on these tasks without the burden of designing data processing modules. The package transforms original data into processed signal excerpts and their computed features which can be further utilized to train various machine learning models. Advanced deep learning models can be trained by taking advantage of Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries. The first release of this software supports WFDB format [@moody2001impact;@goldberger2000physiobank;@wfdb-python;@wfdb-software-package]. The package has optional preprocessing methods to remove noise and baseline wander from the raw signals.
 
 # Example
 
-An example is provided along with this package which demonstrates a deep learning model designed using Keras library for the heartbeat detection task. As this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets.
+As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets. 
 
 ![Example: heartbeat detection using deep learning.\label{fig:example}](mis.png){ width=80% }
 
