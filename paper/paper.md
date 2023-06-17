@@ -23,7 +23,7 @@ pyheartlib is a Python package for processing electrocardiogram signals. This so
 
 # Example
 
-As an example, a deep learning model was designed using Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using the available public datasets. 
+As an example, a deep learning model is designed using the Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using available public datasets.
 
 ![Example: heartbeat detection using deep learning.\label{fig:example}](mis.png){ width=80% }
 
