@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.21 (2023-06-17)
+
+### Documentation
+
+* Edit few lines ([`f7805c8`](https://github.com/devnums/pyheartlib/commit/f7805c849a50270d5cc44e795b56ae8540cea4b9))
+
 ## v0.0.20 (2023-06-16)
 
 
