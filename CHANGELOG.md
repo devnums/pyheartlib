@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.0 (2023-06-17)
+
+### Breaking
+
+* update for release. ([`6a89ca6`](https://github.com/devnums/pyheartlib/commit/6a89ca6ee2a436c3cfb99e3572b1cc7b3aa0253c))
+
 ## v0.0.21 (2023-06-17)
 
 ### Documentation
