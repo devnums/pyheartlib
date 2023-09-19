@@ -19,8 +19,8 @@ Following examples demostrates dataset creation:
 * {doc}`Rpeak dataset <examples/dataset/rpeak>` <br>
 * {doc}`Arrhythmia dataset <examples/dataset/arrhythmia>`
 
-As an example, a deep learning model is designed using the Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using available public datasets.
+As an example, a deep learning model is designed using the Keras library for the R-peak detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using available public datasets.
 
-* {doc}`Beat detection model <examples/model/BEAT_DETECTION>`
+* {doc}`R-peak detection model <examples/model/RPEAK_DETECTION>`
 
-![Example: heartbeat detection using deep learning.](examples/model/plots/mis.png)
+![Example: R-peak detection using deep learning.](examples/model/plots/mis.png)
