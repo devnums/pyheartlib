@@ -1,13 +1,27 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import math
-import time
-import numpy as np
-from tensorflow.keras.utils import Sequence
-from tqdm import tqdm
-from pyheartlib.data import Data, DataSeq
-from pyheartlib.features import get_hrv_features, get_wf_feats
+import math  # noqa: E402
+
+import numpy as np  # noqa: E402
+from tensorflow.keras.utils import Sequence  # noqa: E402
+from tqdm import tqdm  # noqa: E402
+
+from pyheartlib.data import Data, DataSeq  # noqa: E402
+from pyheartlib.features import get_hrv_features, get_wf_feats  # noqa: E402
+
+# import time  # noqa: E402
 
 
 class ArrhythmiaData(Data, DataSeq):
@@ -18,9 +32,11 @@ class ArrhythmiaData(Data, DataSeq):
     base_path : str, optional
         Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
-        If True, baseline will be removed from the raw signals before extracting beat excerpts, by default False
+        If True, baseline will be removed from the raw signals
+        before extracting beat excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals, by default False
+        Whether to apply low pass filtering to the raw signals,
+        by default False
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -61,8 +77,8 @@ class ArrhythmiaData(Data, DataSeq):
 
             First element is the original signal (1D ndarray).
 
-            Second element is a list that has the same length as the original signal with
-            arrhythmia types at each index:
+            Second element is a list that has the same length as
+            the original signal with arrhythmia types at each index:
             ['(N','(N', '(N','AFIB','AFIB','AFIB',...].
         """
 
@@ -76,17 +92,21 @@ class ArrhythmiaData(Data, DataSeq):
         record_full = [signal, full_ann]
         return record_full
 
-    def make_samples_info(self, annotated_records, win_size=30 * 360, stride=36):
-        """Creates a list of signal excerpts meta info and their corresponding annotation.
+    def make_samples_info(
+        self, annotated_records, win_size=30 * 360, stride=36
+    ):
+        """Creates a list of signal excerpts meta info and
+        their corresponding annotation.
 
-        For each excerpt, record id, onset, and offset point of it on the original signal is recorded.
+        For each excerpt, record id, onset, and offset point of it
+        on the original signal is recorded.
 
         Parameters
         ----------
         annotated_records : list
             A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels',
-            'rhythms', 'rhythms_locations', 'full_ann'.
+            Each rec is a dict with keys: 'signal', 'r_locations',
+            'r_labels', 'rhythms', 'rhythms_locations', 'full_ann'.
         win_size : int, optional
             Windows size, by default 30*360
         stride : int, optional
@@ -95,7 +115,8 @@ class ArrhythmiaData(Data, DataSeq):
         Returns
         -------
         list
-            A 2d list. Each inner list is like [record_id, start_win, end_win, Label].
+            A 2d list. Each inner list is like [record_id, start_win,
+            end_win, Label].
             E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...]
         """
 
@@ -103,7 +124,9 @@ class ArrhythmiaData(Data, DataSeq):
         win_size = int(win_size)
 
         samples_info = []
-        for rec_id in tqdm(range(len(annotated_records)), disable=DataSeq.progress_bar):
+        for rec_id in tqdm(
+            range(len(annotated_records)), disable=DataSeq.progress_bar
+        ):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
@@ -124,9 +147,10 @@ class ArrhythmiaData(Data, DataSeq):
 
 class ECGSequence(Sequence):
     """
-    Generates batches of data according to the meta information provided for each sample.
-
-    It is memory efficient and there is no need to put large amount of data in the memory.
+    Generates batches of data according to the meta information
+    provided for each sample.
+    It is memory efficient and there is no need to put large
+    amount of data in the memory.
 
     Parameters
     ----------
@@ -135,20 +159,24 @@ class ECGSequence(Sequence):
         Each rec is a dict with keys: 'signal', 'r_locations', 'r_labels',
         'rhythms', 'rhythms_locations', 'full_ann'.
     samples_info : list
-        A list of lists. Each inner list is like [record_id, start_win, end_win, label].
+        A list of lists. Each inner list is like:
+        [record_id, start_win, end_win, label].
         E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
     class_labels : list, optional
         Arrhythmia types as a list such as ["(N", "(VT"], by default None
     batch_size : int, optional
         Batch size, by default 128
     raw : bool, optional
-        Whether to return the full waveform or the computed features, by default True
+        Whether to return the full waveform or the computed features,
+        by default True
     interval : int, optional
-        interval for sub-segmenting the signal for waveform feature computation, by default 36
+        interval for sub-segmenting the signal for waveform
+        feature computation, by default 36
     shuffle : bool, optional
         If True, after each epoch the samples are shuffled, by default True
     rri_length : int, optional
-        Zero padding (right) rri as they have different length for each excerpt, by default 150
+        Zero padding (right) rri as they have different length
+        for each excerpt, by default 150
     """
 
     def __init__(
@@ -180,11 +208,12 @@ class ECGSequence(Sequence):
         Returns
         -------
         Tuple
-            Contains batch_x, batch_y, where batch_x is a list of numpy arrays
-            of batch_seq, batch_rri, batch_rri_feat.
+            Contains batch_x, batch_y, where batch_x is a list of
+            numpy arrays of batch_seq, batch_rri, batch_rri_feat.
 
-            If raw is False, batch_seq has the shape of (batch_size,#sub-segments,#features),
-            otherwise, it has the shape of (batch_size,seq_len).
+            If raw is False, batch_seq has the shape of
+            (batch_size, #sub-segments, #features), otherwise,
+            it has the shape of (batch_size,seq_len).
 
             batch_y has the shape of (batch_size,1).
         """
@@ -232,7 +261,9 @@ class ECGSequence(Sequence):
     def get_rri(self, rec_id, start, end):
         """Computes RR intervals"""
         sampling_rate = ArrhythmiaData.sampling_rate
-        r_locations = np.asarray(self.data[rec_id]["r_locations"])  # entire record
+        r_locations = np.asarray(
+            self.data[rec_id]["r_locations"]
+        )  # entire record
         inds = np.where((r_locations >= start) & (r_locations < end))
         rpeak_locs = list(
             r_locations[inds]

@@ -1,8 +1,18 @@
-import pytest
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy
-from pyheartlib.data_beat import BeatData
 from dummy import DummyData
 
+from pyheartlib.data_beat import BeatData
 
 test_data_dir = "./tests/dummy_data"
 dmm = DummyData(save_dir=test_data_dir)
@@ -15,7 +25,7 @@ beatdata = BeatData(
     num_pre_rr=2,
     num_post_rr=5,
     remove_bl=True,
-    lowpass=True
+    lowpass=True,
 )
 
 

@@ -1,7 +1,20 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import os
+from abc import ABC, abstractmethod
+
 import yaml
 from tqdm import tqdm
-from abc import ABC, abstractmethod
+
 from pyheartlib.io import get_data, save_data
 from pyheartlib.processing import Processing
 
@@ -12,12 +25,14 @@ class Data:
     Parameters
     ----------
     base_path : str, optional
-        Path of the main directory for loading and saving data, by default None
+        Path of the main directory for loading and saving data,
+        by default None
     remove_bl : bool, optional
-        If True, the baseline is removed from the raw signals before extracting
-        beat excerpts, by default False
+        If True, the baseline is removed from the raw signals
+        before extracting beat excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals, by default False
+        Whether to apply low pass filtering to the raw signals,
+        by default False
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -53,13 +68,17 @@ class Data:
 
         if base_path is None:
             self.base_path = os.getcwd()
-            conf_path = os.path.join(self.base_path, "src", "pyheartlib", "config.yaml")
+            conf_path = os.path.join(
+                self.base_path, "src", "pyheartlib", "config.yaml"
+            )
         else:
             self.base_path = base_path
             conf_path = os.path.join(self.base_path, "config.yaml")
         with open(conf_path) as f:
             __class__.config = yaml.load(f, Loader=yaml.FullLoader)
-        __class__.data_path = os.path.join(self.base_path, self.config["DATA_DIR"])
+        __class__.data_path = os.path.join(
+            self.base_path, self.config["DATA_DIR"]
+        )
         __class__.sampling_rate = int(self.config["SAMPLING_RATE"])
 
     def get_ecg_record(self, record_id=106):
@@ -70,7 +89,8 @@ class Data:
         record_id : str
             Record id.
         return_dict : bool
-            If True the method returns a dictionary, otherwise returns a pandas dataframe.
+            If True the method returns a dictionary, otherwise
+            returns a pandas dataframe.
 
         Returns
         -------
@@ -79,8 +99,9 @@ class Data:
             with keys: *signal*, *r_locations*, *r_labels*, *rhythms*,
             *rhythms_locations*.
 
-            If return_dict is False, it returns a dataframe containing the time, raw signal, and
-            a list of equal size to the raw signal with None values except at annotations locations.
+            If return_dict is False, it returns a dataframe containing the
+            time, raw signal, and a list of equal size to the raw signal
+            with None values except at annotations locations.
         """
         record_path = os.path.join(self.data_path, str(record_id))
         data_dict = get_data(record_path, self.config, return_dict=True)
@@ -151,16 +172,19 @@ class DataSeq(ABC):
         Returns
         -------
         list
-            The list contains two elements. First element is a list containing
-            a dict for each record, [rec1,rec2,....].
-            Each rec is a dict with keys: *signal*, *r_locations*, *r_labels*,
-            *rhythms*, *rhythms_locations*, *full_ann*. Second element is a nested list.
-            Each inner list is like [record_no, start_win, end_win, label].
+            The list contains two elements. First element is a list
+            containing a dict for each record, [rec1,rec2,....].
+            Each rec is a dict with keys: *signal*, *r_locations*,
+            *r_labels*, *rhythms*, *rhythms_locations*, *full_ann*.
+            Second element is a nested list. Each inner list is like:
+            [record_no, start_win, end_win, label].
             E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
         """
 
         annotated_records = self.get_all_annotated_records(rec_list)
-        samples_info = self.make_samples_info(annotated_records, win_size, stride)
+        samples_info = self.make_samples_info(
+            annotated_records, win_size, stride
+        )
         data = [annotated_records, samples_info]
         file_path = os.path.join(self.base_path, file_name)
         save_data(data, file_path=file_path)

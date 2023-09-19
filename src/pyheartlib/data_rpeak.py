@@ -1,13 +1,27 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import math
-import time
-import numpy as np
-from tensorflow.keras.utils import Sequence
-from tqdm import tqdm
-from pyheartlib.data import Data, DataSeq
-from pyheartlib.features import get_wf_feats
+import math  # noqa: E402
+
+import numpy as np  # noqa
+from tensorflow.keras.utils import Sequence  # noqa: E402
+from tqdm import tqdm  # noqa: E402
+
+from pyheartlib.data import Data, DataSeq  # noqa: E402
+from pyheartlib.features import get_wf_feats  # noqa: E402
+
+# import time  # noqa: E402
 
 
 class RpeakData(Data, DataSeq):
@@ -18,10 +32,11 @@ class RpeakData(Data, DataSeq):
     base_path : str, optional
         Path of main directory for loading and saving data, by default None
     remove_bl : bool, optional
-        If True, the baseline is removed from the raw signals before extracting
-        beat excerpts, by default False
+        If True, the baseline is removed from the raw signals
+        before extracting beat excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals, by default False
+        Whether to apply low pass filtering to the raw signals,
+        by default False
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -64,8 +79,9 @@ class RpeakData(Data, DataSeq):
 
             First element is the original signal (1D ndarray).
 
-            Second element is a list that has the same length as the original signal with
-            zero elements except at any rpeak index which has the rpeak annotation instead.
+            Second element is a list that has the same length as
+            the original signal with zero elements except at any
+            rpeak index which has the rpeak annotation instead.
             [00000N00000000000000L00000...]
         """
 
@@ -77,10 +93,14 @@ class RpeakData(Data, DataSeq):
         record_full = [signal, full_ann]
         return record_full
 
-    def make_samples_info(self, annotated_records, win_size=30 * 360, stride=256):
-        """Creates a list of signal excerpts meta info and their corresponding annotation.
+    def make_samples_info(
+        self, annotated_records, win_size=30 * 360, stride=256
+    ):
+        """Creates a list of signal excerpts meta info and
+        their corresponding annotation.
 
-        For each excerpt, record id, onset, and offset point of it on the original signal is recorded.
+        For each excerpt, record id, onset, and offset point of it on
+        the original signal is recorded.
 
         Parameters
         ----------
@@ -91,8 +111,10 @@ class RpeakData(Data, DataSeq):
         Returns
         -------
         list
-            A 2d list. Each inner list is like [record_no, start_win, end_win, Label].
-            Label is a list and its elements are rpeak annotations for each interval.
+            A 2d list.
+            Each inner list is like: [record_no, start_win, end_win, Label].
+            Label is a list and its elements are rpeak annotations for
+            each interval.
             E.g.: [[10,500,800,[000000N00000000L00]], ...]
         """
         interval = 36  # not necessary, will be calculated in EXGSEQUENCE
@@ -107,7 +129,9 @@ class RpeakData(Data, DataSeq):
         samples_info = []
 
         # each record
-        for rec_id in tqdm(range(len(annotated_records)), disable=DataSeq.progress_bar):
+        for rec_id in tqdm(
+            range(len(annotated_records)), disable=DataSeq.progress_bar
+        ):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
             assert len(signal) == len(
@@ -119,12 +143,14 @@ class RpeakData(Data, DataSeq):
             while end < len(full_ann):
                 start = int(end - win_size)
                 seg = full_ann[start:end]
-                labels_seq = []  # not necesssary anymore,will be done in SEQUENCE
+                labels_seq = (
+                    []
+                )  # not necesssary anymore,will be done in SEQUENCE
                 # each subsegment
                 for i in range(0, len(seg), interval):
                     subseg = seg[i : i + interval]
                     if any(subseg):
-                        nonzero = [l for l in subseg if l != 0]
+                        nonzero = [sm for sm in subseg if sm != 0]
                         lb = nonzero[0]
                         if binary:
                             lb = 1
@@ -142,9 +168,10 @@ class RpeakData(Data, DataSeq):
 
 class ECGSequence(Sequence):
     """
-    Generates batches of data according to the meta information provided for each sample.
-
-    It is memory efficient and there is no need to put large amounts of data in the memory.
+    Generates batches of data according to the meta information
+    provided for each sample.
+    It is memory efficient and there is no need to put
+    large amounts of data in the memory.
 
     Parameters
     ----------
@@ -153,17 +180,22 @@ class ECGSequence(Sequence):
         Each rec is a dict with keys: 'signal','r_locations','r_labels',
         'rhythms','rhythms_locations', 'full_ann'.
     samples_info: list
-        [[record_no,start_win,end_win,label],[record_no,start_win,end_win,[labels] ], ...]
+        [[record_no,start_win,end_win,label],
+        [record_no,start_win,end_win,[labels]],
+        ...]
         eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
     class_labels : list, optional
-        Class labels to convert the output label list to integers
-        such as [0, "N", "V"] where "V" will be converted to 2, by default None
+        Class labels to convert the output label list to
+        integers such as [0, "N", "V"] where "V" will be
+        converted to 2, by default None
     batch_size : int, optional
         Batch size, by default 128
     binary : bool, optional
-        If True, any non-zero item will be converted to one in the output annotation, by default True
+        If True, any non-zero item will be converted to
+        one in the output annotation, by default True
     raw : bool, optional
-        Whether to return the full waveform or the computed features, by default True
+        Whether to return the full waveform or the computed features,
+        by default True
     interval : int, optional
         Interval for sub-segmenting the waveform for feature and
         label computations, by default 36
@@ -191,7 +223,7 @@ class ECGSequence(Sequence):
         self.interval = interval
         self.shuffle = shuffle
         self.on_epoch_end()
-        if self.class_labels != None:
+        if self.class_labels is not None:
             self.binary = False
 
     def __len__(self):
@@ -204,8 +236,8 @@ class ECGSequence(Sequence):
         Tuple
             Contains batch_x, batch_y as numpy arrays.
 
-            batch_x has the shape of (batch_size,#sub-segments,#features) if raw is False,
-            otherwise it has the shape of (batch_size,len_seq).
+            batch_x has the shape of (batch_size,#sub-segments,#features) if
+            raw is False, otherwise it has the shape of (batch_size,len_seq).
 
             batch_y has the shape of (batch_size,len_label_list)
         """
@@ -215,11 +247,12 @@ class ECGSequence(Sequence):
         batch_x = []
         batch_y = []
         for sample in batch_samples:
-            # eg sample:[10,500,800,[0,0,0,'N',0,0...] >>[rec,start,end,label]
+            # eg sample:[10,500,800,[0,0,0,'N',0,0...]>>[rec,start,end,label]
             rec_id = sample[0]
             start = sample[1]
             end = sample[2]
-            # ignoring provided labels in samples_info and get it directly from the data
+            # ignoring provided labels in samples_info and get it
+            # directly from the data
             # label = sample[3]
             seq = self.data[rec_id]["signal"][start:end]
             full_ann_seq = self.data[rec_id]["full_ann"][start:end]
@@ -253,13 +286,14 @@ class ECGSequence(Sequence):
         return binary_label
 
     def get_label(self, seg):
-        # this function is used if intentions is to not use provided labels in samples_info
+        # this function is used if intentions is to not use
+        # provided labels in samples_info
         labels_seq = []
         # each subsegment
         for i in range(0, len(seg), self.interval):
             subseg = seg[i : i + self.interval]
             if any(subseg):
-                nonzero = [l for l in subseg if l != 0]
+                nonzero = [sm for sm in subseg if sm != 0]
                 lb = nonzero[0]
                 # if self.binary:
                 # lb=1

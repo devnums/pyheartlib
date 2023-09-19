@@ -1,15 +1,29 @@
-import pytest
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy as np
-import pandas
-import os
 import pytest
-from pyheartlib.features import get_stat_features, get_hrv_features, get_wf_feats
+
+from pyheartlib.features import (
+    get_hrv_features,
+    get_stat_features,
+    get_wf_feats,
+)
 
 
 @pytest.fixture
 def data1():
     return np.array(
-        [[9, 3, 2, 4, 1, 0, -11, -4], [-8, -4, 10, 7, 5, 2, 5, 1]], dtype=np.float32
+        [[9, 3, 2, 4, 1, 0, -11, -4], [-8, -4, 10, 7, 5, 2, 5, 1]],
+        dtype=np.float32,
     )
 
 
@@ -27,7 +41,16 @@ def signal():
 
 
 def test_get_stat_features(data1):
-    flist = ["max", "min", "mean", "std", "median", "skew", "kurtosis", "range"]
+    flist = [
+        "max",
+        "min",
+        "mean",
+        "std",
+        "median",
+        "skew",
+        "kurtosis",
+        "range",
+    ]
     feats_arr = get_stat_features(data1, features=flist)
     assert feats_arr.shape == (2, 8)
     assert feats_arr[0, 0] == 9.0

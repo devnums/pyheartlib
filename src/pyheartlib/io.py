@@ -1,6 +1,18 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
+import pickle
+
 import pandas as pd
 import wfdb
-import pickle
 
 
 def get_data(record_path, config, return_dict=True):
@@ -18,11 +30,12 @@ def get_data(record_path, config, return_dict=True):
     Returns
     -------
     dict or dataframe
-        If return_dict is True, it returns a dictionary
-        with keys: 'signal','r_locations','r_labels','rhythms','rhythms_locations'.
+        If return_dict is True, it returns a dictionary with keys:
+        'signal','r_locations','r_labels','rhythms','rhythms_locations'.
 
-        If return_dict is False, it returns a dataframe containing the time, raw signal, and
-        a list of equal size to the raw signal with None values except at annotations locations.
+        If return_dict is False, it returns a dataframe containing
+        the time, raw signal, and a list of equal size to the raw signal
+        with None values except at annotations locations.
     """
     record = wfdb.rdrecord(record_path, channel_names=["MLII"])
     annotation = wfdb.rdann(record_path, "atr")
@@ -60,7 +73,11 @@ def get_data(record_path, config, return_dict=True):
             annots[ann_locations[i]] = symbol[i]
             if aux[i] != "":
                 annots[ann_locations[i]] = aux[i]
-        sig_dict = {"time": range(len(signal)), "signal": signal, "annots": annots}
+        sig_dict = {
+            "time": range(len(signal)),
+            "signal": signal,
+            "annots": annots,
+        }
         return pd.DataFrame(sig_dict)
 
 

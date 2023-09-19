@@ -1,10 +1,23 @@
-import pytest
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
+import os
+
 import numpy
 import pandas
-import os
-from pyheartlib.data_beat import BeatData
-from pyheartlib.beat_info import BeatInfo
+import pytest
 from dummy import DummyData
+
+from pyheartlib.beat_info import BeatInfo
+from pyheartlib.data_beat import BeatData
 
 test_data_dir = "./tests/dummy_data"
 dmm = DummyData(save_dir=test_data_dir)
@@ -196,7 +209,9 @@ def test_clean_inf_nan(beatdata):
     ds["beat_feats"].iloc[3, 1] = numpy.nan
     clean_ds = beatdata.clean_inf_nan(ds)
     assert ds.keys() == clean_ds.keys()
-    assert clean_ds["labels"].shape == tuple(numpy.subtract(ds["labels"].shape, (2,)))
+    assert clean_ds["labels"].shape == tuple(
+        numpy.subtract(ds["labels"].shape, (2,))
+    )
     assert clean_ds["waveforms"].shape == tuple(
         numpy.subtract(ds["waveforms"].shape, (2, 0))
     )
@@ -228,7 +243,9 @@ def test_append_ds(beatdata):
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
     res = beatdata.append_ds(ds, ds)
     assert ds.keys() == res.keys()
-    assert res["labels"].shape == tuple(numpy.multiply(ds["labels"].shape, (2,)))
+    assert res["labels"].shape == tuple(
+        numpy.multiply(ds["labels"].shape, (2,))
+    )
     assert res["waveforms"].shape == tuple(
         numpy.multiply(ds["waveforms"].shape, (2, 1))
     )

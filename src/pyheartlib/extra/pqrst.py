@@ -1,3 +1,14 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy as np
 from scipy.signal import find_peaks
 
@@ -44,7 +55,7 @@ class PQRST:
                     q_x = 2  # extreme case scenario
             q_y = self.beatwave[q_x]
             return [q_x, q_y]
-        except:
+        except Exception:
             return [np.nan, np.nan]
             # import matplotlib.pyplot as plt
 
@@ -73,7 +84,7 @@ class PQRST:
                     p_x = -200  # p wave not availble
                     p_y = -200
             return [p_x, p_y]
-        except:
+        except Exception:
             return [np.nan, np.nan]
 
     def _comp_s_wave(self):
@@ -95,7 +106,7 @@ class PQRST:
             s_x = s_x + self.rwave[0]
             s_y = self.beatwave[s_x]
             return [s_x, s_y]
-        except:
+        except Exception:
             return [np.nan, np.nan]
             # import matplotlib.pyplot as plt
 

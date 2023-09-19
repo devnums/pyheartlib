@@ -1,9 +1,22 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
+import types
+
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
-from scipy.fft import rfft, rfftfreq
-import matplotlib.pyplot as plt
+from scipy.fft import rfft, rfftfreq  # noqa: F401
+
 from pyheartlib.extra.pqrst import PQRST
-import types
 
 
 class BeatInfo:
@@ -13,26 +26,32 @@ class BeatInfo:
     Parameters
     ----------
     beat_loc : int
-        Index of beat in the rpeaks locations list, considering pre-RR and post-RR values.
+        Index of beat in the rpeaks locations list,
+        considering pre-RR and post-RR values.
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True
+        Whether to calculate rr-intervals in time(miliseconds) or samples,
+        by default True
 
     Attributes
     ----------
     beat_loc : int
-        Index of beat in the rpeaks locations list, considering pre-RR and post-RR values.
+        Index of beat in the rpeaks locations list,
+        considering pre-RR and post-RR values.
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples, by default True
+        Whether to calculate rr-intervals in time(miliseconds) or samples,
+        by default True
     whole_waveform : list
         Whole waveform.
     bwaveform : list
-        Trimmed beat waveform. Selected as a segment of the whole provided waveform.
+        Trimmed beat waveform. Selected as a segment of
+        the whole provided waveform.
     start_idx: int
-        The index of the first sample of the waveform according to the original signal.
+        The index of the first sample of the waveform according to
+        the original signal.
     rri : list
         RR intervals in ms if in_ms=True.
     rri_smpl : list
@@ -40,7 +59,8 @@ class BeatInfo:
     sdrri : list
         Successive RRI differences.
     avail_features : list
-        List of fetaure names (strings) that already have a definition in the class.
+        List of fetaure names (strings) that already have a
+        definition in the class.
     features : dict
         Dictionary with keys(strings) equal to feature names and dict values
         equal to features values.
@@ -63,9 +83,11 @@ class BeatInfo:
             'rpeak_locs' : list
                 A list containing locations of rpeaks.
             'rec_id' : int
-                Record id of the original signal which the excerpt is extracted from.
+                Record id of the original signal which the excerpt is
+                extracted from.
             'start_idx' : int
-                Index of beginnig of the segmented waveform in the original signal.
+                Index of beginnig of the segmented waveform in
+                the original signal.
             'label' : str
                 Type of the beat.
         """
@@ -106,7 +128,9 @@ class BeatInfo:
             Names of new features. Such as: [new_feature_1, new_feature_2]
         """
         for new_feature in new_features:
-            setattr(self, new_feature.__name__, types.MethodType(new_feature, self))
+            setattr(
+                self, new_feature.__name__, types.MethodType(new_feature, self)
+            )
 
     def select_features(self, features):
         """Select features.
@@ -124,8 +148,8 @@ class BeatInfo:
         Returns
         -------
         dict
-            Dictionary with keys(strings) equal to feature names and dict values
-            equal to features values.
+            Dictionary with keys(strings) equal to feature names and
+            dict values equal to features values.
         """
         if (
             hasattr(self, "selected_features_names")
@@ -146,7 +170,8 @@ class BeatInfo:
         return feature_dict
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
-        """Segment beat waveform according to the pre and post RR intervals."""
+        """Segment beat waveform according to the
+        pre and post RR intervals."""
 
         try:
             beat_rpeak_idx = self.rpeaks[self.beat_loc]
@@ -180,7 +205,7 @@ class BeatInfo:
                 "rpk": rpk,
             }
             return bwaveform, wfpts
-        except Exception as e:
+        except Exception:
             import traceback
 
             traceback.print_exc()
@@ -193,8 +218,12 @@ class BeatInfo:
             )
             plt.plot(self.whole_waveform)
             plt.plot(bwaveform)
-            plt.scatter(beat_onset, self.whole_waveform[beat_onset], color="yellow")
-            plt.scatter(beat_offset, self.whole_waveform[beat_offset], color="orange")
+            plt.scatter(
+                beat_onset, self.whole_waveform[beat_onset], color="yellow"
+            )
+            plt.scatter(
+                beat_offset, self.whole_waveform[beat_offset], color="orange"
+            )
             plt.scatter(rpk, self.whole_waveform[rpk], color="r")
 
     def get_rris(self, in_ms):
@@ -203,7 +232,8 @@ class BeatInfo:
         Parameters
         ----------
         in_ms : bool
-            If True result will be in time(miliseconds), otherwise in samples.
+            If True result will be in time(miliseconds),
+            otherwise in samples.
 
         Returns
         -------
@@ -285,11 +315,15 @@ class BeatInfo:
         return self.F_post_rri() / self.F_rms_rri()
 
     def F_diff_pre_avg_nr(self):
-        """Difference of pre RR interval and median of RR intervals, normalized by their RMS."""
+        """Difference of pre RR interval and median of RR intervals,
+        normalized by their RMS."""
+
         return (self.F_pre_rri() - self.F_median_rri()) / self.F_rms_rri()
 
     def F_diff_post_avg_nr(self):
-        """Difference of post RR interval and median of RR intervals, normalized by their RMS."""
+        """Difference of post RR interval and median of RR intervals,
+        normalized by their RMS."""
+
         return (self.F_post_rri() - self.F_median_rri()) / self.F_rms_rri()
 
     def F_compensate_ratio(self):
@@ -356,7 +390,11 @@ class BeatInfo:
         return self.F_beat_max() - self.F_beat_min()
 
     def F_maxmin_diff_norm(self):
-        """Difference of max and min values of heartbeat waveform normalized by waveform RMS"""
+        """Difference of max and min values of heartbeat waveform,
+        normalized by waveform RMS.
+
+        """
+
         return self.F_maxmin_diff() / self.F_beat_rms()
 
     def F_beat_mean(self):
@@ -391,6 +429,7 @@ class BeatInfo:
         -------
         dict
             Waveform sample values.
+
         """
 
         dt = int(len(self.bwaveform) / n_samples)
@@ -404,7 +443,8 @@ class BeatInfo:
         return samples_dict
 
     def F_subsegs(self, n_subsegs=3, ftr="max"):
-        """Computes a feature for equal-length subsegments of the beat waveform."""
+        """Computes a feature for equal-length subsegments of
+        the beat waveform."""
 
         def func(arg, ftr):
             if ftr == "max":
@@ -529,7 +569,8 @@ class BeatInfo:
     #         s = (self.pqrst_dict["s"][0]) + beat_onset
     #         ax.scatter(p, self.whole_waveform[p], color="cyan")
     #         ax.scatter(q, self.whole_waveform[q], color="magenta")
-    #         ax.scatter(r, self.whole_waveform[r], color="violet", marker="x")
+    #         ax.scatter(r, self.whole_waveform[r], color="violet",
+    #         marker="x")
     #         ax.scatter(s, self.whole_waveform[s], color="lime")
     #     except:
     #         pass

@@ -1,9 +1,26 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import math
+
 import numpy as np
+from scipy.signal import (  # noqa: F401
+    butter,
+    medfilt,
+    sosfilt,
+    sosfiltfilt,
+    sosfreqz,
+    spectrogram,
+)
 from tqdm import tqdm
-from scipy.signal import spectrogram
-from scipy.signal import medfilt
-from scipy.signal import butter, sosfilt, sosfreqz, sosfiltfilt
 
 
 class Processing:
@@ -85,9 +102,15 @@ class Processing:
 
     @staticmethod
     def denoise_signal(
-        signal, remove_bl=True, lowpass=False, sampling_rate=360, cutoff=45, order=15
+        signal,
+        remove_bl=True,
+        lowpass=False,
+        sampling_rate=360,
+        cutoff=45,
+        order=15,
     ):
-        """Denoises the signal by removing the baseline wander and/or applying a low pass filter.
+        """Denoises the signal by removing the baseline wander
+        and/or applying a low pass filter.
 
         Parameters
         ----------
@@ -133,13 +156,16 @@ class STFT:
     Example
     -------
     >>> dpr = STFT()
-    >>> features = dpr.specgram(x, sampling_rate=360, nperseg=127, noverlap=122)
+    >>> features = dpr.specgram(x, sampling_rate=360,
+    >>>                         nperseg=127, noverlap=122)
     """
 
     def __init__(self):
         pass
 
-    def specgram(self, signals, sampling_rate=None, nperseg=None, noverlap=None):
+    def specgram(
+        self, signals, sampling_rate=None, nperseg=None, noverlap=None
+    ):
         """Applies Short Time Fourier Transform on the signals.
 
         Parameters

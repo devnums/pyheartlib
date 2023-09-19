@@ -1,3 +1,14 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy as np
 from scipy import stats
 
@@ -19,7 +30,16 @@ def get_stat_features(data, features="all"):
         A 2D numpy array with the shape (#samples, #features).
     """
     if features == "all":
-        flist = ["max", "min", "mean", "std", "median", "skew", "kurtosis", "range"]
+        flist = [
+            "max",
+            "min",
+            "mean",
+            "std",
+            "median",
+            "skew",
+            "kurtosis",
+            "range",
+        ]
     else:
         flist = features
 
@@ -183,7 +203,8 @@ def get_hrv_features(rri, features="all"):
 def get_wf_feats(sig, interval):
     """Computes features for the signal waveform.
 
-    The input signal is segmented into sub-signals based on the given interval parameter.
+    The input signal is segmented into sub-signals
+    based on the given interval parameter.
 
     Parameters
     ----------

@@ -1,9 +1,22 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import os
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
 from pyheartlib.data import Data
-from pyheartlib.io import save_data, load_data
+from pyheartlib.io import load_data, save_data
 
 
 class BeatData(Data):
@@ -16,15 +29,18 @@ class BeatData(Data):
     base_path : str, optional
         Path of main directory for loading and saving data, by default None
     win : list, optional
-        [onset,offset] of signal excerpts around the rpeaks, by default [60, 120]
+        [onset,offset] of signal excerpts around the rpeaks,
+        by default [60, 120]
     num_pre_rr : int, optional
         Number of previous rpeak locations to be included, by default 10
     num_post_rr : int, optional
         Number of future rpeak locations to be included, by default 10
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before extracting beat excerpts, by default False
+        If True removes the baseline from the raw signals before
+        extracting beat excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals, by default False
+        Whether to apply low pass filtering to the raw signals,
+        by default False
     cutoff : int, optional
         Parameter of the low pass filter, by default 45
     order : int, optional
@@ -34,7 +50,9 @@ class BeatData(Data):
 
     Examples
     --------
-    >>> beatdata = BeatData(base_path="./data", win=[200, 200], remove_bl=False, lowpass=False, progress_bar=True)
+    >>> beatdata = BeatData(base_path="./data", win=[200, 200],
+    >>>                     remove_bl=False, lowpass=False,
+    >>>                     progress_bar=True)
     >>> # create a BeatInfo object
     >>> beatinfo = BeatInfo()
     >>> # save the dataset file
@@ -101,15 +119,17 @@ class BeatData(Data):
             beat_types : list
                 Contains the corresponding labels of each beat excerpt.
             r_locs : list
-                A list containing lists of previous, itself, and future rpeak locations
-                for each beat. Can be used for HRV calculations.
+                A list containing lists of previous, itself, and future rpeak
+                locations for each beat. Can be used for HRV calculations.
             s_idxs : list
-                Contains the starting point of each extracted beat excerpt on the original signal.
-                This is computed by subtracting the window onset from the rpeak location.
+                Contains the starting point of each extracted beat excerpt
+                on the original signal. This is computed by subtracting the
+                window onset from the rpeak location.
         """
         if not self.num_pre_rr < (len(r_locations) - self.num_post_rr):
             raise ValueError(
-                "Wrong num_pre_rr and num_post_rr in respect to the number of peaks!"
+                "Wrong num_pre_rr and num_post_rr in \
+                respect to the number of peaks!"
             )
 
         win = self.win
@@ -125,7 +145,11 @@ class BeatData(Data):
                 frags.append(seg)
                 beat_types.append(r_label[i])
                 r_locs.append(
-                    list(r_locations[i - self.num_pre_rr : i + self.num_post_rr + 1])
+                    list(
+                        r_locations[
+                            i - self.num_pre_rr : i + self.num_post_rr + 1
+                        ]
+                    )
                 )
                 s_idxs.append(start_idx)
         signal_frags = np.array(frags)
@@ -182,7 +206,8 @@ class BeatData(Data):
                 },
                 beatinfo_obj,
             )
-            # beat_feats = [[i for i in beat_feat.values()] for beat_feat in beat_feats]
+            # beat_feats = [
+            #   [i for i in beat_feat.values()] for beat_feat in beat_feats]
         else:
             beat_feats = [{"empty": ""}]
             labels = yds
@@ -227,7 +252,9 @@ class BeatData(Data):
         beatinfo_obj.fs = self.sampling_rate
         beatinfo_obj.beat_loc = self.beat_loc
         # beats loop
-        for i in tqdm(range(len(data["rpeak_locs"])), disable=self.progress_bar):
+        for i in tqdm(
+            range(len(data["rpeak_locs"])), disable=self.progress_bar
+        ):
             beatinfo_obj(
                 {
                     "waveform": data["waveforms"][i],
@@ -337,8 +364,11 @@ class BeatData(Data):
         file_test = file_prefix + "_test" + ".beat"
         save_data(ds_test, file_path=os.path.join(self.base_path, file_test))
 
-    def save_dataset_single(self, record, beatinfo_obj, split_ratio=0.3, file=None):
-        """Saves the signal fragments and their labels into a file for a single record.
+    def save_dataset_single(
+        self, record, beatinfo_obj, split_ratio=0.3, file=None
+    ):
+        """Saves the signal fragments and their labels into a file for
+        a single record.
 
         Parameters
         ----------
@@ -369,7 +399,11 @@ class BeatData(Data):
             "beat_feats": farr_train,
             "labels": yarr_train,
         }
-        ds_test = {"waveforms": xarr_test, "beat_feats": farr_test, "labels": yarr_test}
+        ds_test = {
+            "waveforms": xarr_test,
+            "beat_feats": farr_test,
+            "labels": yarr_test,
+        }
         if file is None:
             file_train = str(record) + "_train" + ".beat"
             file_test = str(record) + "_test" + ".beat"
@@ -385,7 +419,8 @@ class BeatData(Data):
         Parameters
         ----------
         file_name : str
-            File name. The final final path is the join of base path and file name.
+            File name. The final final path is the join of
+            base path and file name.
 
         Returns
         -------
@@ -418,7 +453,8 @@ class BeatData(Data):
         -------
         list
             A list of dictionaries. One dictionary per one data set.
-            Keys are labels types(symbols) and values are the counts of each specific symbol.
+            Keys are labels types(symbols) and values are the counts of
+            each specific symbol.
         """
         res_list = []
         for yds in yds_list:
@@ -437,7 +473,8 @@ class BeatData(Data):
         yds_list : list
             List containing several label data. e.g train,val,test.
         name_list : list, optional
-            A list of strings as the name of label data e.g. train,val,test, by default []
+            A list of strings as the name of label data e.g. train,val,test,
+            by default []
 
         Returns
         -------
@@ -453,7 +490,8 @@ class BeatData(Data):
         return df
 
     def per_record_stats(self, rec_ids_list=None, cols=None):
-        """Returns a dataframe containing the number of each type in each record.
+        """Returns a dataframe containing the number of
+        each type in each record.
 
         Parameters
         ----------
@@ -509,15 +547,21 @@ class BeatData(Data):
         sliced_y = sliced_y[indexes_keep]
         sliced_x = sliced_x[indexes_keep]
         sliced_f = sliced_f.iloc[indexes_keep]
-        return {"waveforms": sliced_x, "beat_feats": sliced_f, "labels": sliced_y}
+        return {
+            "waveforms": sliced_x,
+            "beat_feats": sliced_f,
+            "labels": sliced_y,
+        }
 
     def search_label(self, inp, sym="N"):
-        """Searches the provided data and returns the indexes for a patricular label.
+        """Searches the provided data and returns the
+        indexes for a patricular label.
 
         Parameters
         ----------
         inp : dict or numpy.ndarray
-            Input can be a dictionary having a 'labels' key, or a 1D numpy array containing labels.
+            Input can be a dictionary having a 'labels' key, or
+            a 1D numpy array containing labels.
         sym : str, optional
             The label to be searched for in the dataset, by default 'N'
 
@@ -542,7 +586,8 @@ class BeatData(Data):
         return indexes
 
     def clean_inf_nan(self, ds):
-        """Cleans the dataset by removing samples (rows) with inf or nan in computed features.
+        """Cleans the dataset by removing samples (rows) with inf or nan in
+        computed features.
 
         Parameters
         ----------
@@ -552,7 +597,8 @@ class BeatData(Data):
         Returns
         -------
         dict
-            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels".
+            Cleaned dataset with keys: "waveforms",
+            "beat_feats", and "labels".
 
         """
 
@@ -578,12 +624,14 @@ class BeatData(Data):
         factor : float, optional
             Parameter of IQR method, by default 1.5
         return_indexes : bool, optional
-            If True returns indexes of outliers, otherwise returns cleaned dataset, by default False
+            If True returns indexes of outliers, otherwise returns
+            cleaned dataset, by default False
 
         Returns
         -------
         dict or list
-            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels", or indexes of outliers.
+            Cleaned dataset with keys: "waveforms", "beat_feats",
+            and "labels", or indexes of outliers.
 
         """
 
@@ -591,14 +639,17 @@ class BeatData(Data):
         xds = ds["waveforms"]
         fds = ds["beat_feats"]
         fds.reset_index(drop=True, inplace=True)
-        # cleans a 2d array. Each column is a features, rows are samples. Only fds.
+        # cleans a 2d array. Each column is a features, rows are samples.
+        # Only fds.
         ind_outliers = []
         for i in range(fds.shape[1]):
             x = fds.iloc[:, i]
             Q1 = np.quantile(x, 0.25, axis=0)
             Q3 = np.quantile(x, 0.75, axis=0)
             IQR = Q3 - Q1
-            inds = np.where((x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR)))[0]
+            inds = np.where(
+                (x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR))
+            )[0]
             ind_outliers.extend(inds)
         ind_outliers = list(np.unique(ind_outliers))
         fds = fds.drop(ind_outliers, axis=0, inplace=False)
@@ -622,7 +673,8 @@ class BeatData(Data):
         Returns
         -------
         dict
-            Cleaned dataset with keys: "waveforms", "beat_feats", and "labels".
+            Cleaned dataset with keys: "waveforms",
+            "beat_feats", and "labels".
 
         """
 
@@ -659,7 +711,8 @@ class BeatData(Data):
         return dss
 
     # def __aug_decrease(self, ds, label="N", desired_size=21000):
-    #     # """Simple data augmentation to decrease a particular type in the dataset."""
+    #     # """Simple data augmentation to decrease a
+    #          particular type in the dataset."""
     #     import random
     #     import copy
 
@@ -682,7 +735,8 @@ class BeatData(Data):
     #     }
 
     # def __aug_increase(self, ds, desired_size=21000):
-    #     # """Simple data augmentation to increase the number of minorities in the dataset."""
+    #     # """Simple data augmentation to increase the number of
+    #          minorities in the dataset."""
     #     import copy
 
     #     x_aug = ds["waveforms"]
@@ -711,4 +765,5 @@ class BeatData(Data):
     #                     print(sym)
     #         except:
     #             print("label zero")
-    #     return {"waveforms": x_aug, "beat_feats": r_aug, "labels": np.array(y_aug)}
+    #     return {"waveforms": x_aug, "beat_feats": r_aug,
+    #             "labels": np.array(y_aug)}

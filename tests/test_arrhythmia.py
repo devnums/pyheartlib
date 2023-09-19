@@ -1,9 +1,20 @@
-import pytest
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy
-import pandas
+import pytest
+from dummy import DummyData
+
 from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
 from pyheartlib.io import load_data
-import hashlib
 
 
 @pytest.fixture
@@ -37,8 +48,6 @@ def test_full_annotate(arrhythmia_data, record):
     assert full_ann[-1] == "(T"
 
 
-from dummy import DummyData
-
 test_data_dir = "./tests/dummy_data"
 dmm = DummyData(save_dir=test_data_dir)
 dmm.save(record_name="dummy101")
@@ -47,7 +56,9 @@ dmm.save(record_name="dummy102")
 
 @pytest.fixture
 def arrhythmiadata():
-    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(
+        base_path=test_data_dir, remove_bl=False, lowpass=False
+    )
     return obj
 
 
@@ -65,7 +76,9 @@ def test_save_samples(arrhythmiadata):
 
 @pytest.fixture
 def seq_generator1():
-    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(
+        base_path=test_data_dir, remove_bl=False, lowpass=False
+    )
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
@@ -90,7 +103,9 @@ def test_getitem1(seq_generator1):
     batch_label = seq_generator1.__getitem__(batch)[1]  # excerpt label
     batch_seq = seq_generator1.__getitem__(batch)[0][0]  # excerpt values
     batch_rri = seq_generator1.__getitem__(batch)[0][1]  # rr intervals
-    batch_rri_feat = seq_generator1.__getitem__(batch)[0][2]  # calculated rri features
+    batch_rri_feat = seq_generator1.__getitem__(batch)[0][
+        2
+    ]  # calculated rri features
     assert batch_label.shape == (23,)
     assert batch_seq.shape == (23, 400)
     assert batch_label[0] == "(N"
@@ -107,7 +122,9 @@ def test_getitem1(seq_generator1):
 
 @pytest.fixture
 def seq_generator2():
-    obj = ArrhythmiaData(base_path=test_data_dir, remove_bl=False, lowpass=False)
+    obj = ArrhythmiaData(
+        base_path=test_data_dir, remove_bl=False, lowpass=False
+    )
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
@@ -132,7 +149,9 @@ def test_getitem2(seq_generator2):
     batch_label = seq_generator2[batch][1]  # excerpt label
     batch_seq = seq_generator2[batch][0][0]  # excerpt values
     batch_rri = seq_generator2.__getitem__(batch)[0][1]  # rr intervals
-    batch_rri_feat = seq_generator2.__getitem__(batch)[0][2]  # calculated rri features
+    batch_rri_feat = seq_generator2.__getitem__(batch)[0][
+        2
+    ]  # calculated rri features
     assert batch_label.shape == (23,)
     assert batch_seq.shape == (23, 5, 14)
     assert batch_label[0] == 0

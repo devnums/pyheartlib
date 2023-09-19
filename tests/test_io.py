@@ -1,8 +1,21 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import os
+
 import numpy
 import yaml
-from pyheartlib.io import get_data
 from dummy import DummyData
+
+from pyheartlib.io import get_data
 
 test_data_dir = "./tests/dummy_data"
 record_name = "dummy101"

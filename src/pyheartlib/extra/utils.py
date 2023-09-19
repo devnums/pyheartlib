@@ -1,3 +1,14 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 # from scipy.spatial import distance
 # from sklearn.metrics import mean_squared_error
 # import numpy as np
@@ -5,10 +16,11 @@
 
 
 def reset_seed(seed_value=22):
-    from numpy import random
-    import random as python_random
     import os
+    import random as python_random
+
     import tensorflow as tf
+    from numpy import random
 
     # must run every time
     random.seed(seed_value)
@@ -51,7 +63,8 @@ def reset_seed(seed_value=22):
 #     import matplotlib.pyplot as plt
 #     from scipy import signal
 
-#     # f,t,Sxx= signal.spectrogram(sig, fs=sampling_rate, nperseg=win,nfft=win, noverlap=overlap, mode='psd')
+#     # f,t,Sxx= signal.spectrogram(sig, fs=sampling_rate, nperseg=win,
+#                                   nfft=win, noverlap=overlap, mode='psd')
 #     # Sxx_log = 10*np.log10(Sxx)
 #     # plt.pcolormesh(t, f, Sxx_log)
 #     # plt.ylabel('Frequency [Hz]')
@@ -108,7 +121,8 @@ def reset_seed(seed_value=22):
 #     if flag:
 #         from sklearn.utils import class_weight
 
-#         class_weights = class_weight.compute_class_weight("balanced", np.unique(y), y)
+#         class_weights = class_weight.compute_class_weight("balanced",
+#                                                            np.unique(y), y)
 #         class_weights = dict(zip(np.unique(y), class_weights))
 #         # dict(zip(FINAL_MAP_DICT, class_weights))
 #         return class_weights
@@ -161,7 +175,8 @@ def reset_seed(seed_value=22):
 #         dtww.append(dtw)
 #         syms.append(s)
 
-#     dict_res_x = {"sym": syms, "mse_x": mse, "cor": corr, "cos": coss, "dtw": dtww}
+#     dict_res_x = {"sym": syms, "mse_x": mse, "cor": corr,
+#                   "cos": coss, "dtw": dtww}
 #     df_x = pd.DataFrame(dict_res_x)
 #     print(df_x.sort_values(by="cor"))
 
@@ -192,7 +207,8 @@ def reset_seed(seed_value=22):
 #             DTW.append(dtw)
 #             SYMS.append(s)
 
-#     dict_res = {"SYM": SYMS, "MSE": MSE, "COR": COR, "COS": COS, "DTW": DTW}
+#     dict_res = {"SYM": SYMS, "MSE": MSE, "COR": COR,
+#                 "COS": COS, "DTW": DTW}
 #     df_res = pd.DataFrame(dict_res)
 #     return df_res
 

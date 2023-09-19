@@ -1,8 +1,20 @@
-import pytest
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy
-from pyheartlib.data_rpeak import RpeakData, ECGSequence
+import pytest
+from dummy import DummyData
+
+from pyheartlib.data_rpeak import ECGSequence, RpeakData
 from pyheartlib.io import load_data
-import hashlib
 
 
 @pytest.fixture
@@ -30,7 +42,21 @@ def record():
             2910,
             3200,
         ],
-        "r_labels": ["N", "V", "A", "A", "N", "N", "V", "A", "A", "N", "N", "V", "A"],
+        "r_labels": [
+            "N",
+            "V",
+            "A",
+            "A",
+            "N",
+            "N",
+            "V",
+            "A",
+            "A",
+            "N",
+            "N",
+            "V",
+            "A",
+        ],
         "rhythms": ["(N", "(AFIB", "(T"],
         "rhythms_locations": [10, 800, 1500],
     }
@@ -49,8 +75,6 @@ def test_full_annotate(rpeak_data, record):
     rlabels = record["r_labels"] + [0]
     assert (set(full_ann)) == (set(rlabels))
 
-
-from dummy import DummyData
 
 test_data_dir = "./tests/dummy_data"
 dmm = DummyData(save_dir=test_data_dir)
@@ -86,7 +110,13 @@ def seq_generator1():
         stride=200,
     )
     obj = ECGSequence(
-        ann, sam, binary=False, batch_size=7, raw=True, interval=75, shuffle=False
+        ann,
+        sam,
+        binary=False,
+        batch_size=7,
+        raw=True,
+        interval=75,
+        shuffle=False,
     )
     return obj
 
@@ -120,7 +150,13 @@ def seq_generator2():
         stride=200,
     )
     obj = ECGSequence(
-        ann, sam, binary=True, batch_size=7, raw=True, interval=75, shuffle=False
+        ann,
+        sam,
+        binary=True,
+        batch_size=7,
+        raw=True,
+        interval=75,
+        shuffle=False,
     )
     return obj
 

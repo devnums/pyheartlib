@@ -1,6 +1,18 @@
-import pytest
-from pyheartlib.processing import Processing, STFT
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy as np
+import pytest
+
+from pyheartlib.processing import STFT, Processing
 
 
 @pytest.fixture
@@ -11,7 +23,10 @@ def signal():
 def test_apply(signal):
     processors = [
         ("remove_baseline", dict(sampling_rate=360)),
-        ("lowpass_filter_butter", dict(cutoff=45, sampling_rate=360, order=15)),
+        (
+            "lowpass_filter_butter",
+            dict(cutoff=45, sampling_rate=360, order=15),
+        ),
     ]
     r = Processing.apply(processors, signal)
     assert len(r) == len(signal)
@@ -23,7 +38,9 @@ def test_remove_baseline(signal):
 
 
 def test_lowpass_filter_butter(signal):
-    r = Processing.lowpass_filter_butter(signal, cutoff=45, sampling_rate=360, order=15)
+    r = Processing.lowpass_filter_butter(
+        signal, cutoff=45, sampling_rate=360, order=15
+    )
     assert len(r) == len(signal)
 
 
@@ -41,7 +58,9 @@ def signal2d():
 
 def test_specgram(signal2d):
     dpr = STFT()
-    features = dpr.specgram(signal2d, sampling_rate=360, nperseg=127, noverlap=122)
+    features = dpr.specgram(
+        signal2d, sampling_rate=360, nperseg=127, noverlap=122
+    )
     assert features.shape == (3, 26, 64)
 
 

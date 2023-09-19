@@ -1,3 +1,14 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 # from sklearn.metrics import (
 #     confusion_matrix,
 #     ConfusionMatrixDisplay,
@@ -19,9 +30,11 @@
 #         self.labels = labels
 
 #     def conf_matrix(self, normalize=None):
-#         return confusion_matrix(self.y_true, self.y_pred, normalize=normalize)
+#         return confusion_matrix(self.y_true,
+#                                 self.y_pred, normalize=normalize)
 
-#     def plot_confusion_matrix(self, normalize=None, cmap="Blues", values_format=".2%"):
+#     def plot_confusion_matrix(self, normalize=None,
+#                               cmap="Blues", values_format=".2%"):
 #         # print(pylab.rcParams)
 #         params = {
 #             "legend.fontsize": 4,
@@ -41,10 +54,12 @@
 #         disp = ConfusionMatrixDisplay(
 #             confusion_matrix=cm, display_labels=sorted(self.labels)
 #         )
-#         disp.plot(include_values=True, cmap=cmap, values_format=values_format)
+#         disp.plot(include_values=True, cmap=cmap,
+#                   values_format=values_format)
 
 #     def the_classification_report(self, digits=4):
-#         report = classification_report(self.y_true, self.y_pred, digits=digits)
+#         report = classification_report(self.y_true, self.y_pred,
+#                                        digits=digits)
 #         return report
 
 #     def metrics(self):
@@ -57,11 +72,13 @@
 
 #         TPR = TP / (TP + FN) * 100  # Sensitivity, recall
 #         TNR = TN / (TN + FP) * 100  # Specificity, true negative rate
-#         PPV = TP / (TP + FP) * 100  # Precision, positive predictive value (PPV)
+#         # Precision, positive predictive value (PPV)
+#         PPV = TP / (TP + FP) * 100
 #         NPV = TN / (TN + FN) * 100  # Negative predictive value
 #         FPR = FP / (FP + TN) * 100  # False positive rate
 #         FNR = FN / (TP + FN) * 100  # False negative rate
-#         ACC = (TP + TN) / (TP + FP + FN + TN) * 100  # Accuracy of each class
+#         # Accuracy of each class
+#         ACC = (TP + TN) / (TP + FP + FN + TN) * 100
 #         out = {
 #             "Class": sorted(self.labels),
 #             "(PPV)Precision": PPV,
@@ -79,8 +96,10 @@
 
 # """
 #  from sklearn.metrics import confusion_matrix
-# np.set_printoptions(suppress=True, formatter={'float_kind':'{:.2f}'.format})
-# cfm=confusion_matrix(y_true_AAMI, y_pred_AAMI, labels=sorted(labels_AAMI),normalize='true')*100
+# np.set_printoptions(suppress=True,
+#                     formatter={'float_kind':'{:.2f}'.format})
+# cfm=confusion_matrix(y_true_AAMI, y_pred_AAMI, labels=sorted(labels_AAMI),
+#                      normalize='true')*100
 # cfm
 # import pandas as pd
 # pd.DataFrame(cfm).round(2)
