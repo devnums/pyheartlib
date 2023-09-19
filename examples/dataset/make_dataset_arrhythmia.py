@@ -1,8 +1,19 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 import numpy as np
 import pandas as pd
-from pyheartlib.io import load_data
-from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
 
+from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
+from pyheartlib.io import load_data
 
 # AFIBs
 train_set = [201, 203]
@@ -19,7 +30,9 @@ annotated_records, samples_info = load_data("./data/train.arr")
 labels = []
 for sample in samples_info:
     labels.append(sample[3])
-df = pd.DataFrame(np.unique(labels, return_counts=True), index=["Label", "Count"])
+df = pd.DataFrame(
+    np.unique(labels, return_counts=True), index=["Label", "Count"]
+)
 print(df)
 
 class_labels = list(np.unique(labels))

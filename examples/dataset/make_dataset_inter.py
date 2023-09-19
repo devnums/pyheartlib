@@ -1,10 +1,20 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 """
 This example shows how to create the datasets inter-patient.
 """
 
-from pyheartlib.data_beat import BeatData
 from pyheartlib.beat_info import BeatInfo
-
+from pyheartlib.data_beat import BeatData
 
 # Inter-patient
 # Lets create a BeatData object.
@@ -59,7 +69,8 @@ test_ds = beatdata.load_data(file_name="test.beat")
 
 # Number of samples per class
 stat_report = beatdata.report_stats_table(
-    [train_ds["labels"], val_ds["labels"], test_ds["labels"]], ["Train", "Val", "Test"]
+    [train_ds["labels"], val_ds["labels"], test_ds["labels"]],
+    ["Train", "Val", "Test"],
 )
 print(stat_report)
 print(train_ds["beat_feats"].tail(3))
