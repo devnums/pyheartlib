@@ -14,9 +14,9 @@ $ pip install pyheartlib
 
 Following examples demostrates dataset creation:
 
-* {doc}`Inter-patient dataset <examples/dataset/inter_patient>` <br> 
-* {doc}`Intra-patient dataset <examples/dataset/intra_patient>` <br> 
-* {doc}`Rpeak dataset <examples/dataset/rpeak>` <br>    
+* {doc}`Inter-patient dataset <examples/dataset/inter_patient>` <br>
+* {doc}`Intra-patient dataset <examples/dataset/intra_patient>` <br>
+* {doc}`Rpeak dataset <examples/dataset/rpeak>` <br>
 * {doc}`Arrhythmia dataset <examples/dataset/arrhythmia>`
 
 As an example, a deep learning model is designed using the Keras library for the heartbeat detection task. Because this task is less complex compared to the heartbeat and arrhythmia classification tasks, it can be trained with high accuracy using available public datasets.

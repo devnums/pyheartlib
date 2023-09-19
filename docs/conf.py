@@ -4,13 +4,13 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Project information -----------------------------------------------------
+# -- Project information --------------------------------------------------
 
 project = "pyheartlib"
 copyright = "2023, devnums"
 author = "devnums"
 
-# -- General configuration ---------------------------------------------------
+# -- General configuration ------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -35,20 +35,20 @@ autodoc_default_options = {
     "special-members": False,
 }
 
-# -- Options for HTML output -------------------------------------------------
+# -- Options for HTML output -----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
 
-# -- MyST-NB -------------------------------------------------
+# -- MyST-NB ---------------------------------------------------------------
 nb_execution_timeout = 180
 
 
-# -- Custom code -----------------------------------------------------
+# -- Custom code -----------------------------------------------------------
 print("\n***************\ndoc is running\n***************\n")
-import shutil
+import shutil  # noqa: E402
 
 files = [
     ["../examples/model/data_preparation.py", "examples/model/"],

@@ -6,7 +6,7 @@
     :titlesonly:
     :maxdepth: 1
 
-    
+
     quickstart.md
     examples/examples
     autoapi/index
