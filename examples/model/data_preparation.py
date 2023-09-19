@@ -1,7 +1,19 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 # This file can be used to prepare data for the example model
 import os
+
+from pyheartlib.data_rpeak import ECGSequence, RpeakData
 from pyheartlib.io import load_data
-from pyheartlib.data_rpeak import RpeakData, ECGSequence
 
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
@@ -30,7 +42,12 @@ annotated_records, samples_info = load_data(train_data)
 print("number of generated sampels:", str(len(samples_info)))
 
 trainseq = ECGSequence(
-    annotated_records, samples_info, binary=True, batch_size=1, raw=True, interval=36
+    annotated_records,
+    samples_info,
+    binary=True,
+    batch_size=1,
+    raw=True,
+    interval=6,
 )
 
 i = 0

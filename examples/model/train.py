@@ -1,9 +1,22 @@
+#############################################################################
+# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
+# Project repo: https://github.com/devnums/pyheartlib                       #
+# Contact: devnums.code@gmail.com                                           #
+#                                                                           #
+# This file is part of the Pyheartlib project.                              #
+# To see the complete LICENSE file visit:                                   #
+# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
+#############################################################################
+
+
 # This file can be used to train the example model
 import os
-import tensorflow as tf
-from pyheartlib.io import load_data
-from pyheartlib.extra.utils import reset_seed
 
+from pyheartlib.extra.utils import reset_seed
+from pyheartlib.io import load_data
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import tensorflow as tf  # noqa: E402
 
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
@@ -12,6 +25,7 @@ data_dir = "../../data"
 train_data = os.path.join(data_dir, "train.rpeak")
 val_data = os.path.join(data_dir, "val.rpeak")
 mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
+interval_value = 6
 
 reset_seed()
 
@@ -25,7 +39,7 @@ for sample in samples_info:
 print(len(labels))
 
 # import model architecture
-from model_arch import model_arch
+from model_arch import model_arch  # noqa: E402
 
 params_model = {
     "x_input_dim": samples_info[0][2] - samples_info[0][1],  # win size
@@ -34,7 +48,7 @@ params_model = {
     "regularizer": None,
 }
 print(params_model)
-params_train = {"batch_size": 128, "epochs": 2}
+params_train = {"batch_size": 64, "epochs": 2}
 
 mymodel = model_arch(params_model)
 opt = tf.keras.optimizers.Adam(
@@ -65,7 +79,7 @@ model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
     save_best_only=True,
     verbose=1,
 )
-import time
+import time  # noqa: E402
 
 batch_sleep = tf.keras.callbacks.LambdaCallback(
     on_batch_end=lambda batch, logs: time.sleep(0.0001)
@@ -74,7 +88,7 @@ batch_sleep = tf.keras.callbacks.LambdaCallback(
 callbacks = [early_stopping, model_checkpoint, reduce_lr]
 # callbacks = [batch_sleep]
 
-from pyheartlib.data_rpeak import ECGSequence
+from pyheartlib.data_rpeak import ECGSequence  # noqa: E402
 
 trainseq = ECGSequence(
     annotated_records,
@@ -82,7 +96,7 @@ trainseq = ECGSequence(
     binary=True,
     batch_size=params_train["batch_size"],
     raw=True,
-    interval=36,
+    interval=interval_value,
 )
 
 print("trainseq.shape: ", str(trainseq[0][0].shape))
@@ -97,7 +111,7 @@ validationseq = ECGSequence(
     binary=True,
     batch_size=params_train["batch_size"],
     raw=True,
-    interval=36,
+    interval=interval_value,
 )
 
 # train model

@@ -1,16 +1,16 @@
 # This file contains the architecture of the example model.
 import tensorflow as tf
 from tensorflow.keras.layers import (
-    Input,
-    Activation,
-    Conv1D,
-    BatchNormalization,
-    Dropout,
-    MaxPool1D,
-    Flatten,
-    Bidirectional,
     LSTM,
+    Activation,
+    BatchNormalization,
+    Bidirectional,
+    Conv1D,
     Dense,
+    Dropout,
+    Flatten,
+    Input,
+    MaxPool1D,
 )
 
 
@@ -65,7 +65,7 @@ def conv1d_block(
 def model_arch(params_model):
     x_input_dim = int(params_model["x_input_dim"])
     num_classes = int(params_model["num_classes"])
-    out_seq_len = int(params_model["out_seq_len"])
+    # out_seq_len = int(params_model["out_seq_len"])
 
     input1_layer = Input(shape=(x_input_dim), name="x_input_dim")
     # input1_layer = Input(shape=(150,14), name='x_input_dim')
@@ -80,21 +80,21 @@ def model_arch(params_model):
     out = conv1d_block(
         out,
         name="block1",
-        filters=32,
-        kernel_size=36,
+        filters=16,
+        kernel_size=6,
         bn=True,
         drate=0.2,
-        pool_size=36,
+        pool_size=6,
         flatten=False,
     )
     out = Activation("relu")(out)
-    out = Bidirectional(LSTM(64, return_sequences=True))(out)
+    out = Bidirectional(LSTM(32, return_sequences=True))(out)
     out = Dropout(0.2)(out)
     print_layer(out)
-    out = Bidirectional(LSTM(64, return_sequences=True))(out)
+    out = Bidirectional(LSTM(32, return_sequences=True))(out)
     out = Dropout(0.2)(out)
     print_layer(out)
-    out = Dense(128, activation="relu")(out)
+    out = Dense(64, activation="relu")(out)
     out = Dropout(0.2)(out)
     out = Dense(num_classes, activation="softmax")(out)
     print_layer(out)
