@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 79
+max-doc-length = 77
+extend-ignore = E203
+exclude = **/oldarchs/
