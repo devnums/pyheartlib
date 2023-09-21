@@ -30,6 +30,7 @@ Results
 =======
 
 .. literalinclude:: result.txt
+   :language: none
 
 .. figure:: plots/mis.png
   :width: 600

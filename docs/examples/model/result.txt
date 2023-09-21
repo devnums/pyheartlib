@@ -1,12 +1,35 @@
+************************************************************
+Without considering adjacency of ground truth and prediction
+
+
               precision    recall  f1-score   support
 
-           0       0.99      1.00      1.00   5790290
-           1       0.92      0.72      0.81    123310
+           0       1.00      1.00      1.00   5790290
+           1       0.93      0.91      0.92    123310
 
-    accuracy                           0.99   5913600
-   macro avg       0.96      0.86      0.90   5913600
-weighted avg       0.99      0.99      0.99   5913600
+    accuracy                           1.00   5913600
+   macro avg       0.96      0.96      0.96   5913600
+weighted avg       1.00      1.00      1.00   5913600
 
 Confusion Matrix
-[[5782308    7982]
- [  34334   88976]]
+[[5781231    9059]
+ [  10684  112626]]
+
+
+************************************************************
+The results below were obtained by considering a very small
+tolerance for the adjacency of ground truth and prediction
+
+
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00   5790290
+           1       1.00      0.98      0.99    123310
+
+    accuracy                           1.00   5913600
+   macro avg       1.00      0.99      0.99   5913600
+weighted avg       1.00      1.00      1.00   5913600
+
+Confusion Matrix
+[[5790081     209]
+ [   2266  121044]]

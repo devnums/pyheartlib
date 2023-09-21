@@ -48,7 +48,7 @@ params_model = {
     "regularizer": None,
 }
 print(params_model)
-params_train = {"batch_size": 64, "epochs": 2}
+params_train = {"batch_size": 32, "epochs": 3}
 
 mymodel = model_arch(params_model)
 opt = tf.keras.optimizers.Adam(
