@@ -1,4 +1,4 @@
-# Example: Beat Detection
+# Example: R-peak Detection
 
 This example contains the code for training a deep learning model for the R-peak detection task. As the task is not complex, it can be trained with high accuracy on a small amount of data.
 In this example, the electrocardiogram signals are segmented into ten seconds ecxerpts. Each excerpt corresponds to an annotation list of length 600 containing zeros and ones. A subsegment with an R-peak corresponds to one in the annotation list.
