@@ -19,13 +19,17 @@ bibliography: paper.bib
 
 # Summary
 
-Electrocardiogram (ECG) signals represent the electrical activity of the heart as a graph of voltage versus time. These signals have significant importance in healthcare and contain valuable information. Therefore, they can be analyzed for the diagnosis of various cardiac conditions.
+Electrocardiogram (ECG) signals represent the electrical activity of the heart as a graph of voltage versus time. These signals have significant importance in healthcare and contain valuable information. Therefore, they can be analyzed for the diagnosis of various disease.
 
 `Pyheartlib` is a Python package for processing electrocardiogram recordings. This software facilitates working with signals for tasks such as heartbeat detection, heartbeat classification, and arrhythmia classification. Utilizing it, researchers can focus on these tasks without the burden of designing data processing modules. The package transforms original data into processed signal excerpts and their computed features in order to be used for training various machine learning models including advanced deep learning models, which can be trained by taking advantage of Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries.
 
 # Statement of need
 
-A popular software for working with electrocardiogram recordings is the WFDB Python package, which has the ability to read and write recordings and perform some basic signal processing operations [@moody2001impact;@goldberger2000physiobank;@wfdb-python;@wfdb-software-package].  NeuroKit is another Python package with some functionalities such as denoising, delineation, and plotting [@Makowski_NeuroKit2_A_Python_2021]. These packages don't have the ability to prepare electrocardiogram recordings for training machine-learning models for various tasks. `Pyheartlib` addresses this issue by providing researchers with the necessary data processing modules. It comprises several dedicated classes for different use cases.
+Recent advances in deep learning have made it possible to accomplish tasks previously unattainable through the implementation of conventional algorithms.
+
+The capabilities of conventional approaches for analyzing ECG signals are limited. Therefore, it is imperative to develop data-driven models capable of automatically identifying patterns from vast heterogeneous data.
+
+`Pyheartlib` supports this goal and, unlike popular packages such as NeuroKit2, does not implement pre-defined algorithms. It instead provides data processing modules to assist researchers with the implementation of their own models for various tasks. For example, SleepECG [@SleepECG_2023] and Neurokit2 [@NeuroKit2_2021] have implemented several conventional methods, such as the Pan–Tompkins [@PanTompkins1985] and Hamilton [@Hamilton2002] algorithms, for the R-peak detection task. However, the same task can be accomplished through deep learning. Various models can be trained by utilizing the readily available data processing modules in `Pyheartlib`. An example model is provided with this package that performs this task. `Pyheartlib` comprises several dedicated classes for different use cases.
 
 For the heartbeat classification task, which typically requires segmented and annotated heartbeat waveforms, the software preprocesses the input data and delivers datasets comprising waveforms and features. Features can be computed from waveform and RR-intervals.
 
@@ -33,9 +37,9 @@ For the classification of signal excerpts, e.g., arrhythmia classification, the 
 
 Another use case is when each excerpt has to be divided into smaller sub-segments each with a specific label, e.g., r-peak detection. The package delivers data samples by storing metadata about the excerpts and providing lists of labels as annotations for the excerpts.
 
-`Pyheartlib` is easy to use and its documentation contains examples for different use cases. \autoref{fig:example} illustrates an example outcome of a deep learning model that was trained with the help of `Pyheartlib` and Keras [@chollet2015keras] to detect heartbeats.
+`Pyheartlib` is easy to use and its documentation contains examples for different use cases. \autoref{fig:example} illustrates an example outcome of a deep learning model that was trained with the help of `Pyheartlib` and Keras [@chollet2015keras] to detect R-peaks.
 
-![Example: heartbeat detection using deep learning.\label{fig:example}](mis.png){ width=80% }
+![R-peak detection using deep learning. In this example use case, the Pyheartlib package was utilized for processing the signals for training and testing a deep learning model that was implemented using the Keras library. This figure illustrates the outcome of the model on the test dataset. Additional information about this example model is available on the project repository and its documentation. \label{fig:example}](mis.png){ width=95% }
 
 This package utilizes the WFDB Python package to read data, therefore it supports the WFDB format. Recordings with different formats can be converted using the WFDB Python package [@moody2001impact;@goldberger2000physiobank;@wfdb-python;@wfdb-software-package].
 
