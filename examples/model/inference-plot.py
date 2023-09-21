@@ -28,7 +28,7 @@ mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
 interval_value = 6
 opt = {1: "mis", 2: "correct", 3: "all"}
 to_plot = opt[3]
-rang = range(5240, 5246)
+rang = range(3790, 3800)
 
 # load trained model
 loaded_model = tf.keras.models.load_model(mdl_checkpoint)
@@ -117,11 +117,13 @@ for i in tqdm(rang):  # range(round(len(samples_info_test)/batch_size)):
                     c="#044dcc",
                     zorder=3,
                 )
+        fp = False
         for p in range(labels_pred.shape[1]):
             if (
                 labels_pred[0][p] != labels_true[0][p]
                 and labels_true[0][p] == 0
             ):
+                fp = True
                 plt.scatter(
                     (p + 0.5) * interval_value,
                     1.1,
@@ -142,9 +144,10 @@ for i in tqdm(rang):  # range(round(len(samples_info_test)/batch_size)):
         # add legend
         lbl = "Manually annotated R-peaks (Ground truth)"
         plt.scatter(-50, 1.3, s=mrkr_size, c="red", zorder=3, label=lbl)
-        "Incorrectly detected R-peaks (False positive)"
-        plt.scatter(-50, 1.3, s=mrkr_size, c="orange", zorder=3, label=lbl)
-        "Correctly detected R-peaks (True positive)"
+        if fp:
+            lbl = "Incorrectly detected R-peaks (False positive)"
+            plt.scatter(-50, 1.3, s=mrkr_size, c="orange", zorder=3, label=lbl)
+        lbl = "Correctly detected R-peaks (True positive)"
         plt.scatter(-50, 1.3, s=mrkr_size, c="#044dcc", zorder=3, label=lbl)
         # plt.scatter(0, 1.3, s=mrkr_size, c="#3ab505", label="Ground truth
         # R-peaks missed by the model (False negative)")
@@ -158,7 +161,7 @@ for i in tqdm(rang):  # range(round(len(samples_info_test)/batch_size)):
             " spans six samples, contains an R-peak."
         )
         plt.scatter(-50, 1.3, s=0, c="white", zorder=3, label=lbl)
-        plt.legend(loc="lower left", fontsize=9, labelspacing=0.14)
+        plt.legend(loc="lower left", fontsize=10, labelspacing=0.14)
         # add title
         titl = (
             "Example use case of the pyheartlib package for"
@@ -169,4 +172,4 @@ for i in tqdm(rang):  # range(round(len(samples_info_test)/batch_size)):
         plt.rcParams["axes.axisbelow"] = True
         # save fig
         fig_path = "./plots/" + str(i) + ".png"
-        plt.savefig(fig_path, dpi=300)
+        plt.savefig(fig_path, dpi=600)
