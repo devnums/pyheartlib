@@ -36,7 +36,7 @@ annotated_records_test, samples_info_test = load_data(test_data)
 print(len(samples_info_test))
 from pyheartlib.data_rpeak import ECGSequence  # noqa: E402
 
-batch_size = 64
+batch_size = 32
 testseq = ECGSequence(
     annotated_records_test,
     samples_info_test,
