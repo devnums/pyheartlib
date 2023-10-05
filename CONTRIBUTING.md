@@ -102,7 +102,7 @@ The HTML report can be viewed at `cov_html/index.html`
 
 ## Discussions
 
-For any questions or discussion, please join us on [Discord](https://discord.gg/uNQmX6QZ).
+For any questions or discussion, please join us on [Discord](https://discord.gg/DQVfR2yWYc).
 
 ## Your code
 
