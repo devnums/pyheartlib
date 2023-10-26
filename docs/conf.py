@@ -51,11 +51,23 @@ print("\n***************\ndoc is running\n***************\n")
 import shutil  # noqa: E402
 
 files = [
+    ["../examples/dataset/arrhythmia.ipynb", "examples/dataset/"],
+    ["../examples/dataset/inter_patient.ipynb", "examples/dataset/"],
+    ["../examples/dataset/intra_patient.ipynb", "examples/dataset/"],
+    ["../examples/dataset/rpeak.ipynb", "examples/dataset/"],
     ["../examples/model/data_preparation.py", "examples/model/"],
     ["../examples/model/train.py", "examples/model/"],
     ["../examples/model/inference.py", "examples/model/"],
     ["../examples/model/result.txt", "examples/model/"],
     ["../examples/model/plots/mis.png", "examples/model/plots/mis.png"],
 ]
+
 for f in files:
     shutil.copy(f[0], f[1])
+
+""" import zipfile
+zfile = "../data/mit-bih-arrhythmia-database-1.0.0.zip"
+with zipfile.ZipFile(zfile, 'r') as zipf:
+    zipf.extractall("data/mit-bih-arrhythmia-database-1.0.0")
+
+shutil.copy("../data/config.yaml", "data/") """
