@@ -1,4 +1,4 @@
-# This file contains the architecture of the example model.
+# Architecture of the example model.
 import tensorflow as tf
 from tensorflow.keras.layers import (
     LSTM,
