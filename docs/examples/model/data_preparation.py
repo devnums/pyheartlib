@@ -1,15 +1,4 @@
-#############################################################################
-# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
-# Project repo: https://github.com/devnums/pyheartlib                       #
-# Contact: devnums.code@gmail.com                                           #
-#                                                                           #
-# This file is part of the Pyheartlib project.                              #
-# To see the complete LICENSE file visit:                                   #
-# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
-#############################################################################
-
-
-# This file can be used to prepare data for the example model
+# Prepare dataset
 import os
 
 from pyheartlib.data_rpeak import ECGSequence, RpeakData
@@ -18,7 +7,7 @@ from pyheartlib.io import load_data
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
 print("Current directory changed to:\n", cdir)
-data_dir = "../../data"
+data_dir = "data"
 # create train, validation, and test sets
 rpeak_data = RpeakData(base_path=data_dir, remove_bl=False, lowpass=False)
 
