@@ -1,15 +1,4 @@
-#############################################################################
-# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
-# Project repo: https://github.com/devnums/pyheartlib                       #
-# Contact: devnums.code@gmail.com                                           #
-#                                                                           #
-# This file is part of the Pyheartlib project.                              #
-# To see the complete LICENSE file visit:                                   #
-# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
-#############################################################################
-
-
-# This file can be used to do inference using the trained example model
+# Inference using the trained example model
 import os
 import textwrap
 
@@ -24,7 +13,7 @@ cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
 print("Current directory changed to:\n", cdir)
 
-data_dir = "../../data"
+data_dir = "data"
 test_data = os.path.join(data_dir, "test.rpeak")
 mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
 interval_value = 6

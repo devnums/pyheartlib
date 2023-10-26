@@ -1,15 +1,4 @@
-#############################################################################
-# Copyright (c) 2023 Pyheartlib team. - All Rights Reserved                 #
-# Project repo: https://github.com/devnums/pyheartlib                       #
-# Contact: devnums.code@gmail.com                                           #
-#                                                                           #
-# This file is part of the Pyheartlib project.                              #
-# To see the complete LICENSE file visit:                                   #
-# https://github.com/devnums/pyheartlib/blob/main/LICENSE                   #
-#############################################################################
-
-
-# This file can be used to train the example model
+# Train the example model
 import os
 
 from pyheartlib.extra.utils import reset_seed
@@ -21,7 +10,7 @@ import tensorflow as tf  # noqa: E402
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
 print("Current directory changed to:\n", cdir)
-data_dir = "../../data"
+data_dir = "data"
 train_data = os.path.join(data_dir, "train.rpeak")
 val_data = os.path.join(data_dir, "val.rpeak")
 mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
