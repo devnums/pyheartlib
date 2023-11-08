@@ -1,8 +1,0 @@
-Dataset
-=======
-
-.. toctree::
-    :titlesonly:
-    :glob:
-
-    *

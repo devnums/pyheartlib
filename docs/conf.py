@@ -5,11 +5,13 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Project information --------------------------------------------------
+from pyheartlib import __version__
 
 project = "pyheartlib"
 copyright = "2023, devnums"
 author = "devnums"
 
+print("Project version:" + str(__version__))
 # -- General configuration ------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -20,6 +22,7 @@ extensions = [
     "autoapi.extension",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "sphinx_togglebutton",
 ]
 autoapi_dirs = ["../src"]
 
@@ -35,6 +38,16 @@ autodoc_default_options = {
     "special-members": False,
 }
 
+myst_enable_extensions = [
+    "fieldlist",
+    "colon_fence",
+    "substitution",
+]
+myst_all_links_external = True
+myst_heading_anchors = 7
+
+myst_substitutions = {"versionkey": str(__version__)}
+
 # -- Options for HTML output -----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -43,31 +56,26 @@ autodoc_default_options = {
 html_theme = "sphinx_rtd_theme"
 
 # -- MyST-NB ---------------------------------------------------------------
-nb_execution_timeout = 180
+nb_execution_timeout = 900
 
 
 # -- Custom code -----------------------------------------------------------
 print("\n***************\ndoc is running\n***************\n")
-import shutil  # noqa: E402
 
 files = [
-    ["../examples/dataset/arrhythmia.ipynb", "examples/dataset/"],
-    ["../examples/dataset/inter_patient.ipynb", "examples/dataset/"],
-    ["../examples/dataset/intra_patient.ipynb", "examples/dataset/"],
-    ["../examples/dataset/rpeak.ipynb", "examples/dataset/"],
-    ["../examples/model/data_preparation.py", "examples/model/"],
-    ["../examples/model/train.py", "examples/model/"],
-    ["../examples/model/inference.py", "examples/model/"],
-    ["../examples/model/result.txt", "examples/model/"],
-    ["../examples/model/plots/mis.png", "examples/model/plots/mis.png"],
+    ["../examples/dataset/heartbeat.ipynb", "examples/"],
+    ["../examples/dataset/arrhythmia.ipynb", "examples/"],
+    ["../examples/dataset/rpeak.ipynb", "examples/"],
+    ["../examples/model/rpeak_detection.ipynb", "examples/"],
 ]
+
+# ["../examples/model/data_preparation.py", "examples/model/"],
+# ["../examples/model/train.py", "examples/model/"],
+# ["../examples/model/inference.py", "examples/model/"],
+# ["../examples/model/result.txt", "examples/model/"],
+# ["../examples/model/plots/mis.png", "examples/model/plots/mis.png"],
+
+import shutil  # noqa: E402
 
 for f in files:
     shutil.copy(f[0], f[1])
-
-""" import zipfile
-zfile = "../data/mit-bih-arrhythmia-database-1.0.0.zip"
-with zipfile.ZipFile(zfile, 'r') as zipf:
-    zipf.extractall("data/mit-bih-arrhythmia-database-1.0.0")
-
-shutil.copy("../data/config.yaml", "data/") """
