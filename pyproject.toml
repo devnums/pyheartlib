@@ -36,6 +36,7 @@ python-semantic-release = "^7.33.5"
 pre-commit = "^3.4.0"
 isort = "^5.12.0"
 ruff = "^0.0.290"
+sphinx-togglebutton = "^0.3.2"
 
 [tool.semantic_release]
 version_variable = "pyproject.toml:version" # version location
