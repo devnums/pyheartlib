@@ -25,23 +25,23 @@ class Data:
     Parameters
     ----------
     base_path : str, optional
-        Path of the main directory for loading and saving data,
-        by default None
+        Path of the main directory for storing the original and
+        processed data, by default None
     remove_bl : bool, optional
-        If True, the baseline is removed from the raw signals
-        before extracting beat excerpts, by default False
+        If True, the baseline wander is removed from the original signals
+        prior to extracting excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals,
+        Whether or not to apply low-pass filter to the original signals,
         by default False
     cutoff : int, optional
-        Parameter of the low pass filter, by default 45
+        Parameter of the low pass-filter, by default 45
     order : int, optional
-        Parameter of the low pass filter, by default 15
+        Parameter of the low pass-filter, by default 15
 
     Attributes
     ----------
     config : dict
-        Dataset config loaded from config.yaml file.
+        Dataset config. It is loaded from the config.yaml file.
     data_path : str
         Path of the data directory.
     sampling_rate : int
@@ -82,26 +82,19 @@ class Data:
         __class__.sampling_rate = int(self.config["SAMPLING_RATE"])
 
     def get_ecg_record(self, record_id=106):
-        """Loads a record and returns its components.
+        """Returns a record as a dictionary.
 
         Parameters
         ----------
         record_id : str
             Record id.
-        return_dict : bool
-            If True the method returns a dictionary, otherwise
-            returns a pandas dataframe.
 
         Returns
         -------
-        dict or dataframe
-            If return_dict is True, it returns a dictionary
-            with keys: *signal*, *r_locations*, *r_labels*, *rhythms*,
-            *rhythms_locations*.
+        dict
+            A dictionary with keys: *signal*, *r_locations*, *r_labels*,
+            *rhythms*, *rhythms_locations*.
 
-            If return_dict is False, it returns a dataframe containing the
-            time, raw signal, and a list of equal size to the raw signal
-            with None values except at annotations locations.
         """
         record_path = os.path.join(self.data_path, str(record_id))
         data_dict = get_data(record_path, self.config, return_dict=True)
@@ -125,20 +118,21 @@ class DataSeq(ABC):
     def full_annotate(self):
         pass
 
-    def get_all_annotated_records(self, rec_list):
-        """Creates full annotation for records in the provided list.
+    def get_all_records(self, rec_list):
+        """Returns all the records.
 
         Parameters
         ----------
         rec_list : list
-            List of records.
+            List of records IDs.
 
         Returns
         -------
         list
-            A list containing a dict for each record. [rec1,rec2,....].
-            Each rec is a dictionary with keys: *signal*, *r_locations*,
+            A list containing a dictionary for each record. [rec1,rec2,....].
+            Each record is a dictionary with keys: *signal*, *r_locations*,
             *r_labels*, *rhythms*, *rhythms_locations*, *full_ann*.
+
         """
 
         all_recs = []
@@ -151,41 +145,51 @@ class DataSeq(ABC):
         return all_recs
 
     @abstractmethod
-    def make_samples_info(self):
+    def gen_samples_info(self):
         pass
 
-    def save_samples(self, rec_list, file_name, win_size, stride):
-        """Returns and saves the signals and their full annotations along
-        with information necessary for extracting signal excerpts.
+    def save_samples(self, rec_list, file_name, win_size, stride, **kwargs):
+        """Saves a dataset holding ECG records along with metadata
+        about signal excerpts.
 
         Parameters
         ----------
         rec_list : list
-            Contains ids of records
+            List of records IDs.
         file_name : str, optional
-            Save file name, by default None
+            Name of the file that will be saved, by default None
         win_size : int, optional
-            Windows size
+            Sliding window length (excerpt length).
         stride : int, optional
-            Stride of the moving windows, by default 36
+            Stride of the sliding window, by default 36
 
         Returns
         -------
-        list
-            The list contains two elements. First element is a list
-            containing a dict for each record, [rec1,rec2,....].
-            Each rec is a dict with keys: *signal*, *r_locations*,
+        tuple
+            Two items: (records, metadata)
+
+            The first item is a list of records ([rec1_dict, ...]).
+            Each record is a dictionary with keys: *signal*, *r_locations*,
             *r_labels*, *rhythms*, *rhythms_locations*, *full_ann*.
-            Second element is a nested list. Each inner list is like:
-            [record_no, start_win, end_win, label].
-            E.g. : [[10,500,800,'AFIB'], [10,700,900,'(N'], ...].
+
+            The second item is a nested list. Each inner list contains the
+            metadata for an excerpt structured as:
+            [record_id, onset, offset, annotation].
+            E.g. : [[10,500,800,'AFIB'], ...].
         """
 
-        annotated_records = self.get_all_annotated_records(rec_list)
-        samples_info = self.make_samples_info(
-            annotated_records, win_size, stride
+        kargs = {"return_ds": False}  # default values
+        kargs.update(kwargs)
+        return_ds = kargs["return_ds"]
+
+        annotated_records = self.get_all_records(rec_list)
+        samples_info = self.gen_samples_info(
+            annotated_records, win_size, stride, **kwargs
         )
-        data = [annotated_records, samples_info]
+        data = (annotated_records, samples_info)
         file_path = os.path.join(self.base_path, file_name)
         save_data(data, file_path=file_path)
-        return data
+        if return_ds:
+            return data
+        else:
+            return None
