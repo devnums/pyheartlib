@@ -26,44 +26,45 @@ class BeatInfo:
     Parameters
     ----------
     beat_loc : int
-        Index of beat in the rpeaks locations list,
-        considering pre-RR and post-RR values.
+        Index of beat in the R-peaks locations list, considering preceding
+        R-peak locations and subsequent R-peak locations.
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples,
+        Whether to calculate RR-intervals in time (miliseconds) or samples,
         by default True
 
     Attributes
     ----------
     beat_loc : int
-        Index of beat in the rpeaks locations list,
-        considering pre-RR and post-RR values.
+        Index of beat in the R-peaks locations list, considering preceding
+        R-peak locations and subsequent R-peak locations.
     fs : int, optional
         Sampling rate, by default 360
     in_ms : bool, optional
-        Whether to calculate rr-intervals in time(miliseconds) or samples,
+        Whether to calculate RR-intervals in time (miliseconds) or samples,
         by default True
     whole_waveform : list
-        Whole waveform.
+        Whole waveform, that is not trimmed.
     bwaveform : list
-        Trimmed beat waveform. Selected as a segment of
-        the whole provided waveform.
+        Segmented beat waveform. Selected as a segment of
+        the whole waveform.
     start_idx: int
-        The index of the first sample of the waveform according to
-        the original signal.
+        The index of the first sample (onset) of the waveform
+        on the original signal.
     rri : list
-        RR intervals in ms if in_ms=True.
+        List of RR-intervals, in miliseconds if the in_ms parameter
+        has been set to True.
     rri_smpl : list
-        RR intervals in samples.
+        RR-intervals in samples.
     sdrri : list
-        Successive RRI differences.
+        Successive RR interval (RRI) differences.
     avail_features : list
-        List of fetaure names (strings) that already have a
-        definition in the class.
+        List of features names (strings) that already have a
+        definition (predefined features).
     features : dict
-        Dictionary with keys(strings) equal to feature names and dict values
-        equal to features values.
+        Dictionary containing computed features. Keys are feature names
+        and values are features values.
     """
 
     def __init__(self, beat_loc=10, fs=360, in_ms=True):
@@ -109,12 +110,12 @@ class BeatInfo:
             # self.__plot_wf() #plot for debug
 
     def available_features(self):
-        """Returns availble features that can be computed.
+        """Returns available features that can be computed.
 
         Returns
         -------
         list
-            List containing features names as strings.
+            List containing features names.
         """
         avail_feats = [f for f in dir(self) if f.startswith("F_")]
         return avail_feats
@@ -125,7 +126,8 @@ class BeatInfo:
         Parameters
         ----------
         new_features : list
-            Names of new features. Such as: [new_feature_1, new_feature_2]
+            Names of new features in a list.
+            Such as: [new_feature_1, new_feature_2]
         """
         for new_feature in new_features:
             setattr(
@@ -133,12 +135,12 @@ class BeatInfo:
             )
 
     def select_features(self, features):
-        """Select features.
+        """Select desired features for computation.
 
         Parameters
         ----------
         features : list
-            List of feature names(strings).
+            List of features names (strings).
         """
         self.selected_features_names = features
 
@@ -171,7 +173,7 @@ class BeatInfo:
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
         """Segment beat waveform according to the
-        pre and post RR intervals."""
+        pre and post RR-intervals."""
 
         try:
             beat_rpeak_idx = self.rpeaks[self.beat_loc]
@@ -227,7 +229,7 @@ class BeatInfo:
             plt.scatter(rpk, self.whole_waveform[rpk], color="r")
 
     def get_rris(self, in_ms):
-        """Compute RR intervals.
+        """Compute RR-intervals.
 
         Parameters
         ----------
@@ -238,7 +240,7 @@ class BeatInfo:
         Returns
         -------
         list
-            Contains RR intervals.
+            Contains RR-intervals.
         """
         if in_ms:
             rpeaks = [1000 * item / self.fs for item in self.rpeaks]
@@ -270,58 +272,58 @@ class BeatInfo:
         return self.rri[self.beat_loc - 1]
 
     def F_ratio_post_pre(self):
-        """Ratio of post and pre RR intervals."""
+        """Ratio of post and pre RR-intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return post / pre
 
     def F_diff_post_pre(self):
-        """Difference of post and pre RR intervals."""
+        """Difference of post and pre RR-intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return post - pre
 
     def F_diff_post_pre_nr(self):
-        """Normalized difference of post and pre RR intervals."""
+        """Normalized difference of post and pre RR-intervals."""
         post = self.F_post_rri()
         pre = self.F_pre_rri()
         return (post - pre) / self.F_rms_rri()
 
     def F_median_rri(self):
-        """Median of RR intervals."""
+        """Median of RR-intervals."""
         return np.median(self.rri)
 
     def F_mean_pre_rri(self):
-        """Mean of pre RR intervals."""
+        """Mean of pre RR-intervals."""
         pre_rri = self.rri[: self.beat_loc]
         return np.mean(pre_rri)
 
     def F_rms_rri(self):
-        """RMS of RR intervals."""
+        """RMS of RR-intervals."""
         rri = np.asarray(self.rri)
         rms = np.sqrt(np.mean(rri**2))
         return rms
 
     def F_std_rri(self):
-        """STD of RR intervals."""
+        """STD of RR-intervals."""
         return np.std(self.rri)
 
     def F_ratio_pre_rms(self):
-        """Ratio of pre RR interval to RMS of RR intervals."""
+        """Ratio of pre RR interval to RMS of RR-intervals."""
         return self.F_pre_rri() / self.F_rms_rri()
 
     def F_ratio_post_rms(self):
-        """Ratio of post RR interval to RMS of RR intervals."""
+        """Ratio of post RR interval to RMS of RR-intervals."""
         return self.F_post_rri() / self.F_rms_rri()
 
     def F_diff_pre_avg_nr(self):
-        """Difference of pre RR interval and median of RR intervals,
+        """Difference of pre RR interval and median of RR-intervals,
         normalized by their RMS."""
 
         return (self.F_pre_rri() - self.F_median_rri()) / self.F_rms_rri()
 
     def F_diff_post_avg_nr(self):
-        """Difference of post RR interval and median of RR intervals,
+        """Difference of post RR interval and median of RR-intervals,
         normalized by their RMS."""
 
         return (self.F_post_rri() - self.F_median_rri()) / self.F_rms_rri()

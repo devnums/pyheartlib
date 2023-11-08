@@ -21,32 +21,35 @@ from pyheartlib.io import load_data, save_data
 
 class BeatData(Data):
     """
-    Processes the provided data and creates the dataset file containing
-    waveforms, features, and labels.
+    Processes the provided ECG records and creates a dataset containing
+    waveforms, features, and annotations.
 
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default None
+        Path of the main directory for storing the original and
+        processed data, by default None
     win : list, optional
-        [onset,offset] of signal excerpts around the rpeaks,
+        [Onset, Offset] of signal excerpts around the R-peaks,
         by default [60, 120]
     num_pre_rr : int, optional
-        Number of previous rpeak locations to be included, by default 10
+        Number of preceding R-peak locations to be included for each beat,
+        by default 10
     num_post_rr : int, optional
-        Number of future rpeak locations to be included, by default 10
+        Number of subsequent R-peak locations to be included for each beat,
+        by default 10
     remove_bl : bool, optional
-        If True removes the baseline from the raw signals before
-        extracting beat excerpts, by default False
+        If True, the baseline wander is removed from the original signals
+        prior to extracting excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals,
+        Whether or not to apply low-pass filter to the original signals,
         by default False
     cutoff : int, optional
-        Parameter of the low pass filter, by default 45
+        Parameter of the low pass-filter, by default 45
     order : int, optional
-        Parameter of the low pass filter, by default 15
+        Parameter of the low pass-filter, by default 15
     progress_bar : bool, optional
-        If True shows a progress bar, by default True
+        Whether to display a progress bar, by default True
 
     Examples
     --------
@@ -278,15 +281,15 @@ class BeatData(Data):
         return features, labels
 
     def save_dataset_inter(self, records, beatinfo_obj, file=None):
-        """Makes dataset and saves it in a file.
+        """Creates a dataset from the given record IDs.
 
         Parameters
         ----------
         records : list
-            A list containing records ids.
-        beatinfo_obj : instance of BeatInfo
+            List of records IDs.
+        beatinfo_obj : Instance of BeatInfo.
         file : str
-            Name of the file to be saved.
+            Name of the file that will be saved.
         """
 
         if file is None:
@@ -301,13 +304,13 @@ class BeatData(Data):
         split_ratio=0.3,
         file_prefix="intra",
     ):
-        """Makes and saves the dataset in intra way.
+        """Makes the dataset in intra-patient way.
 
         Parameters
         ----------
         records : list, optional
-            A list of record ids.
-        beatinfo_obj : instance of BeatInfo
+            List of records IDs.
+        beatinfo_obj : Instance of BeatInfo.
         split_ratio : float, optional
             Ratio of test set, by default 0.3
         file_prefix : str, optional
