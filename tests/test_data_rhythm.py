@@ -13,13 +13,13 @@ import numpy
 import pytest
 from dummy import DummyData
 
-from pyheartlib.data_arrhythmia import ArrhythmiaData, ECGSequence
+from pyheartlib.data_rhythm import ECGSequence, RhythmData
 from pyheartlib.io import load_data
 
 
 @pytest.fixture
-def arrhythmia_data():
-    obj = ArrhythmiaData()
+def rhythm_data():
+    obj = RhythmData()
     return obj
 
 
@@ -35,8 +35,8 @@ def record():
     return r
 
 
-def test_full_annotate(arrhythmia_data, record):
-    signal, full_ann = arrhythmia_data.full_annotate(record)
+def test_full_annotate(rhythm_data, record):
+    signal, full_ann = rhythm_data.full_annotate(record)
     assert len(signal) == len(full_ann)
     assert full_ann[0] == "unlab"
     assert full_ann[9] == "unlab"
@@ -55,19 +55,18 @@ dmm.save(record_name="dummy102")
 
 
 @pytest.fixture
-def arrhythmiadata():
-    obj = ArrhythmiaData(
-        base_path=test_data_dir, remove_bl=False, lowpass=False
-    )
+def rhythmdata():
+    obj = RhythmData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     return obj
 
 
-def test_save_samples(arrhythmiadata):
-    ann, sam = arrhythmiadata.save_samples(
+def test_save_samples(rhythmdata):
+    ann, sam = rhythmdata.save_samples(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     annotated_records, samples_info = load_data(test_data_dir + "/tmp.arr")
     assert annotated_records[0]["rhythms"] == ann[0]["rhythms"]
@@ -76,14 +75,13 @@ def test_save_samples(arrhythmiadata):
 
 @pytest.fixture
 def seq_generator1():
-    obj = ArrhythmiaData(
-        base_path=test_data_dir, remove_bl=False, lowpass=False
-    )
+    obj = RhythmData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     obj = ECGSequence(
         ann,
@@ -122,14 +120,13 @@ def test_getitem1(seq_generator1):
 
 @pytest.fixture
 def seq_generator2():
-    obj = ArrhythmiaData(
-        base_path=test_data_dir, remove_bl=False, lowpass=False
-    )
+    obj = RhythmData(base_path=test_data_dir, remove_bl=False, lowpass=False)
     ann, sam = obj.save_samples(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     obj = ECGSequence(
         ann,
