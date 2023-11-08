@@ -94,6 +94,7 @@ def test_save_samples(rpeakdata):
         file_name="tmp.rpeak",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     annotated_records, samples_info = load_data(test_data_dir + "/tmp.rpeak")
     assert annotated_records[0]["r_labels"] == ann[0]["r_labels"]
@@ -108,6 +109,7 @@ def seq_generator1():
         file_name="tmp.rpeak",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     obj = ECGSequence(
         ann,
@@ -148,6 +150,7 @@ def seq_generator2():
         file_name="tmp.rpeak",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     obj = ECGSequence(
         ann,
@@ -188,6 +191,7 @@ def seq_generator3():
         file_name="tmp.rpeak",
         win_size=400,
         stride=200,
+        return_ds=True,
     )
     obj = ECGSequence(
         ann,
