@@ -124,3 +124,5 @@ guides/
 ..checkpoint
 trsh/
 **/oldarchs/
+src/pyheartlib/archs/oldarchs.tar.xz
+ignore_dir/
