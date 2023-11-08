@@ -25,24 +25,56 @@ from pyheartlib.features import get_wf_feats  # noqa: E402
 
 
 class RpeakData(Data, DataSeq):
-    """Provides signal data with annotations as a list.
+    """Processes ECG records to make a dataset holding records along with
+    metadata about signal excerpts.
+
+    It has a method that can generate metadata for signal excerpts.
+    The metadata are generated using the sliding window approach.
+    For each excerpt of a signal the onset, offset, and its annotation
+    is recorded. The metadata list for an excerpt is structured as:
+    [record_id, onset, offset, annotation].
+    Annotation for an excerpt is a list of zeros, except for any interval
+    where there is an R-peak label.
+    Example metadata for an excerpt:
+    [10, 500, 800, [0, 0, 0, 'N', 0, 'N', 0, 'N', 0, ...]]
 
     Parameters
     ----------
     base_path : str, optional
-        Path of main directory for loading and saving data, by default None
+        Path of the main directory for storing the original and
+        processed data, by default None
     remove_bl : bool, optional
-        If True, the baseline is removed from the raw signals
-        before extracting beat excerpts, by default False
+        If True, the baseline wander is removed from the original signals
+        prior to extracting excerpts, by default False
     lowpass : bool, optional
-        Whether to apply low pass filtering to the raw signals,
+        Whether or not to apply low-pass filter to the original signals,
         by default False
     cutoff : int, optional
-        Parameter of the low pass filter, by default 45
+        Parameter of the low pass-filter, by default 45
     order : int, optional
-        Parameter of the low pass filter, by default 15
+        Parameter of the low pass-filter, by default 15
     progress_bar : bool, optional
-        If True, progress bar is shown, by default True
+        Whether to display a progress bar, by default True
+
+    Example
+    -------
+    >>> from pyheartlib.data_rpeak import RpeakData
+    >>> # Make an instance of the RpeakData
+    >>> rpeak_data = RpeakData(
+    >>>     base_path="data", remove_bl=False, lowpass=False,
+    >>>     progress_bar=False)
+    >>> # Define records
+    >>> train_set = [201, 203]
+    >>> # Create the dataset
+    >>> # The win_size specifies the length of the excerpts
+    >>> rpeak_data.save_samples(
+    >>>     rec_list=train_set,
+    >>>     file_name="train.rpeak",
+    >>>     win_size=5 * 360,
+    >>>     stride=360,
+    >>>     interval=72,
+    >>> )
+
     """
 
     def __init__(
@@ -64,25 +96,26 @@ class RpeakData(Data, DataSeq):
         DataSeq.progress_bar = not progress_bar
 
     def full_annotate(self, record):
-        """Fully annotate a signal.
+        """Returns a signal along with an annotation of the same length.
 
         Parameters
         ----------
         record : dict
-            Record as a dictionary with keys: 'signal', 'r_locations',
-            'r_labels', 'rhythms', 'rhythms_locations'.
+            Record as a dictionary with keys: *signal*, *r_locations*,
+            *r_labels*, *rhythms*, *rhythms_locations*.
 
         Returns
         -------
-        list
-            A list of signal and full_ann: [signal, full_ann].
+        tuple
+            Two items: (signal, full_ann).
 
             First element is the original signal (1D ndarray).
 
             Second element is a list that has the same length as
             the original signal with zero elements except at any
-            rpeak index which has the rpeak annotation instead.
-            [00000N00000000000000L00000...]
+            R-peak index which has the R-peak label instead.
+            E.g.: [0,0,0,'N',0,'N',0,'N', ...]
+
         """
 
         signal, r_locations, r_labels, _, _ = record.values()
@@ -90,37 +123,56 @@ class RpeakData(Data, DataSeq):
         for i, loc in enumerate(r_locations):
             full_ann[loc] = r_labels[i]
 
-        record_full = [signal, full_ann]
+        record_full = (signal, full_ann)
         return record_full
 
-    def make_samples_info(
-        self, annotated_records, win_size=30 * 360, stride=256
+    def gen_samples_info(
+        self, annotated_records, win_size=30 * 360, stride=256, **kwargs
     ):
-        """Creates a list of signal excerpts meta info and
-        their corresponding annotation.
+        """Generates metadata for signal excerpts.
 
-        For each excerpt, record id, onset, and offset point of it on
-        the original signal is recorded.
+        The metadata are generated using the sliding window approach.
+        For each excerpt of a signal the onset, offset, and its annotation
+        is recorded. The metadata list for an excerpt is structured as:
+        [record id, onset, offset, annotation]
 
         Parameters
         ----------
-        annotated_records: [[signal1, full_ann1],[signal2, full_ann2],...]
-        win_size : the length of each extracted sample
-        stride : the stride for extracted samples.
+        annotated_records : list
+            List of records ([rec1_dict, ...]).
+            Each record is a dictionary with keys: *signal*, *r_locations*,
+            *r_labels*, *rhythms*, *rhythms_locations*, *full_ann*.
+        win_size : int, optional
+            Sliding window length, by default 30*360
+        stride : int, optional
+            Stride of the sliding window, by default 36
+        interval : int, optional
+            Controls the degree of granularity of labels in
+            the annotation list, by default 36
+        binary : bool, optional
+            If True, any non-zero label will be converted to
+            1 in the annotation list, by default False
 
         Returns
         -------
         list
-            A 2d list.
-            Each inner list is like: [record_no, start_win, end_win, Label].
-            Label is a list and its elements are rpeak annotations for
-            each interval.
-            E.g.: [[10,500,800,[000000N00000000L00]], ...]
+            A nested list. Each inner list is structured as:
+            [record id, onset, offset, annotation].
+
+            Annotation is a list with zeros except for any interval that
+            there is an R-peak label.
+
+            E.g.: [[10, 500, 800, [0,0,0,'N',0,'N',0,'N',0,....] ], ...]
+
         """
-        interval = 36  # not necessary, will be calculated in EXGSEQUENCE
-        binary = False  # remove it and only do in ECGSEQUENCE
+
         # interval : the output interval for labels.
-        # binary : if True 1 is replaced instead of labels
+        # binary : if True, 1 is replaced instead of labels
+        # interval and binary are optional parameters, ECGSequence does it
+        kargs = {"interval": 36, "binary": False}  # default values
+        kargs.update(kwargs)
+        interval = kargs["interval"]
+        binary = kargs["binary"]
 
         stride = int(stride)
         win_size = int(win_size)
@@ -143,10 +195,8 @@ class RpeakData(Data, DataSeq):
             while end < len(full_ann):
                 start = int(end - win_size)
                 seg = full_ann[start:end]
-                labels_seq = (
-                    []
-                )  # not necesssary anymore,will be done in SEQUENCE
-                # each subsegment
+                labels_seq = []
+                # this part is optional, ECGSequence does it
                 for i in range(0, len(seg), interval):
                     subseg = seg[i : i + interval]
                     if any(subseg):
@@ -167,40 +217,50 @@ class RpeakData(Data, DataSeq):
 
 
 class ECGSequence(Sequence):
-    """
-    Generates batches of data according to the meta information
-    provided for each sample.
-    It is memory efficient and there is no need to put
-    large amounts of data in the memory.
+    """Generates samples of data in batches.
+
+    The excerpt for each sample is extracted based on the provided metadata.
+    The use of metadata instead of excerpts has the advantage of reducing
+    the RAM requirement, especially when numerous excerpts are required from
+    the raw signals. By using metadata about the excerpts, they are
+    extracted in batches whenever they are needed.
 
     Parameters
     ----------
-    data: list
-        A list containing a dict for each record, [rec1,rec2,....].
-        Each rec is a dict with keys: 'signal','r_locations','r_labels',
-        'rhythms','rhythms_locations', 'full_ann'.
-    samples_info: list
-        [[record_no,start_win,end_win,label],
-        [record_no,start_win,end_win,[labels]],
-        ...]
-        eg: [[10,500,800,[0,0,0,'N',0,0...],[],...]
+    data : list
+        A list containing a dictionary for each record: [rec1,rec2,….].
+        Each record is a dictionary with keys:
+        *signal*, *r_locations*, *r_labels*,
+        *rhythms*, *rhythms_locations*, *full_ann*.
+    samples_info : list
+        A nested list of metadata for excerpts. For each excerpt,the metadata
+        is structured as a list: [record_id, onset, offset, annotation].
+        E.g. : [[10, 500, 800, [0,0,0,'N',0,'N',0,'N',0,...] ], ...].
     class_labels : list, optional
-        Class labels to convert the output label list to
-        integers such as [0, "N", "V"] where "V" will be
-        converted to 2, by default None
+        Classes as a list for converting the output annotations to integers
+        such as: [0, "N", "V"] => [0,1,2], by default None
     batch_size : int, optional
-        Batch size, by default 128
+        Number of samples in each batch, by default 128
     binary : bool, optional
-        If True, any non-zero item will be converted to
-        one in the output annotation, by default True
+        If True, any non-zero label will be converted to
+        1 in the output annotation list, by default True
     raw : bool, optional
-        Whether to return the full waveform or the computed features,
+        Whether to return the waveform or the computed features,
         by default True
     interval : int, optional
-        Interval for sub-segmenting the waveform for feature and
-        label computations, by default 36
+        Sub-segmenting interval for feature computations and label
+        assignments. Controls the degree of granularity for labels in the
+        output annotation list and the number of sub-segments, by default 36
     shuffle : bool, optional
         If True, after each epoch the samples are shuffled, by default True
+
+    Example
+    -------
+    >>> from pyheartlib.data_rpeak import ECGSequence
+    >>> trainseq = ECGSequence(
+    >>>     annotated_records, samples_info, binary=False, batch_size=2,
+    >>> raw=True, interval=72)
+
     """
 
     def __init__(
@@ -233,13 +293,13 @@ class ECGSequence(Sequence):
         """
         Returns
         -------
-        Tuple
+        tuple
             Contains batch_x, batch_y as numpy arrays.
 
             batch_x has the shape of (batch_size,#sub-segments,#features) if
             raw is False, otherwise it has the shape of (batch_size,len_seq).
 
-            batch_y has the shape of (batch_size,len_label_list)
+            batch_y has the shape of (batch_size,len_annotation_list)
         """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
@@ -247,16 +307,16 @@ class ECGSequence(Sequence):
         batch_x = []
         batch_y = []
         for sample in batch_samples:
-            # eg sample:[10,500,800,[0,0,0,'N',0,0...]>>[rec,start,end,label]
+            # eg sample:[10,500,800,[0,0,0,'N',0,0...]>>[rec,start,end,ann]
             rec_id = sample[0]
             start = sample[1]
             end = sample[2]
             # ignoring provided labels in samples_info and get it
             # directly from the data
-            # label = sample[3]
+            # ann = sample[3]
             seq = self.data[rec_id]["signal"][start:end]
             full_ann_seq = self.data[rec_id]["full_ann"][start:end]
-            label = self.get_label(full_ann_seq)
+            ann = self.gen_annotation(full_ann_seq)
             # compute signal waveform features for fragments
             if self.raw is False:
                 seq = self.compute_wf_feats(seq)
@@ -264,10 +324,10 @@ class ECGSequence(Sequence):
             else:
                 batch_x.append(seq)
             if self.class_labels is not None:
-                label = self.get_integer(label)
+                ann = self.get_integer(ann)
             if self.binary:
-                label = self.get_binary(label)
-            batch_y.append(label)
+                ann = self.get_binary(ann)
+            batch_y.append(ann)
         return np.array(batch_x), np.array(batch_y)
 
     def on_epoch_end(self):
@@ -275,17 +335,24 @@ class ECGSequence(Sequence):
         if self.shuffle:
             np.random.shuffle(self.samples_info)
 
-    def get_integer(self, label):
-        # text label to integer >> 0,1,2,...
-        int_label = [list(self.class_labels).index(item) for item in label]
+    def get_integer(self, ann):
+        """Converts labels in an annotation list to integers."""
+        int_label = [list(self.class_labels).index(item) for item in ann]
         return int_label
 
-    def get_binary(self, label):
-        # text label to integer 0,1 label
-        binary_label = [1 if item != 0 else 0 for item in label]
+    def get_binary(self, ann):
+        """Converts labels in an annotation list to 0 or 1."""
+        binary_label = [1 if item != 0 else 0 for item in ann]
         return binary_label
 
-    def get_label(self, seg):
+    def gen_annotation(self, seg):
+        """Generate annotation list.
+
+        The returned list contains zeros except for any interval that has
+        an R-peak label.
+
+        """
+
         # this function is used if intentions is to not use
         # provided labels in samples_info
         labels_seq = []
