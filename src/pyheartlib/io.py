@@ -16,7 +16,7 @@ import wfdb
 
 
 def get_data(record_path, config, return_dict=True):
-    """Loads a record and returns its components.
+    """Reads a record and returns its components.
 
     Parameters
     ----------
@@ -25,19 +25,24 @@ def get_data(record_path, config, return_dict=True):
     config : dict
         Config of the dataset.
     return_dict : bool
-        If True returns as a dict, otherwise returns as a pandas dataframe.
+        If True, returns a dict, otherwise returns a pandas dataframe.
 
     Returns
     -------
     dict or dataframe
         If return_dict is True, it returns a dictionary with keys:
-        'signal','r_locations','r_labels','rhythms','rhythms_locations'.
+        *signal*, *r_locations*, *r_labels*, *rhythms*, *rhythms_locations*.
 
         If return_dict is False, it returns a dataframe containing
         the time, raw signal, and a list of equal size to the raw signal
         with None values except at annotations locations.
+
     """
-    record = wfdb.rdrecord(record_path, channel_names=["MLII"])
+    try:
+        channel = str(config["CHANNEL"])
+    except KeyError:
+        channel = "MLII"
+    record = wfdb.rdrecord(record_path, channel_names=[channel])
     annotation = wfdb.rdann(record_path, "atr")
     signal = record.p_signal[:, 0]  # numpy.ndarray
     ann_locations = annotation.sample
@@ -82,7 +87,7 @@ def get_data(record_path, config, return_dict=True):
 
 
 def save_data(data, file_path):
-    """Saves data"""
+    """Saves the data into a file."""
     if file_path is None:
         raise ValueError("Save file path is not provided!")
     with open(file_path, "wb") as f:
@@ -91,7 +96,7 @@ def save_data(data, file_path):
 
 
 def load_data(file_path=None):
-    """Loads data"""
+    """Loads the data from a file."""
     if file_path is None:
         print("File path must be provided")
     with open(file_path, "rb") as f:
