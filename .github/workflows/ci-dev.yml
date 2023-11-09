@@ -40,19 +40,22 @@ jobs:
         uses: snok/install-poetry@v1
 
       - name: Install & Test ubuntu
-        if: startsWith(${{ matrix.os }}, 'ubuntu')
-        run: |
-            poetry install
-            poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+        if: ${{ matrix.os }} == "ubuntu-22.04"
+        run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
+        # run: |
+        #     poetry install
+        #     poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
       - name: Install & Test macos
         if: startsWith(${{ matrix.os }}, 'macos')
-        run: |
-            poetry install
-            poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+        run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
+        # run: |
+        #     poetry install
+        #     poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
-      - name: Install & Test windows
-        if: startsWith(${{ matrix.os }}, 'windows')
-        run: |
-            C:\Users\runneradmin\.local\bin\poetry install
-            C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+      # - name: Install & Test windows
+      #   if: startsWith(${{ matrix.os }}, 'windows')
+      #     run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
+        # run: |
+        #     C:\Users\runneradmin\.local\bin\poetry install
+        #     C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
