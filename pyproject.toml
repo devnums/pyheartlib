@@ -10,7 +10,7 @@ documentation = "https://pyheartlib.readthedocs.io"
 keywords = ["electrocardiogram", "ECG"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.10"
 numpy = ">=1.22.0"
 wfdb = ">=4.0.0"
 pandas = ">=1.4.0"
