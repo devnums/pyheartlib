@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 
-from pyheartlib.io import load_data
+from pyheartlib.data_rpeak import load_dataset
 
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
@@ -24,7 +24,7 @@ rang = range(3790, 3800)
 loaded_model = tf.keras.models.load_model(mdl_checkpoint)
 
 # load test data
-annotated_records_test, samples_info_test = load_data(test_data)
+annotated_records_test, samples_info_test = load_dataset(test_data)
 print(len(samples_info_test))
 # plot
 import matplotlib.pyplot as plt  # noqa: E402

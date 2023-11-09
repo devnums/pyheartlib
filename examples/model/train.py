@@ -1,8 +1,8 @@
 # Train the example model
 import os
 
+from pyheartlib.data_rpeak import load_dataset
 from pyheartlib.extra.utils import reset_seed
-from pyheartlib.io import load_data
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import tensorflow as tf  # noqa: E402
@@ -19,7 +19,7 @@ interval_value = 6
 reset_seed()
 
 # load train data
-annotated_records, samples_info = load_data(train_data)
+annotated_records, samples_info = load_dataset(train_data)
 print("Train data loaded, number of sampels:", str(len(samples_info)))
 
 labels = []
@@ -92,7 +92,7 @@ print("trainseq.shape: ", str(trainseq[0][0].shape))
 print(trainseq[0][0].shape, trainseq[0][1].shape)
 
 # load validation data
-annotated_records_val, samples_info_val = load_data(val_data)
+annotated_records_val, samples_info_val = load_dataset(val_data)
 
 validationseq = ECGSequence(
     annotated_records_val,

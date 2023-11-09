@@ -1,8 +1,7 @@
 # Prepare dataset
 import os
 
-from pyheartlib.data_rpeak import ECGSequence, RpeakData
-from pyheartlib.io import load_data
+from pyheartlib.data_rpeak import ECGSequence, RpeakData, load_dataset
 
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
@@ -15,19 +14,19 @@ train_set = rpeak_data.config["DS1"][:18]
 val_set = rpeak_data.config["DS1"][18:]
 test_set = rpeak_data.config["DS2"]
 
-annotated_records, samples_info = rpeak_data.save_samples(
+rpeak_data.save_dataset(
     rec_list=train_set, file_name="train.rpeak", win_size=10 * 360, stride=1440
 )
-annotated_records, samples_info = rpeak_data.save_samples(
+rpeak_data.save_dataset(
     rec_list=val_set, file_name="val.rpeak", win_size=10 * 360, stride=1440
 )
-annotated_records, samples_info = rpeak_data.save_samples(
+rpeak_data.save_dataset(
     rec_list=test_set, file_name="test.rpeak", win_size=10 * 360, stride=1440
 )
 
 # for verfication
 train_data = os.path.join(data_dir, "train.rpeak")
-annotated_records, samples_info = load_data(train_data)
+annotated_records, samples_info = load_dataset(train_data)
 print("number of generated sampels:", str(len(samples_info)))
 
 trainseq = ECGSequence(

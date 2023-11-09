@@ -7,7 +7,7 @@ import tensorflow as tf
 from sklearn.metrics import classification_report, confusion_matrix
 from tqdm import tqdm
 
-from pyheartlib.io import load_data
+from pyheartlib.data_rpeak import load_dataset
 
 cdir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(cdir)
@@ -22,7 +22,7 @@ interval_value = 6
 loaded_model = tf.keras.models.load_model(mdl_checkpoint)
 
 # load test data
-annotated_records_test, samples_info_test = load_data(test_data)
+annotated_records_test, samples_info_test = load_dataset(test_data)
 print(len(samples_info_test))
 from pyheartlib.data_rpeak import ECGSequence  # noqa: E402
 
