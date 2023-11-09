@@ -13,8 +13,7 @@ import numpy
 import pytest
 from dummy import DummyData
 
-from pyheartlib.data_rhythm import ECGSequence, RhythmData
-from pyheartlib.io import load_data
+from pyheartlib.data_rhythm import ECGSequence, RhythmData, load_dataset
 
 
 @pytest.fixture
@@ -61,14 +60,14 @@ def rhythmdata():
 
 
 def test_save_samples(rhythmdata):
-    ann, sam = rhythmdata.save_samples(
+    ann, sam = rhythmdata.save_dataset(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
         stride=200,
         return_ds=True,
     )
-    annotated_records, samples_info = load_data(test_data_dir + "/tmp.arr")
+    annotated_records, samples_info = load_dataset(test_data_dir + "/tmp.arr")
     assert annotated_records[0]["rhythms"] == ann[0]["rhythms"]
     assert samples_info[0][2] == sam[0][2]
 
@@ -76,7 +75,7 @@ def test_save_samples(rhythmdata):
 @pytest.fixture
 def seq_generator1():
     obj = RhythmData(base_path=test_data_dir, remove_bl=False, lowpass=False)
-    ann, sam = obj.save_samples(
+    ann, sam = obj.save_dataset(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
@@ -121,7 +120,7 @@ def test_getitem1(seq_generator1):
 @pytest.fixture
 def seq_generator2():
     obj = RhythmData(base_path=test_data_dir, remove_bl=False, lowpass=False)
-    ann, sam = obj.save_samples(
+    ann, sam = obj.save_dataset(
         rec_list=["dummy101", "dummy102"],
         file_name="tmp.arr",
         win_size=400,
