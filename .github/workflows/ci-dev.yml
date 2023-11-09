@@ -41,18 +41,12 @@ jobs:
 
       - name: Install & Test ubuntu
         if: runner.os == 'Linux'
-        steps:
-          - name: Install package
-            run: poetry install
-
-          - name: Test with pytest
-            run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+        run: |
+            poetry install
+            poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
       - name: Install & Test windows
         if: runner.os == 'Windows'
-        steps:
-          - name: Install package
-            run: C:\Users\runneradmin\.local\bin\poetry install
-
-          - name: Test with pytest
-            run: C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+        run: |
+           C:\Users\runneradmin\.local\bin\poetry install
+           C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
