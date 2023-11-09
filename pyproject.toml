@@ -11,7 +11,7 @@ keywords = ["electrocardiogram", "ECG"]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-#numpy = ">=1.22.0"
+numpy = ">=1.22.0"
 wfdb = ">=4.0.0"
 pandas = ">=1.4.0"
 tqdm = ">=4.63.0"
@@ -24,15 +24,15 @@ scipy = ">=1.8.0"
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
-pytest-cov = "^4.1.0"
-black = "^23.3.0"
-myst-nb = "^0.17.2"
-sphinx-autoapi = "^2.1.0"
-sphinx-rtd-theme = "^1.2.1"
-third-party-license-file-generator = "^2023.2.22"
-flake8 = "^6.0.0"
-python-semantic-release = "^7.33.5"
+pytest = ">=7.3.1"
+pytest-cov = ">=4.1.0"
+black = ">=23.3.0"
+myst-nb = ">=0.17.2"
+sphinx-autoapi = ">=2.1.0"
+sphinx-rtd-theme = ">=1.2.1"
+third-party-license-file-generator = ">=2023.2.22"
+flake8 = ">=6.0.0"
+python-semantic-release = ">=7.33.5"
 pre-commit = ">=3.4.0"
 isort = ">=5.12.0"
 ruff = ">=0.0.290"
