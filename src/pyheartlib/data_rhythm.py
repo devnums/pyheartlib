@@ -20,6 +20,7 @@ from tqdm import tqdm  # noqa: E402
 
 from pyheartlib.data import Data, DataSeq  # noqa: E402
 from pyheartlib.features import get_hrv_features, get_wf_feats  # noqa: E402
+from pyheartlib.io import load_data  # noqa: E402
 
 # import time  # noqa: E402
 
@@ -64,7 +65,7 @@ class RhythmData(Data, DataSeq):
     >>> # Define records
     >>> train_set = [201, 203]
     >>> # Create the dataset
-    >>> rhythm_data.save_samples(
+    >>> rhythm_data.save_dataset(
     >>>   rec_list=train_set, file_name="train.arr", win_size=3600, stride=64
     >>> )
 
@@ -337,3 +338,15 @@ class ECGSequence(Sequence):
     def compute_wf_feats(self, seq):
         """Computes waveform features."""
         return get_wf_feats(seq, self.interval)
+
+
+def load_dataset(file_path=None):
+    """Loads the dataset.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        Path of the dataset, by default None
+
+    """
+    return load_data(file_path)

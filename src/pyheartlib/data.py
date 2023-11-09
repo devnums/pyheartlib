@@ -11,6 +11,7 @@
 
 import os
 from abc import ABC, abstractmethod
+from warnings import warn
 
 import yaml
 from tqdm import tqdm
@@ -148,7 +149,7 @@ class DataSeq(ABC):
     def gen_samples_info(self):
         pass
 
-    def save_samples(self, rec_list, file_name, win_size, stride, **kwargs):
+    def save_dataset(self, rec_list, file_name, win_size, stride, **kwargs):
         """Saves a dataset holding ECG records along with metadata
         about signal excerpts.
 
@@ -193,3 +194,8 @@ class DataSeq(ABC):
             return data
         else:
             return None
+
+    def save_samples(self, *args, **kwargs):
+        msg = "Method save_samples() will be deprecated.Use save_dataset()."
+        warn(msg, DeprecationWarning, stacklevel=2)
+        return self.save_dataset(*args, **kwargs)
