@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12"]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -40,22 +40,19 @@ jobs:
         uses: snok/install-poetry@v1
 
       - name: Install & Test ubuntu
-        if: ${{ matrix.os }} == "ubuntu-22.04"
-        run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
-        # run: |
-        #     poetry install
-        #     poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+        if: runner.os == 'Linux'
+        steps:
+          - name: Install package
+            run: poetry install
 
-      - name: Install & Test macos
-        if: startsWith(${{ matrix.os }}, 'macos')
-        run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
-        # run: |
-        #     poetry install
-        #     poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+          - name: Test with pytest
+            run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
-      # - name: Install & Test windows
-      #   if: startsWith(${{ matrix.os }}, 'windows')
-      #     run: echo OS= ${{ matrix.os }} Python= ${{ matrix.python-version }}
-        # run: |
-        #     C:\Users\runneradmin\.local\bin\poetry install
-        #     C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+      - name: Install & Test windows
+        if: runner.os == 'Windows'
+        steps:
+          - name: Install package
+            run: C:\Users\runneradmin\.local\bin\poetry install
+
+          - name: Test with pytest
+            run: C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
