@@ -93,7 +93,7 @@ For the arrhythmia classification, the `RhythmData` class can be utilized to cre
 - `progress_bar` : Whether to display a progress bar.
 ---
 ```{eval-rst}
-:meth:`save_samples() <pyheartlib.data.DataSeq.save_samples>` :
+:meth:`save_dataset() <pyheartlib.data.DataSeq.save_dataset>` :
 ```
 - `rec_list`:  List of records IDs.
 - `file_name`:  Name of the file that will be saved.
@@ -156,7 +156,7 @@ Similar to the `RhythmData` class, the `RpeakData` class produces a dataset from
 - `progress_bar` : Whether to display a progress bar.
 ---
 ```{eval-rst}
-:meth:`save_samples() <pyheartlib.data.DataSeq.save_samples>` :
+:meth:`save_dataset() <pyheartlib.data.DataSeq.save_dataset>` :
 ```
 - `rec_list`:  List of records IDs.
 - `file_name`:  Name of the file that will be saved.

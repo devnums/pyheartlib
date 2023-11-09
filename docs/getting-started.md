@@ -125,16 +125,16 @@ rhythm_data = RhythmData(
 ```
 Descriptions of all the parameters can be found [here](introduction.html#directive-rdt).
 
-Using the `save_samples()` method, the dataset will be created.
+Using the `save_dataset()` method, the dataset will be created.
 ```python
-rhythm_data.save_samples(
+rhythm_data.save_dataset(
     rec_list=train_set, file_name="train.arr", win_size=3600, stride=64
 )
 ```
-The dataset can be loaded using the `load_data()` function.
+The dataset can be loaded using the `load_dataset()` function.
 ```python
-from pyheartlib.io import load_data
-annotated_records, samples_info = load_data("data/train.arr")
+from pyheartlib.data_rhythm import load_dataset
+annotated_records, samples_info = load_dataset("data/train.arr")
 ```
 
  To generate batches of sample data, the dataset that was created before can be used. To accomplish this, an instance of `pyheartlib.data_rhythm.ECGSequence` must be created.
@@ -175,10 +175,10 @@ rpeak_data = RpeakData(
 ```
 Descriptions of all the parameters can be found [here](introduction.html#directive-rpd).
 
-Using the `save_samples()` method, the dataset will be created.
+Using the `save_dataset()` method, the dataset will be created.
 
 ```python
-rpeak_data.save_samples(
+rpeak_data.save_dataset(
     rec_list=train_set,
     file_name="train.rpeak",
     win_size=5 * 360,
@@ -187,10 +187,10 @@ rpeak_data.save_samples(
 )
 ```
 
-The dataset can be loaded using the `load_data()` function.
+The dataset can be loaded using the `load_dataset()` function.
 ```python
-from pyheartlib.io import load_data
-annotated_records, samples_info = load_data("data/train.rpeak")
+from pyheartlib.data_rpeak import load_dataset
+annotated_records, samples_info = load_dataset("data/train.rpeak")
 ```
 The dataset that was created can be used to generate batches of sample data. To accomplish this, an instance of `pyheartlib.data_rpeak.ECGSequence` must be created.
 ```python
