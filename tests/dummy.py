@@ -28,6 +28,28 @@ class DummyData:
         self.sampling_rate = sampling_rate
         self.channels = channels
 
+        self.annotations = [
+            (30, "+", "(N\x00"),
+            (90, "N", ""),
+            (450, "N", ""),
+            (810, "V", ""),
+            (900, "+", "(VT\x00"),
+            (1170, "N", ""),
+            (1530, "A", ""),
+            (1600, "N", ""),
+            (1730, "N", ""),
+            (1810, "N", ""),
+            (1930, "N", ""),
+            (2230, "N", ""),
+            (2430, "N", ""),
+            (2550, "N", ""),
+            (2610, "N", ""),
+            (2750, "N", ""),
+            (2970, "N", ""),
+            (3150, "N", ""),
+            (3400, "N", ""),
+        ]
+
     def save(self, record_name="dummy101"):
         self.make_dir()
         self.record_name = record_name
@@ -47,82 +69,18 @@ class DummyData:
         )
 
     def save_ann(self):
-        symbol = [
-            "N",
-            "N",
-            "V",
-            "N",
-            "A",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-            "N",
-        ]
-        sample = [
-            90,
-            450,
-            810,
-            1170,
-            1530,
-            1600,
-            1730,
-            1810,
-            1930,
-            2230,
-            2430,
-            2550,
-            2610,
-            2750,
-            2970,
-            3150,
-            3400,
-        ]
-        # ["+", "N", "N", "V", "+", "N", "A"
-        # [+30, 90, 450, 810, +900, 1170, 1530
-        sample.insert(0, 30)
-        symbol.insert(0, "+")
-        sample.insert(4, 900)
-        symbol.insert(4, "+")
-        sample = np.array(sample)
-        aux_note = [
-            "(N\x00",
-            "",
-            "",
-            "",
-            "(VT\x00",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-        ]
-
-        wfdb.wrann(
-            self.record_name,
-            "atr",
-            sample,
-            symbol=symbol,
-            aux_note=aux_note,
-            fs=self.sampling_rate,
-            write_dir=self.save_dir,
+        samples = np.array([ann[0] for ann in self.annotations])
+        symbols = np.array([ann[1] for ann in self.annotations])
+        aux_notes = [ann[2] for ann in self.annotations]
+        ann = wfdb.Annotation(
+            record_name=self.record_name,
+            extension="atr",
+            sample=samples,
+            symbol=symbols,
+            aux_note=aux_notes,
         )
+
+        ann.wrann(write_fs=False, write_dir=self.save_dir)
 
     def gen_sig(self, cycles):
         x = list(range(0, 360 * cycles))
