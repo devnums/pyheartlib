@@ -39,13 +39,22 @@ jobs:
       - name: Install poetry
         uses: snok/install-poetry@v1
 
-      - name: Install package
-        run: poetry install
+      - name: Install & Test ubuntu macos
+        if: |
+          contains(matrix.python-version, 'ubuntu')
+          || contains(matrix.python-version, 'macos')
+        steps:
+          - name: Install package
+            run: poetry install
 
-      - name: Test with pytest
-        run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+          - name: Test with pytest
+            run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
-      # - name: Use Codecov to track coverage
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     files: ./coverage.xml   # coverage report
+      - name: Install & Test windows
+        if: contains(matrix.python-version, 'windows')
+        steps:
+          - name: Install package
+            run: C:\Users\runneradmin\.local\bin\poetry install
+
+          - name: Test with pytest
+            run: C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
