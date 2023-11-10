@@ -44,7 +44,7 @@ tomli = ">=2.0.1"
 version_toml = ["pyproject.toml:tool.poetry.version"]
 branch = "main"
 changelog_file = "CHANGELOG.md"
-build_command = "poetry build"
+build_command = "pip install poetry && poetry build"
 dist_path = "dist/"
 upload_to_release = true
 upload_to_pypi = false
