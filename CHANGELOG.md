@@ -2,6 +2,31 @@
 
 
 
+## v1.0.6 (2023-11-10)
+
+### Build
+
+* build: update field ([`336c3da`](https://github.com/devnums/pyheartlib/commit/336c3da44fa74a9fb58b99c880d1b1c7a0fbbf2e))
+
+* build: add a new dep ([`6ae7c8f`](https://github.com/devnums/pyheartlib/commit/6ae7c8fe597a85fa4e124044b6a88c5201064fff))
+
+### Ci
+
+* ci: update workflow ([`76d2814`](https://github.com/devnums/pyheartlib/commit/76d28143c516b55b10994619a8ac8daa0dfeaee3))
+
+### Documentation
+
+* docs: add requirement ([`43b86ff`](https://github.com/devnums/pyheartlib/commit/43b86ffbc0589144d5f3793fb0e313ed8b08d936))
+
+* docs: fix ([`a821e6f`](https://github.com/devnums/pyheartlib/commit/a821e6f140df57ed0ebe569454d81189d933cbf5))
+
+### Fix
+
+* fix: fix bug ([`1ea3f4e`](https://github.com/devnums/pyheartlib/commit/1ea3f4e1bd3560010d70872bfb38f038266a953f))
+
+* fix: update ([`3b82ccf`](https://github.com/devnums/pyheartlib/commit/3b82ccf6152358a833121b6e61a4847657ce5578))
+
+
 ## v1.0.5 (2023-11-10)
 
 ### Fix
