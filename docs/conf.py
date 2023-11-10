@@ -5,9 +5,11 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Project information --------------------------------------------------
-from importlib.metadata import version
+import tomli
 
-project_version = version("pyheartlib")
+with open("../pyproject.toml", "rb") as f:
+    tml = tomli.load(f)
+project_version = tml["tool"]["poetry"]["version"]
 
 project = "pyheartlib"
 copyright = "2023, devnums"
