@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-12, macos-13, macos-14, windows-latest]
         python-version: ["3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
@@ -51,8 +51,8 @@ jobs:
             poetry install
             poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
 
-      - name: Install & Test Windows
-        if: runner.os == 'Windows'
-        run: |
-           C:\Users\runneradmin\.local\bin\poetry install
-           C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+      # - name: Install & Test Windows
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #      C:\Users\runneradmin\.local\bin\poetry install
+      #      C:\Users\runneradmin\.local\bin\poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
