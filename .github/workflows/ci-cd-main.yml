@@ -84,13 +84,21 @@ jobs:
       - name: Install package
         run: poetry install
 
-      - name: Use Python Semantic Release to prepare release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-            git config user.name github-actions
-            git config user.email github-actions@github.com
-            poetry run semantic-release version
+      # - name: Use Python Semantic Release to prepare release
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #       git config user.name github-actions
+      #       git config user.email github-actions@github.com
+      #       poetry run semantic-release version
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v8.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
 
       - name: Test with pytest
         run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
@@ -101,6 +109,7 @@ jobs:
           files: ./coverage.xml   # coverage report
 
       - name: Publish to TestPyPI
+        if: steps.release.outputs.released == 'true'   #check
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
@@ -115,6 +124,7 @@ jobs:
             pyheartlib
 
       - name: Publish to PyPI
+        if: steps.release.outputs.released == 'true'   #check
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
