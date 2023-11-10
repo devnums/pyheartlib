@@ -20,9 +20,10 @@ test:
 	pytest tests/
 test-cov:
 	pytest --cov-report html:cov_html --cov=pyheartlib tests/
-docs:
+doc:
 	sphinx-build -b html docs docs/_build/html
-docs-nocache:
+doc-clean:
+	rm -r docs/_build
 	sphinx-build -E -b html docs docs/_build/html
 gen-license:
 	./gen_license.sh

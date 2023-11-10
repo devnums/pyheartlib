@@ -78,7 +78,7 @@ This project applies NumPy-style for docstrings and uses `sphinx` for generating
 After adding or changing the documentations, the command below should be run in the terminal to build the documentation.
 
 ```bash
-$ make docs
+$ make doc
 ```
 
 The HTML documentations are created in the `docs/_build` directory.
