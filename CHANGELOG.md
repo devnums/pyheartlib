@@ -2,6 +2,15 @@
 
 
 
+## v1.0.4 (2023-11-10)
+
+### Fix
+
+* fix: update ([`6edf6b0`](https://github.com/devnums/pyheartlib/commit/6edf6b0bee2ee57180c18bd79621780eb3494dba))
+
+* fix: add fields ([`c0806ef`](https://github.com/devnums/pyheartlib/commit/c0806ef8f9e0c6a98c198c399d476b8d143aa7f3))
+
+
 ## v1.0.3 (2023-11-10)
 
 ### Build
