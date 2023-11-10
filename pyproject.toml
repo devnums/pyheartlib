@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyheartlib"
-version = "1.0.1"
+version = "1.0.2"
 description = "A Python package for processing electrocardiogram signals"
 authors = ["devnums <devnums.code@gmail.com>"]
 license = "AGPL-3.0-only"
@@ -39,7 +39,7 @@ ruff = ">=0.0.290"
 sphinx-togglebutton = ">=0.3.2"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version"         # version location
+version_toml = ["pyproject.toml:tool.poetry.version"]
 branch = "main"                                     # branch to make releases of
 changelog_file = "CHANGELOG.md"                     # changelog file
 build_command = "pip install poetry && poetry build"# build dists
