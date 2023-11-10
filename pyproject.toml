@@ -39,8 +39,8 @@ ruff = ">=0.0.290"
 sphinx-togglebutton = ">=0.3.2"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:tool.poetry.version"
-#version_toml = "pyproject.toml:tool.poetry.version"
+#version_variable = "pyproject.toml:tool.poetry.version"
+version_toml = "pyproject.toml:tool.poetry.version"
 branch = "main"
 changelog_file = "CHANGELOG.md"
 build_command = "poetry build"
