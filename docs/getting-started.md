@@ -6,9 +6,9 @@
 
 This version ({{ versionkey }}) of the package was tested on:
 
-* Ubuntu: 21.0 ?
+- Ubuntu: 20.04 | 22.04 & Python: 3.10 | 3.11
 
-* Python: 3.10 | 3.11
+- macOS: 12.6.9 | 13.6 & Python: 3.10 | 3.11
 
 ## Installation
 
