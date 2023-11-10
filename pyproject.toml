@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyheartlib"
-version = "1.0.2"
+version = "1.0.3"
 description = "A Python package for processing electrocardiogram signals"
 authors = ["devnums <devnums.code@gmail.com>"]
 license = "AGPL-3.0-only"
@@ -39,15 +39,18 @@ ruff = ">=0.0.290"
 sphinx-togglebutton = ">=0.3.2"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version" # version location
-branch = "main"                             # branch to make releases of
-changelog_file = "CHANGELOG.md"             # changelog file
-build_command = "poetry build"              # build dists
-dist_path = "dist/"                         # where to put dists
-upload_to_release = true                    # auto-create GitHub release
-upload_to_pypi = false                      # don't auto-upload to PyPI
-remove_dist = false                         # don't remove dists
-patch_without_tag = true                    # patch release by default
+version_variable = "pyproject.toml:tool.poetry.version"
+version_toml = "pyproject.toml:tool.poetry.version"
+branch = "main"
+changelog_file = "CHANGELOG.md"
+build_command = "poetry build"
+dist_path = "dist/"
+upload_to_release = true
+upload_to_pypi = false
+remove_dist = false
+patch_without_tag = true
+commit_version_number = true
+version_source = "tag"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
