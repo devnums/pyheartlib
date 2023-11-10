@@ -16,11 +16,27 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  ci:
+  style:
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+
+      - name: Check-out repository
+        uses: actions/checkout@v3
+
+      - name: Check style
+        uses: pre-commit/action@v2.0.0
+
+  test:
+    needs: style
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-12, macos-13, macos-14]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-12, macos-13]
         python-version: ["3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
