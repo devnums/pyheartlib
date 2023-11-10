@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.10", "3.11"]
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
@@ -58,8 +58,8 @@ jobs:
       - name: Test with pytest
         run: poetry run pytest tests/ --cov=pyheartlib
 
-      # - name: Build documentation
-      #   run: poetry run make html --directory docs/
+      - name: Build documentation
+        run: poetry run make html --directory docs/
 
   cd:
     # Only run this job if the "ci" job passes
@@ -86,19 +86,26 @@ jobs:
 
       - name: Use Python Semantic Release to prepare release
         env:
-          # This token is created automatically by GH Actions
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             git config user.name github-actions
             git config user.email github-actions@github.com
             poetry run semantic-release version
 
+      - name: Test with pytest
+        run: poetry run pytest tests/ --cov=pyheartlib --cov-report=xml
+
+      - name: Use Codecov to track coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml   # coverage report
+
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Test install from TestPyPI
         run: |
@@ -107,8 +114,8 @@ jobs:
             --extra-index-url https://pypi.org/simple \
             pyheartlib
 
-      # - name: Publish to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
