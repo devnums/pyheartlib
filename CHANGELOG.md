@@ -2,6 +2,15 @@
 
 
 
+## v1.0.5 (2023-11-10)
+
+### Fix
+
+* fix: update ([`81e8a67`](https://github.com/devnums/pyheartlib/commit/81e8a67a44fccbcb21398f35aa370a8ea95cbfd4))
+
+* fix: update ([`715796a`](https://github.com/devnums/pyheartlib/commit/715796a275011b0effd648808e57e461ea6115b1))
+
+
 ## v1.0.4 (2023-11-10)
 
 ### Fix
