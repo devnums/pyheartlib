@@ -5,13 +5,15 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Project information --------------------------------------------------
-from pyheartlib import __version__
+from importlib.metadata import version
+
+project_version = version("pyheartlib")
 
 project = "pyheartlib"
 copyright = "2023, devnums"
 author = "devnums"
 
-print("Project version:" + str(__version__))
+print("Project version:" + str(project_version))
 # -- General configuration ------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -46,7 +48,7 @@ myst_enable_extensions = [
 myst_all_links_external = True
 myst_heading_anchors = 7
 
-myst_substitutions = {"versionkey": str(__version__)}
+myst_substitutions = {"versionkey": str(project_version)}
 
 # -- Options for HTML output -----------------------------------------------
 
