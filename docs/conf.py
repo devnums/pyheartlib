@@ -57,6 +57,7 @@ html_theme = "sphinx_rtd_theme"
 
 # -- MyST-NB ---------------------------------------------------------------
 nb_execution_timeout = 900
+nb_execution_mode = "off"
 
 
 # -- Custom code -----------------------------------------------------------
@@ -68,12 +69,6 @@ files = [
     ["../examples/dataset/rpeak.ipynb", "examples/"],
     ["../examples/model/rpeak_detection.ipynb", "examples/"],
 ]
-
-# ["../examples/model/data_preparation.py", "examples/model/"],
-# ["../examples/model/train.py", "examples/model/"],
-# ["../examples/model/inference.py", "examples/model/"],
-# ["../examples/model/result.txt", "examples/model/"],
-# ["../examples/model/plots/mis.png", "examples/model/plots/mis.png"],
 
 import shutil  # noqa: E402
 
