@@ -2,6 +2,13 @@
 
 
 
+## v1.0.9 (2023-11-11)
+
+### Fix
+
+* fix: edit field ([`6c2c119`](https://github.com/devnums/pyheartlib/commit/6c2c119b2ff680e9044dd08186ab1d8fb7dd9d1e))
+
+
 ## v1.0.8 (2023-11-11)
 
 ### Documentation
