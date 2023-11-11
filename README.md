@@ -25,9 +25,11 @@ Documentation is available at the link below.
 
 Current version of the package was tested on:
 
-- Ubuntu: 20.04 | 22.04 & Python: 3.10 | 3.11
+- Ubuntu: 20.04 | 22.04 & Python: 3.10 | 3.11 & Processor: x86_64
 
-- macOS: 12.6.9 | 13.6 & Python: 3.10 | 3.11
+- macOS: 12.6.9 | 13.6 & Python: 3.10 | 3.11 & Processor: x86_64
+
+However, it may also be compatible with other systems.
 
 ## Installation
 
