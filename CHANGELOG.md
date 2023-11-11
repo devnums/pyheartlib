@@ -2,7 +2,14 @@
 
 
 
-## v1.0.9 (2023-11-11)
+## v1.20.1 (2023-11-11)
+
+### Fix
+
+* fix: edit version ([`baf3236`](https://github.com/devnums/pyheartlib/commit/baf3236543e49c878ee0d883992ed81b0172cb33))
+
+
+## v1.20.0 (2023-11-11)
 
 ### Fix
 
