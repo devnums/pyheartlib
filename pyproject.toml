@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyheartlib"
-version = "1.0.6"
+version = "1.0.7"
 description = "A Python package for processing electrocardiogram signals"
 authors = ["devnums <devnums.code@gmail.com>"]
 license = "AGPL-3.0-only"
@@ -51,7 +51,7 @@ upload_to_pypi = false
 remove_dist = false
 patch_without_tag = true
 commit_version_number = true
-version_source = "tag"
+version_source = "commit"
 
 [build-system]
 requires = ["poetry-core>=1.6.0"]
