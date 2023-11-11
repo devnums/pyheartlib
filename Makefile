@@ -10,7 +10,7 @@
 
 
 welcome:
-	echo "Welcome to pyhearlib!"
+	echo "Welcome to Pyhearlib!"
 install:
 	poetry install
 	pre-commit install
