@@ -2,6 +2,17 @@
 
 
 
+## v1.0.8 (2023-11-11)
+
+### Documentation
+
+* docs: fix entry title ([`933d733`](https://github.com/devnums/pyheartlib/commit/933d733277de93ac2c8ffce3c012b83d642ab23d))
+
+### Fix
+
+* fix: edit file ([`1af880c`](https://github.com/devnums/pyheartlib/commit/1af880ca5bcf4e41bb48a5408dad1a7fded74b82))
+
+
 ## v1.0.7 (2023-11-11)
 
 ### Build
