@@ -1,4 +1,4 @@
-# Contributing to Pyheartlib
+# Contributing
 
 Thank you for your interest in contributing to `pyheartlib`.
 You can contribute to this project in several ways.
@@ -21,19 +21,19 @@ Fork the original `pyheartlib` repo by visiting the project GitHub page and clic
 
 Clone your fork on your local computer by running the command below in your terminal.
 
-```bash
+```
 $ git clone https://github.com/your-username/pyheartlib
 ```
 
 Change your directory:
 
-```bash
+```
 $ cd pyheartlib
 ```
 
 Install the project and its dependencies (including development dependencies) by running the following command:
 
-```bash
+```
 $ make install
 ```
 
@@ -41,28 +41,28 @@ This command will install the project using `poetry` and set up `pre-commit` git
 
 The next step is to create a new branch and check it out by running the command below. It is important that the branch name describes the change you are making to the code.
 
-```bash
+```
 $ git checkout -b branch-name
 ```
 
 After you make some changes or add new codes, you should make sure that your changes conform to the project's styling standards. Kindly incorporate the necessary tests and documentations for your new codes, and ensure that the tests pass and the documentations are constructed as desired.
 
-```bash
+```
 $ make check
 $ make test
-$ make docs
+$ make doc
 ```
 
 If everything is alright, you can commit the changes by running the following commands in your terminal. Please ensure that your commit message follows the [Angular style](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits).
 
-```bash
+```
 $ git add .
 $ git commit -m "commit message"
 ```
 
 Your contributions are now ready to be transmitted to the remote.
 
-```bash
+```
 $ git push
 ```
 
@@ -75,10 +75,16 @@ To maintain a clean and readable python code, `pyheartlib` conforms to the `PEP 
 ## Documentation
 
 This project applies NumPy-style for docstrings and uses `sphinx` for generating documentations.
-After adding or changing the documentations, the command below should be run in the terminal to build the documentation.
+After adding or changing the documentations, the command provided below should be executed in the terminal to generate the modifications in the documentation.
 
-```bash
+```
 $ make doc
+```
+
+To clean the builds and rebuild everything, the next command should be run.
+
+```
+$ make doc-clean
 ```
 
 The HTML documentations are created in the `docs/_build` directory.
@@ -88,27 +94,23 @@ The HTML documentations are created in the `docs/_build` directory.
 `Pyheartlib` uses `pytest` for testing. If you are adding new features or modifying the code, please add the appropriate tests to the [`tests`](https://github.com/devnums/pyheartlib/tree/main/tests) directory.
 To ensure that the tests pass successfully, please run the following command in your terminal.
 
-```bash
+```
 $ make test
 ```
 
 Run the following command to generate the HTML coverage report.
 
-```bash
+```
 $ make test-cov
 ```
 
 The HTML report can be viewed at `cov_html/index.html`
 
-## Discussions
-
-For any questions or discussion, please join us on [Discord](https://discord.gg/DQVfR2yWYc).
-
 ## Your code
 
 The code you are contributing must be your own, and whenever it is necessary to add a new dependency, use the command below.
 
-```bash
+```
 $ poetry add package-name
 ```
 
@@ -121,3 +123,7 @@ If you contribute to `pyheartlib`, you acknowledge that your contributions will 
     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
     THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Discussions & Support
+
+For any questions, discussions, or problems with this software, please join us on [Discord](https://discord.gg/DQVfR2yWYc). An alternative option is to open a GitHub issue. ([Issues](https://github.com/devnums/pyheartlib/issues), [New issue](https://github.com/devnums/pyheartlib/issues/new))

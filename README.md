@@ -47,6 +47,10 @@ Examples can be found in the [examples section](https://pyheartlib.readthedocs.i
 
 Feedback and contributions are appreciated. The guidelines for contributing are provided [here](CONTRIBUTING.md).
 
+## Discussions & Support
+
+For any questions, discussions, or problems with this software, please join us on [Discord](https://discord.gg/DQVfR2yWYc). An alternative option is to open a GitHub issue. ([Issues](https://github.com/devnums/pyheartlib/issues), [New issue](https://github.com/devnums/pyheartlib/issues/new))
+
 ## License
 
 `Pyheartlib` is released under the [AGPL-3.0](LICENSE) License.
