@@ -14,6 +14,7 @@ Learn more:
     getting-started.md
     examples/examples.rst
     autoapi/index
-    Changelog<changelog.md>
+    Changelog <changelog.md>
     acknowledgements.rst
-    Github <https://github.com/devnums/pyheartlib>
+    contributing.md
+    GitHub Repository <https://github.com/devnums/pyheartlib>
