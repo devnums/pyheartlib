@@ -42,22 +42,23 @@ autodoc_default_options = {
     "special-members": False,
 }
 
-myst_enable_extensions = [
-    "fieldlist",
-    "colon_fence",
-    "substitution",
-]
-myst_all_links_external = True
-myst_heading_anchors = 7
-
-myst_substitutions = {"versionkey": str(project_version)}
-
 # -- Options for HTML output -----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
+
+# --MyST---------------------------------------------------------------------
+myst_enable_extensions = [
+    "fieldlist",
+    "colon_fence",
+    "substitution",
+]
+myst_all_links_external = True
+# myst_heading_anchors = 7
+
+myst_substitutions = {"versionkey": str(project_version)}
 
 # -- MyST-NB ---------------------------------------------------------------
 nb_execution_timeout = 900
