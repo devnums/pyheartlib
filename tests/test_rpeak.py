@@ -128,7 +128,7 @@ def test_getitem1(seq_generator1):
     batch = 0
     seq = seq_generator1.__getitem__(batch)[0]  # excerpt values
     label = seq_generator1.__getitem__(batch)[1]  # excerpt label
-    assert seq.shape == (7, 400)
+    assert seq.shape == (7, 2, 400)
     assert label.shape == (7, 6)
     assert int(label[0][0]) == 0
     assert label[0][1] == "N"
@@ -169,7 +169,7 @@ def test_getitem2(seq_generator2):
     batch = 0
     seq = seq_generator2[batch][0]  # excerpt values
     label = seq_generator2[batch][1]  # excerpt label
-    assert seq.shape == (7, 400)
+    assert seq.shape == (7, 2, 400)
     assert label.shape == (7, 6)
     assert label[0][0] == 0
     assert label[0][1] == 1
@@ -210,7 +210,7 @@ def test_getitem3(seq_generator3):
     batch = 0
     seq = seq_generator3.__getitem__(batch)[0]  # excerpt values
     label = seq_generator3.__getitem__(batch)[1]  # excerpt label
-    assert seq.shape == (7, 400)
+    assert seq.shape == (7, 2, 400)
     assert label.shape == (7, 6)
     assert label[0][0] == 0
     assert label[0][1] == 1
