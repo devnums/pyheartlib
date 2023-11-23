@@ -13,6 +13,7 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import math  # noqa: E402
+from warnings import warn  # noqa: E402
 
 import numpy as np  # noqa
 from tensorflow.keras.utils import Sequence  # noqa: E402
@@ -120,7 +121,9 @@ class RpeakData(Data, DataSeq):
         """
 
         signal, r_locations, r_labels, _, _ = record.values()
-        full_ann = [0] * len(signal)
+        if r_labels is None or r_locations is None:
+            raise RuntimeError("R-peaks are not provided!")
+        full_ann = [0] * signal.shape[0]
         for i, loc in enumerate(r_locations):
             full_ann[loc] = r_labels[i]
 
@@ -187,7 +190,7 @@ class RpeakData(Data, DataSeq):
         ):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
-            assert len(signal) == len(
+            assert signal.shape[0] == len(
                 full_ann
             ), "signal and annotation must have the same length!"
 
@@ -320,8 +323,11 @@ class ECGSequence(Sequence):
             ann = self.gen_annotation(full_ann_seq)
             # compute signal waveform features for fragments
             if self.raw is False:
-                seq = self.compute_wf_feats(seq)
-                batch_x.append(list(seq))
+                feats = []
+                for ch in range(seq.shape[1]):
+                    feats_ch = self.compute_wf_feats(seq[:, ch])
+                    feats.append(list(feats_ch))
+                batch_x.append(feats)
             else:
                 batch_x.append(seq)
             if self.class_labels is not None:
@@ -329,7 +335,15 @@ class ECGSequence(Sequence):
             if self.binary:
                 ann = self.get_binary(ann)
             batch_y.append(ann)
-        return np.array(batch_x), np.array(batch_y)
+        batch_x = np.array(batch_x)
+        if self.raw is True:
+            batch_x = np.swapaxes(batch_x, 1, 2)
+        if batch_x.shape[1] == 1:
+            msg = "Output will have one more dimension in future for channel!"
+            warn(msg, DeprecationWarning, stacklevel=2)
+            batch_x = np.squeeze(batch_x, axis=1)
+        batch_y = np.array(batch_y)
+        return batch_x, batch_y
 
     def on_epoch_end(self):
         """After each epoch shuffles the samples."""

@@ -13,6 +13,7 @@ import os
 from abc import ABC, abstractmethod
 from warnings import warn
 
+import numpy as np
 import yaml
 from tqdm import tqdm
 
@@ -99,14 +100,19 @@ class Data:
         """
         record_path = os.path.join(self.data_path, str(record_id))
         data_dict = get_data(record_path, self.config, return_dict=True)
-        data_dict["signal"] = Processing.denoise_signal(
-            data_dict["signal"],
-            remove_bl=self.remove_bl,
-            lowpass=self.lowpass,
-            sampling_rate=self.sampling_rate,
-            cutoff=self.cutoff,
-            order=self.order,
-        )
+        signal = data_dict["signal"]
+        processed_sig = np.empty_like(signal)
+        for ch in range(signal.shape[1]):
+            processed_sig[:, ch] = Processing.denoise_signal(
+                signal[:, ch],
+                remove_bl=self.remove_bl,
+                lowpass=self.lowpass,
+                sampling_rate=self.sampling_rate,
+                cutoff=self.cutoff,
+                order=self.order,
+            )
+
+        data_dict["signal"] = processed_sig
         return data_dict
 
 

@@ -13,6 +13,7 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import math  # noqa: E402
+from warnings import warn  # noqa: E402
 
 import numpy as np  # noqa: E402
 from tensorflow.keras.utils import Sequence  # noqa: E402
@@ -111,9 +112,11 @@ class RhythmData(Data, DataSeq):
         """
 
         signal, _, _, rhythms, rhythms_locations = record.values()
-        sig_length = len(signal)
+        if rhythms is None or rhythms_locations is None:
+            raise RuntimeError("Rhythms are not provided!")
+        sig_length = signal.shape[0]
         full_ann = []
-        full_ann = ["unlab"] * len(signal)
+        full_ann = ["unlab"] * signal.shape[0]
         for i in range(len(rhythms_locations)):
             remained = sig_length - rhythms_locations[i]
             full_ann[rhythms_locations[i] :] = [rhythms[i]] * remained
@@ -158,7 +161,7 @@ class RhythmData(Data, DataSeq):
         ):
             signal = annotated_records[rec_id]["signal"]
             full_ann = annotated_records[rec_id]["full_ann"]
-            assert len(signal) == len(
+            assert signal.shape[0] == len(
                 full_ann
             ), "signal and annotation must have the same length!"
 
@@ -236,6 +239,7 @@ class ECGSequence(Sequence):
         raw=True,
         interval=36,
         shuffle=True,
+        rri_output=True,
         rri_length=150,
     ):
         self.shuffle = shuffle
@@ -245,6 +249,7 @@ class ECGSequence(Sequence):
         self.data = data
         self.samples_info = samples_info
         self.class_labels = class_labels
+        self.rri_output = rri_output
         self.rri_length = rri_length
         self.on_epoch_end()
 
@@ -260,8 +265,8 @@ class ECGSequence(Sequence):
             numpy arrays of batch_seq, batch_rri, batch_rri_feat.
 
             If raw is False, batch_seq has the shape of
-            (batch_size, #sub-segments, #features), otherwise,
-            it has the shape of (batch_size, seq_len).
+            (batch_size, #channels, #sub-segments, #features), otherwise,
+            it has the shape of (batch_size, #channels, seq_len).
 
             batch_y has the shape of (batch_size, 1).
         """
@@ -284,16 +289,30 @@ class ECGSequence(Sequence):
             seq = self.data[rec_id]["signal"][start:end]
             # compute signal waveform features for fragments
             if self.raw is False:
-                seq = self.compute_wf_feats(seq)
-                batch_seq.append(list(seq))
+                feats = []
+                for ch in range(seq.shape[1]):
+                    feats_ch = self.compute_wf_feats(seq[:, ch])
+                    feats.append(list(feats_ch))
+                batch_seq.append(feats)
             else:
                 batch_seq.append(seq)
-            rri = self.get_rri(rec_id, start, end)
-            batch_rri.append(rri)
-        batch_rri = np.array(batch_rri)
-        batch_rri_feat = self.compute_rri_features(batch_rri * 1000)
-        # return np.array(batch_seq),np.array(batch_label)
-        batch_x = [np.array(batch_seq), batch_rri, batch_rri_feat]
+            if self.rri_output:
+                rri = self.get_rri(rec_id, start, end)
+                batch_rri.append(rri)
+        batch_seq = np.array(batch_seq)
+        if self.rri_output:
+            batch_rri = np.array(batch_rri)
+            batch_rri_feat = self.compute_rri_features(batch_rri * 1000)
+        if self.raw is True:
+            batch_seq = np.swapaxes(batch_seq, 1, 2)
+        if batch_seq.shape[1] == 1:
+            msg = "Output will have one more dimension in future for channel!"
+            warn(msg, DeprecationWarning, stacklevel=2)
+            batch_seq = np.squeeze(batch_seq, axis=1)
+        if self.rri_output:
+            batch_x = [batch_seq, batch_rri, batch_rri_feat]
+        else:
+            batch_x = batch_seq
         batch_y = np.array(batch_label)
         return batch_x, batch_y
 
@@ -309,9 +328,10 @@ class ECGSequence(Sequence):
     def get_rri(self, rec_id, start, end):
         """Computes RR-intervals."""
         sampling_rate = RhythmData.sampling_rate
-        r_locations = np.asarray(
-            self.data[rec_id]["r_locations"]
-        )  # entire record
+        r_locations = self.data[rec_id]["r_locations"]  # entire record
+        if r_locations is None:
+            raise RuntimeError("R-peak locations are not provided!")
+        r_locations = np.asarray(r_locations)
         inds = np.where((r_locations >= start) & (r_locations < end))
         rpeak_locs = list(
             r_locations[inds]

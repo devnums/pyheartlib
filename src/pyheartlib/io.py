@@ -39,13 +39,26 @@ def get_data(record_path, config, return_dict=True):
 
     """
     try:
-        channel = str(config["CHANNEL"])
+        chnls = ""
+        chnls = config["CHANNEL"]
     except KeyError:
-        channel = "MLII"
-    record = wfdb.rdrecord(record_path, channel_names=[channel])
+        print("Names of channels are not provided!")
+    if isinstance(chnls, list):
+        channels = chnls
+    else:
+        channels = []
+        channels.append(str(chnls))
+    record = wfdb.rdrecord(record_path, channel_names=channels)
     annotation = wfdb.rdann(record_path, "atr")
-    signal = record.p_signal[:, 0]  # numpy.ndarray
+    signal = record.p_signal
+    if signal is None:
+        raise RuntimeError("Record was not read correctly!")
+    if signal.shape[1] != len(channels):
+        raise ValueError("Channels are not right!")
     ann_locations = annotation.sample
+    if len(ann_locations) < 1:
+        errmsg = "Record was not read correctly or does not have annotations!"
+        raise RuntimeError(errmsg)
     symbol = annotation.symbol
     aux = annotation.aux_note
     aux = [txt.rstrip("\x00") for txt in aux]
@@ -54,15 +67,26 @@ def get_data(record_path, config, return_dict=True):
     r_locations = []
     rhythms = []
     rhythms_locations = []
-    syms = config["BEAT_TYPES"]
-    for i in range(len(ann_locations)):
-        if symbol[i] in syms:
-            r_labels.append(symbol[i])
-            r_locations.append(ann_locations[i])
 
-        if aux[i] in config["RHYTHM_TYPES"]:
-            rhythms.append(aux[i])
-            rhythms_locations.append(ann_locations[i])
+    try:
+        syms = config["BEAT_TYPES"]
+        for i in range(len(ann_locations)):
+            if symbol[i] in syms:
+                r_labels.append(symbol[i])
+                r_locations.append(ann_locations[i])
+    except KeyError:
+        r_labels = None
+        r_locations = None
+
+    try:
+        auxs = config["RHYTHM_TYPES"]
+        for i in range(len(ann_locations)):
+            if aux[i] in auxs:
+                rhythms.append(aux[i])
+                rhythms_locations.append(ann_locations[i])
+    except KeyError:
+        rhythms = None
+        rhythms_locations = None
 
     if return_dict is True:
         return {
@@ -73,16 +97,19 @@ def get_data(record_path, config, return_dict=True):
             "rhythms_locations": rhythms_locations,
         }
     else:
-        annots = [None] * len(signal)
+        annots = [None] * signal.shape[0]
+        auxiliary = [None] * signal.shape[0]
         for i in range(len(ann_locations)):
             annots[ann_locations[i]] = symbol[i]
-            if aux[i] != "":
-                annots[ann_locations[i]] = aux[i]
+            if symbol[i] == "+":
+                auxiliary[ann_locations[i]] = aux[i]
         sig_dict = {
-            "time": range(len(signal)),
-            "signal": signal,
+            "time": range(signal.shape[0]),
             "annots": annots,
+            "auxiliary": auxiliary,
         }
+        for ch in channels:
+            sig_dict[ch] = signal[:, ch]
         return pd.DataFrame(sig_dict)
 
 
