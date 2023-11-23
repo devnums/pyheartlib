@@ -104,7 +104,7 @@ def test_getitem1(seq_generator1):
         2
     ]  # calculated rri features
     assert batch_label.shape == (23,)
-    assert batch_seq.shape == (23, 400)
+    assert batch_seq.shape == (23, 2, 400)
     assert batch_label[0] == "(N"
     assert batch_label[2] == "(VT"
     assert batch_label[3] == "(VT"
@@ -149,7 +149,7 @@ def test_getitem2(seq_generator2):
         2
     ]  # calculated rri features
     assert batch_label.shape == (23,)
-    assert batch_seq.shape == (23, 5, 14)
+    assert batch_seq.shape == (23, 2, 5, 14)
     assert batch_label[0] == 0
     assert batch_label[2] == 1
     assert batch_label[3] == 1
