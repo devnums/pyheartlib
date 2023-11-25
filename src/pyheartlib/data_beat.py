@@ -197,7 +197,7 @@ class BeatData(Data):
             yds = yds + beat_types
             rds = rds + r_locs
             i += 1
-
+        xds = np.array(xds)
         if beatinfo_obj is not None:
             beat_feats, labels = self.beat_info_feat(
                 {
@@ -230,8 +230,8 @@ class BeatData(Data):
 
             Dictionary with keys:
 
-            'waveform' : list
-                List of waveforms.
+            'waveform' : numpy.ndarray
+                Array of waveforms (#waveforms, len_waveforms, #channels).
             'rpeak_locs' : list
                 List of rpeak locations.
             'rec_ids' : list
@@ -608,11 +608,17 @@ class BeatData(Data):
         yds = ds["labels"]
         xds = ds["waveforms"]
         fds = ds["beat_feats"]
+        # clean feature array
         indexes = []
-        # cleans feature array
-        indexes.extend(np.where(np.isinf(fds))[0])
-        indexes.extend(np.where(np.isnan(fds))[0])
+        fds = fds.reset_index(drop=True)
+        for indx, row in fds.iterrows():
+            for label, content in row.items():
+                if np.isinf(content).any() or np.isnan(content).any():
+                    # fds[label][indx] = np.nan
+                    indexes.append(indx)
+        indexes = list(set(indexes))
         fds = fds.drop(indexes, axis=0, inplace=False)
+        fds = fds.reset_index(drop=True)
         xds = np.delete(xds, indexes, axis=0)
         yds = np.delete(yds, indexes, axis=0)
         return {"waveforms": xds, "beat_feats": fds, "labels": yds}
@@ -644,20 +650,30 @@ class BeatData(Data):
         fds.reset_index(drop=True, inplace=True)
         # cleans a 2d array. Each column is a features, rows are samples.
         # Only fds.
+        unmodified = []
         ind_outliers = []
         for i in range(fds.shape[1]):
-            x = fds.iloc[:, i]
-            Q1 = np.quantile(x, 0.25, axis=0)
-            Q3 = np.quantile(x, 0.75, axis=0)
+            cont = fds.iloc[:, i]
+            try:
+                float(cont[0])
+            except TypeError:
+                unmodified.append(cont.name)
+                continue
+            Q1 = np.quantile(cont, 0.25, axis=0)
+            Q3 = np.quantile(cont, 0.75, axis=0)
             IQR = Q3 - Q1
             inds = np.where(
-                (x > (Q3 + factor * IQR)) | (x < (Q1 - factor * IQR))
+                (cont > (Q3 + factor * IQR)) | (cont < (Q1 - factor * IQR))
             )[0]
             ind_outliers.extend(inds)
-        ind_outliers = list(np.unique(ind_outliers))
+        ind_outliers = list(set(ind_outliers))
         fds = fds.drop(ind_outliers, axis=0, inplace=False)
+        fds.reset_index(drop=True, inplace=True)
         xds = np.delete(xds, ind_outliers, axis=0)
         yds = np.delete(yds, ind_outliers, axis=0)
+        print(f"{len(ind_outliers)} rows were removed!")
+        print("The following columns were not considered: ")
+        print(unmodified)
         if return_indexes is False:
             return {"waveforms": xds, "beat_feats": fds, "labels": yds}
         else:
@@ -691,7 +707,7 @@ class BeatData(Data):
         return ds_all
 
     def append_ds(self, ds1, ds2):
-        """Appends two datasets together.
+        """Appends two datasets.
 
         Parameters
         ----------
@@ -712,61 +728,3 @@ class BeatData(Data):
             (ds1["labels"].reshape(-1, 1), ds2["labels"].reshape(-1, 1))
         ).flatten()
         return dss
-
-    # def __aug_decrease(self, ds, label="N", desired_size=21000):
-    #     # """Simple data augmentation to decrease a
-    #          particular type in the dataset."""
-    #     import random
-    #     import copy
-
-    #     ds = copy.deepcopy(ds)
-    #     xx = ds["waveforms"]
-    #     rr = ds["beat_feats"]
-    #     yy = ds["labels"]
-    #     ind = self.search_label(ds, sym=label)
-    #     random.shuffle(ind)
-    #     nn = len(ind) - desired_size
-    #     ind_remove = ind[0:nn]
-    #     x_train_aug = np.delete(xx, ind_remove, axis=0)
-    #     r_train_aug = np.delete(rr, ind_remove, axis=0)
-    #     y_train_aug = np.delete(yy, ind_remove)
-    #     print(x_train_aug.shape, y_train_aug.shape)
-    #     return {
-    #         "waveforms": x_train_aug,
-    #         "beat_feats": r_train_aug,
-    #         "labels": y_train_aug,
-    #     }
-
-    # def __aug_increase(self, ds, desired_size=21000):
-    #     # """Simple data augmentation to increase the number of
-    #          minorities in the dataset."""
-    #     import copy
-
-    #     x_aug = ds["waveforms"]
-    #     r_aug = ds["beat_feats"]
-    #     y_aug = ds["labels"].tolist()
-    #     for sym in self.config["BEAT_TYPES"]:
-    #         try:
-    #             ind_minor = self.search_label(ds, sym=sym)
-    #             minority = np.take(ds["waveforms"], ind_minor, axis=0)
-    #             minority_r = np.take(ds["beat_feats"], ind_minor, axis=0)
-    #             minority_labels = [sym] * len(minority)
-    #             if len(minority) > 0 and len(ind_minor) < desired_size:
-    #                 times = desired_size // len(minority)
-    #                 if times > 0:
-    #                     arr = copy.deepcopy(minority)
-    #                     arr_r = copy.deepcopy(minority_r)
-    #                     list_appnd = copy.deepcopy(minority_labels)
-    #                     for i in range(times - 1):
-    #                         arr = np.append(arr, minority, axis=0)
-    #                         arr_r = np.append(arr_r, minority_r, axis=0)
-    #                         list_appnd = list_appnd + minority_labels
-    #                     x_aug = np.append(x_aug, arr, axis=0)
-    #                     r_aug = np.append(r_aug, arr_r, axis=0)
-    #                     y_aug = y_aug + list_appnd
-    #                 else:
-    #                     print(sym)
-    #         except:
-    #             print("label zero")
-    #     return {"waveforms": x_aug, "beat_feats": r_aug,
-    #             "labels": np.array(y_aug)}

@@ -16,8 +16,6 @@ import numpy as np
 from scipy import stats
 from scipy.fft import rfft, rfftfreq  # noqa: F401
 
-from pyheartlib.extra.pqrst import PQRST
-
 
 class BeatInfo:
     """
@@ -44,11 +42,11 @@ class BeatInfo:
     in_ms : bool, optional
         Whether to calculate RR-intervals in time (miliseconds) or samples,
         by default True
-    whole_waveform : list
-        Whole waveform, that is not trimmed.
-    bwaveform : list
+    input_waveform : numpy.ndarray
+        Input waveform, that is not trimmed (len_waveform, #channels).
+    bwaveform : numpy.ndarray
         Segmented beat waveform. Selected as a segment of
-        the whole waveform.
+        the input waveform (len_waveform, #channels).
     start_idx: int
         The index of the first sample (onset) of the waveform
         on the original signal.
@@ -79,8 +77,8 @@ class BeatInfo:
         data : dict
             A dict containing data about the beat with keys:
 
-            'waveform' : list
-                Waveform of the beat.
+            'waveform' : numpy.ndarray
+                Waveform (len_waveform, #channels).
             'rpeak_locs' : list
                 A list containing locations of rpeaks.
             'rec_id' : int
@@ -96,18 +94,16 @@ class BeatInfo:
         self.data = data
         self.label = data["label"]
         self.rpeaks = data["rpeak_locs"]
-        self.whole_waveform = data["waveform"]  # Whole waveform
+        self.input_waveform = data["waveform"]  # Input waveform
         self.rri = self.get_rris(in_ms=self.in_ms)
         self.rri_smpl = self.get_rris(in_ms=False)
         self.sdrri = self.get_sdrri()
-        self.bwaveform, self.wfpts = self.get_beat_waveform()  # beat waveform
+        (
+            self.bwaveform,
+            self.wfpts,
+        ) = self.get_beat_waveform()  # Trimmed waveform
         self.avail_features = self.available_features()
         self.features = self.compute_features()
-        if self.bwaveform is not None:
-            self.pqrst_dict = self.pqrst()
-        if self.label == "V":
-            pass
-            # self.__plot_wf() #plot for debug
 
     def available_features(self):
         """Returns available features that can be computed.
@@ -164,11 +160,24 @@ class BeatInfo:
         for f in features_names:
             ret = getattr(self, f)()
             # if the feature function returns one value
-            if not isinstance(ret, dict):
+            if isinstance(ret, (int, float)):
                 feature_dict[f] = ret
             # if the feature function returns multiple values as a dict
             elif isinstance(ret, dict):
-                feature_dict.update(ret)
+                try:
+                    keys = list(ret.keys())
+                    float(ret[keys[0]])
+                    for key, val in ret.items():
+                        feature_dict[key] = val
+                except TypeError:
+                    for key, val in ret.items():
+                        feature_dict[key] = tuple(val)
+            # for channels
+            elif isinstance(ret, tuple) or isinstance(ret, np.ndarray):
+                ret = tuple(ret)
+                for chnl, val in enumerate(ret):
+                    key = f"{f}(CH{chnl+1})"
+                    feature_dict[key] = val
         return feature_dict
 
     def get_beat_waveform(self, win=[-0.35, 0.65]):
@@ -186,13 +195,13 @@ class BeatInfo:
             beat_offset = beat_offset_org - self.data["start_idx"]
             if beat_onset < 0:
                 beat_onset = 0
-            if beat_offset > len(self.whole_waveform):
-                beat_offset = len(self.whole_waveform) - 1
+            if beat_offset > len(self.input_waveform):
+                beat_offset = len(self.input_waveform) - 1
             rpk = beat_rpeak_idx - self.data["start_idx"]
-            bwaveform = self.whole_waveform[beat_onset:beat_offset]
+            bwaveform = self.input_waveform[beat_onset:beat_offset]
             bwaveform = np.asarray(bwaveform)
             # if len(bwaveform)==0 or beat_onset*beat_offset<0:
-            # print(len(self.whole_waveform))
+            # print(len(self.input_waveform))
             # print([beat_onset_org,beat_offset_org])
             # print(beat_rpeak_idx)
             # print(self.start_idx)
@@ -218,15 +227,15 @@ class BeatInfo:
                     self.data["rec_id"], self.data["start_idx"]
                 )
             )
-            plt.plot(self.whole_waveform)
+            plt.plot(self.input_waveform)
             plt.plot(bwaveform)
             plt.scatter(
-                beat_onset, self.whole_waveform[beat_onset], color="yellow"
+                beat_onset, self.input_waveform[beat_onset], color="yellow"
             )
             plt.scatter(
-                beat_offset, self.whole_waveform[beat_offset], color="orange"
+                beat_offset, self.input_waveform[beat_offset], color="orange"
             )
-            plt.scatter(rpk, self.whole_waveform[rpk], color="r")
+            plt.scatter(rpk, self.input_waveform[rpk], color="r")
 
     def get_rris(self, in_ms):
         """Compute RR-intervals.
@@ -381,43 +390,51 @@ class BeatInfo:
 
     def F_beat_max(self):
         """Max value of heartbeat waveform."""
-        return max(self.bwaveform)
+        res = np.max(self.bwaveform, axis=0)
+        return res
 
     def F_beat_min(self):
         """Min value of heartbeat waveform."""
-        return min(self.bwaveform)
+        res = np.min(self.bwaveform, axis=0)
+        return res
 
     def F_maxmin_diff(self):
         """Difference of max and min values of heartbeat waveform."""
-        return self.F_beat_max() - self.F_beat_min()
+        res = self.F_beat_max() - self.F_beat_min()
+        return res
 
     def F_maxmin_diff_norm(self):
         """Difference of max and min values of heartbeat waveform,
         normalized by waveform RMS.
 
         """
-
-        return self.F_maxmin_diff() / self.F_beat_rms()
+        res = self.F_maxmin_diff() / self.F_beat_rms()
+        return res
 
     def F_beat_mean(self):
         """Mean of heartbeat waveform."""
-        return np.mean(self.bwaveform)
+        res = np.mean(self.bwaveform, axis=0)
+        return res
 
     def F_beat_std(self):
         """STD of heartbeat waveform."""
-        return np.std(self.bwaveform)
+        res = np.std(self.bwaveform, axis=0)
+        return res
 
     def F_beat_skewness(self):
         """Skewness of heartbeat waveform."""
-        return stats.skew(self.bwaveform)
+        res = stats.skew(self.bwaveform)
+        return res
 
     def F_beat_kurtosis(self):
         """Kurtosis of heartbeat waveform."""
-        return stats.kurtosis(self.bwaveform)
+        res = stats.kurtosis(self.bwaveform)
+        return res
 
     def F_beat_rms(self):
         """RMS of heartbeat waveform."""
-        return np.sqrt(np.mean(self.bwaveform**2))
+        res = np.sqrt(np.mean(self.bwaveform**2, axis=0))
+        return res
 
     def F_nsampels(self, n_samples=10):
         """Gives equally spaced samples of the trimmed heartbeat waveform.
@@ -444,74 +461,43 @@ class BeatInfo:
             samples_dict[key] = sampl
         return samples_dict
 
-    def F_subsegs(self, n_subsegs=3, ftr="max"):
-        """Computes a feature for equal-length subsegments of
-        the beat waveform."""
+    # def F_subsegs(self, n_subsegs=3, ftr="max"):
+    #     """Computes a feature for equal-length subsegments of
+    #     the beat waveform."""
 
-        def func(arg, ftr):
-            if ftr == "max":
-                f = max(arg)
-            elif ftr == "min":
-                f = min(arg)
-            elif ftr == "mean":
-                f = np.mean(arg)
-            elif ftr == "std":
-                f = np.std(arg)
-            elif ftr == "median":
-                f = np.median(arg)
-            elif ftr == "skewness":
-                f = stats.skew(arg)
-            elif ftr == "kurtosis":
-                f = stats.kurtosis(arg)
-            elif ftr == "rms":
-                f = np.sqrt(np.mean(arg**2))
-            return f
+    #     def func(arg, ftr):
+    #         if ftr == "max":
+    #             f = max(arg)
+    #         elif ftr == "min":
+    #             f = min(arg)
+    #         elif ftr == "mean":
+    #             f = np.mean(arg)
+    #         elif ftr == "std":
+    #             f = np.std(arg)
+    #         elif ftr == "median":
+    #             f = np.median(arg)
+    #         elif ftr == "skewness":
+    #             f = stats.skew(arg)
+    #         elif ftr == "kurtosis":
+    #             f = stats.kurtosis(arg)
+    #         elif ftr == "rms":
+    #             f = np.sqrt(np.mean(arg**2))
+    #         return f
 
-        ret_dict = {}
-        for i in range(n_subsegs):
-            s_ix = int(i / n_subsegs * len(self.bwaveform))
-            e_ix = int((i + 1) / n_subsegs * len(self.bwaveform))
-            subseg = self.bwaveform[s_ix:e_ix]
-            key = f"seg[{str(i+1)}]_"
-            ret_dict[key + ftr] = func(subseg, ftr)
-        # agg results
-        ls = [v for k, v in ret_dict.items()]
-        arr = np.asarray(ls)
-        ret_dict["agg_mean_" + ftr] = np.mean(arr)
-        ret_dict["agg_std_" + ftr] = np.std(arr)
-        ret_dict["agg_rms_" + ftr] = np.sqrt(np.mean(arr**2))
-        return ret_dict
-
-    def pqrst(self):
-        # 120ms <Normal_PR< 220ms.
-        # 75ms  <Normal_QRS< 120ms
-        # QRS region estimate 160ms.
-        # Compute: QRS width,Q,R,S amplitudes.
-
-        beat_pqrst = PQRST(fs=self.fs)
-        beat_pqrst(self.bwaveform)
-        p = beat_pqrst.pwave
-        q = beat_pqrst.qwave
-        r = beat_pqrst.rwave
-        s = beat_pqrst.swave
-        pr = beat_pqrst.pr_interval
-        qs = beat_pqrst.qs_interval
-        return {"p": p, "q": q, "r": r, "s": s, "pr": pr, "qs": qs}
-
-    def pr_interval(self):
-        # pr interval in ms
-        pr = self.pqrst_dict["pr"]
-        return pr
-
-    def qs_interval(self):
-        # qs interval in ms
-        qs = self.pqrst_dict["qs"]
-        return qs
-
-    def qs_interval_nr(self):
-        # qs interval (normalized)
-        qs = self.pqrst_dict["qs"]
-        return qs / self.rms_rri()
+    #     ret_dict = {}
+    #     for i in range(n_subsegs):
+    #         s_ix = int(i / n_subsegs * len(self.bwaveform))
+    #         e_ix = int((i + 1) / n_subsegs * len(self.bwaveform))
+    #         subseg = self.bwaveform[s_ix:e_ix]
+    #         key = f"seg[{str(i+1)}]_"
+    #         ret_dict[key + ftr] = func(subseg, ftr)
+    #     # agg results
+    #     ls = [v for k, v in ret_dict.items()]
+    #     arr = np.asarray(ls)
+    #     ret_dict["agg_mean_" + ftr] = np.mean(arr)
+    #     ret_dict["agg_std_" + ftr] = np.std(arr)
+    #     ret_dict["agg_rms_" + ftr] = np.sqrt(np.mean(arr**2))
+    #     return ret_dict
 
     # ============================================================
     # Spectral features of the beat waveform
@@ -534,61 +520,3 @@ class BeatInfo:
             key = "fft_" + str(i + 1)
             ret_dict[key] = ret
         return ret_dict
-
-    # ============================================================
-    # helper functions
-    # ============================================================
-    # def __plot_wf(self):
-    #     from matplotlib import figure
-
-    #     fig = figure.Figure(figsize=(8, 4), dpi=170)
-    #     ax = fig.add_subplot(111)
-    #     ax.plot(self.whole_waveform)
-    #     # plt.plot(bwaveform)
-    #     beat_rpeak_idx = self.rpeaks[self.beat_loc]
-    #     beat_onset = self.wfpts["beat_onset"]
-    #     beat_offset = self.wfpts["beat_offset"]
-    #     ax.scatter(
-    #         beat_onset,
-    #         self.whole_waveform[beat_onset],
-    #         color="deeppink",
-    #         marker=">",
-    #         s=40,
-    #     )
-    #     ax.scatter(
-    #         beat_offset,
-    #         self.whole_waveform[beat_offset],
-    #         color="deeppink",
-    #         marker="<",
-    #         s=40,
-    #     )
-    #     rpk = beat_rpeak_idx - self.data["start_idx"]
-    #     ax.scatter(rpk, self.whole_waveform[rpk], color="red")
-    #     try:
-    #         p = (self.pqrst_dict["p"][0]) + beat_onset
-    #         q = (self.pqrst_dict["q"][0]) + beat_onset
-    #         r = (self.pqrst_dict["r"][0]) + beat_onset
-    #         s = (self.pqrst_dict["s"][0]) + beat_onset
-    #         ax.scatter(p, self.whole_waveform[p], color="cyan")
-    #         ax.scatter(q, self.whole_waveform[q], color="magenta")
-    #         ax.scatter(r, self.whole_waveform[r], color="violet",
-    #         marker="x")
-    #         ax.scatter(s, self.whole_waveform[s], color="lime")
-    #     except:
-    #         pass
-    #     ax.set_title(self.label)
-    #     ax.set_ylim(-1, 2)
-    #     ptnt = str(self.data["rec_id"])
-    #     fldr = "../wvplots/{}".format(ptnt)
-    #     try:
-    #         import os
-
-    #         os.makedirs(fldr, exist_ok=True)
-    #     except OSError as err:
-    #         print("Folder can not be created!")
-    #     fig.savefig(
-    #         "{}/{}_{}_{}.jpg".format(
-    #             fldr, ptnt, str(self.data["start_idx"]), self.label
-    #         )
-    #     )
-    #     fig.clear()
