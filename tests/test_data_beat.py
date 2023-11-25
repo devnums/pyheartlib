@@ -203,20 +203,22 @@ def test_search_label(beatdata):
 
 def test_clean_inf_nan(beatdata):
     beatinfo = BeatInfo()
-    beatinfo.select_features(["F_beat_max", "F_beat_min"])
+    beatinfo.select_features(["F_beat_max", "F_post_rri"])
     ds = beatdata.make_dataset(["dummy101"], beatinfo)
-    ds["beat_feats"].iloc[2, 0] = numpy.inf
+    ds["beat_feats"].iloc[2, 1] = numpy.inf
+    ds["beat_feats"].iloc[6, 0] = -numpy.inf
     ds["beat_feats"].iloc[3, 1] = numpy.nan
+    ds["beat_feats"].iloc[7, 0] = numpy.nan
     clean_ds = beatdata.clean_inf_nan(ds)
     assert ds.keys() == clean_ds.keys()
     assert clean_ds["labels"].shape == tuple(
-        numpy.subtract(ds["labels"].shape, (2,))
+        numpy.subtract(ds["labels"].shape, (4,))
     )
     assert clean_ds["waveforms"].shape == tuple(
-        numpy.subtract(ds["waveforms"].shape, (2, 0))
+        numpy.subtract(ds["waveforms"].shape, (4, 0, 0))
     )
     assert clean_ds["beat_feats"].shape == tuple(
-        numpy.subtract(ds["beat_feats"].shape, (2, 0))
+        numpy.subtract(ds["beat_feats"].shape, (4, 0))
     )
 
 
@@ -247,12 +249,12 @@ def test_append_ds(beatdata):
         numpy.multiply(ds["labels"].shape, (2,))
     )
     assert res["waveforms"].shape == tuple(
-        numpy.multiply(ds["waveforms"].shape, (2, 1))
+        numpy.multiply(ds["waveforms"].shape, (2, 1, 1))
     )
     assert res["beat_feats"].shape == tuple(
         numpy.multiply(ds["beat_feats"].shape, (2, 1))
     )
-    wshape = ds["waveforms"].shape
-    assert res["waveforms"][wshape[0], 3] == ds["waveforms"][0, 3]
-    fshape = ds["beat_feats"].shape
-    assert res["waveforms"][fshape[0] + 2, 5] == ds["waveforms"][2, 5]
+    num_rows = ds["waveforms"].shape[0]
+    assert res["labels"][num_rows] == ds["labels"][0]
+    assert res["waveforms"][num_rows, 3][0] == ds["waveforms"][0, 3][0]
+    assert res["beat_feats"].iloc[num_rows, 5] == ds["beat_feats"].iloc[0, 5]
