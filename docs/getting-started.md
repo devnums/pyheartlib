@@ -89,16 +89,21 @@ For feature computation, an instance of the `pyheartlib.beat_info.BeatInfo` has 
 from pyheartlib.beat_info import BeatInfo
 beatinfo = BeatInfo()
 ```
-`BeatInfo` includes some predefined features, however user-defined features can also be added. Each user-defined feature definition must adhere to this syntax:
-```python
-def F_new_feature1(self):
-    return return_result
+`BeatInfo` includes some predefined features, however custom features can also be defined. Each custom feature definition must adhere to this syntax and its name must start with *F_*:
 
-# The `return_result` can be a single number or
-# a dictionary such as {"Feature_1": value_1, "Feature_2": value_2}.
+```python
+def F_new_feature(self):
+    return return_result
 ```
 
-The user-defined features can be added to the beatinfo object by using the `add_features()` method. The list of all available features can be obtained using the `available_features()` method. To select desired features for computation the `select_features()` method can be used.
+The `return_result` must be one of the following:
+1) A real number.
+2) A dictionary such as {"Feature_1": value_1, "Feature_2": value_2}. Each value can be a real number. Alternatively, each value can be a one-dimensional array, list, or tuple. In this case, their elements must correspond to the channels.
+3) Tuple or one-dimensional NumPy array. Their elements must correspond to the channels. For example, the return value of `F_feat_new()` as a tuple *(element1, element2)* will produce `F_feat_new(CH1)` for *element1* and `F_feat_new(CH2)` for *element2*. The order of channels is determined by the *CHANNEL* field in the *config.yaml* file.
+4) A list. An output as a list will be a list.
+
+The custom features can be added to the beatinfo object by using the `add_features()` method, the list of all available features can be obtained using the `available_features()` method, and to select desired features for computation the `select_features()` method can be used.
+
 Descriptions of all the parameters of `BeatInfo` can be found [here](introduction.html#directive-bif).
 
 Finally, using the `save_dataset_inter()` method of `BeatData`, an inter-patient dataset can be created.
