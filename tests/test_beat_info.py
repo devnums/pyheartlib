@@ -44,16 +44,31 @@ def test_add_features(test_data, beatinfo):
     def F_new_feature2(self):
         return {"FEAT_a": 330, "FEAT_b": 4668}
 
+    def F_new_feature2b(self):
+        return {"FEAT_a2": (23, 67), "FEAT_b2": (35, 76)}
+
+    def F_new_feature2c(self):
+        return {
+            "FEAT_a3": numpy.array([89.3, 58]),
+            "FEAT_b3": numpy.array([35.3, 47.5]),
+        }
+
     def F_new_feature3(self):
         return (218, 4.5)
 
-    def F_new_feature4(self):
+    def F_new_feature3b(self):
         return numpy.array([56.2, 236])
+
+    def F_new_feature4(self):
+        return [3, 4, 2, 6, 27]
 
     new_features = [
         F_new_feature1,
         F_new_feature2,
+        F_new_feature2b,
+        F_new_feature2c,
         F_new_feature3,
+        F_new_feature3b,
         F_new_feature4,
     ]
     beatinfo.add_features(new_features)
@@ -65,8 +80,11 @@ def test_add_features(test_data, beatinfo):
     assert "F_new_feature1" in beatinfo.features.keys()
     assert beatinfo.features["F_new_feature1"] == 890
     assert beatinfo.features["FEAT_a"] == 330
+    assert beatinfo.features["FEAT_a2"] == (23, 67)
+    assert beatinfo.features["FEAT_b3"] == (35.3, 47.5)
     assert beatinfo.features["F_new_feature3(CH2)"] == 4.5
-    assert beatinfo.features["F_new_feature4(CH1)"] == 56.2
+    assert beatinfo.features["F_new_feature3b(CH1)"] == 56.2
+    assert beatinfo.features["F_new_feature4"] == [3, 4, 2, 6, 27]
 
 
 def test_select_features(beatinfo):
