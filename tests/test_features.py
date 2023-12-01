@@ -70,7 +70,7 @@ def test_get_hrv_features(rri_data):
         "rmssd",
         "nrmssd",
     ]
-    feats_arr = get_hrv_features(rri_data, features=flist)
+    feats_arr = get_hrv_features(rri=rri_data, features=flist)
     assert feats_arr.shape == (2, 8)
     assert feats_arr[0, 0] == 285.0
     assert feats_arr[0, 1] == pytest.approx(47.87, rel=0.001)
@@ -80,7 +80,7 @@ def test_get_hrv_features(rri_data):
 
 def test_get_wf_feats(signal):
     interval = 36
-    feats = get_wf_feats(signal, interval)
+    feats = get_wf_feats(sig=signal, interval=interval, only_names=False)
     assert feats.shape == (16, 14)
     assert feats[0, 0] == np.max(signal[:interval])
     assert feats[0, 1] == np.min(signal[:interval])
