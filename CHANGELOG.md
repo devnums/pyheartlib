@@ -2,6 +2,75 @@
 
 
 
+## v1.21.0 (2023-12-01)
+
+### Build
+
+* build: update lock file ([`a1bf0d9`](https://github.com/devnums/pyheartlib/commit/a1bf0d9d2e1761e6a14f20f5e9e48ff66642cbf4))
+
+### Chore
+
+* chore: update and rerun examples ([`29b7eb3`](https://github.com/devnums/pyheartlib/commit/29b7eb39bf8a7e5a1748bff27be2669c1f312dc3))
+
+* chore: update file for multichannel ([`58b218e`](https://github.com/devnums/pyheartlib/commit/58b218e5cb932da000035e94b3a0d71521e13278))
+
+* chore: fix example and add more info ([`33a4306`](https://github.com/devnums/pyheartlib/commit/33a43066431131ea75105298fa7886c06598170a))
+
+* chore: add extra channel ([`9103e9f`](https://github.com/devnums/pyheartlib/commit/9103e9f3cd4c0ba22d269509db52d97fd49f0e29))
+
+* chore: edit files ([`0c7fc30`](https://github.com/devnums/pyheartlib/commit/0c7fc30d697529a3dec5e7353c013cee3a8d2bab))
+
+* chore: fix link ([`5abe622`](https://github.com/devnums/pyheartlib/commit/5abe62229f2578296280096ad13678127e5e02ef))
+
+### Ci
+
+* ci: system info ([`73034a8`](https://github.com/devnums/pyheartlib/commit/73034a8939de7855cead3fbd1425abecda0c76c3))
+
+### Documentation
+
+* docs: update docs ([`c3e0926`](https://github.com/devnums/pyheartlib/commit/c3e092686be1d6044285104732b96f46f7dfeded))
+
+* docs: update and add new info ([`aeb2ccd`](https://github.com/devnums/pyheartlib/commit/aeb2ccd9c3ed5585c2d8f2eaea6cc2afab9d6f13))
+
+* docs: update files ([`16a710f`](https://github.com/devnums/pyheartlib/commit/16a710f05affccd4dcc38e68be279f62febe476c))
+
+* docs: modify style ([`a2c61e8`](https://github.com/devnums/pyheartlib/commit/a2c61e85c8ee61c40428c3c70616519d13558ec2))
+
+* docs: fix broken link ([`8ab0673`](https://github.com/devnums/pyheartlib/commit/8ab0673baedbdb9d72143b6bd09087b04b56879d))
+
+* docs: edit processor ([`20b8586`](https://github.com/devnums/pyheartlib/commit/20b85868a9bcaeb1078fe66695c254686d4f86bf))
+
+### Feature
+
+* feat: add new args ([`cead088`](https://github.com/devnums/pyheartlib/commit/cead088d46f1e61fd82c4917af6fc2c3b9e166b6))
+
+* feat: add multichannel support ([`c2ea097`](https://github.com/devnums/pyheartlib/commit/c2ea0971a58189894d12853f2597ef9d67f7211c))
+
+* feat: add multichannel support ([`3809494`](https://github.com/devnums/pyheartlib/commit/3809494144bc931f7ea6d450ed208867c7ac4931))
+
+### Fix
+
+* fix: improve record reading ([`1dfe203`](https://github.com/devnums/pyheartlib/commit/1dfe2034bdbd4ec35161a4718b584923f6ad189e))
+
+* fix: add new methods, docstrings, clean some parts ([`e4e2bb0`](https://github.com/devnums/pyheartlib/commit/e4e2bb0149f1bb565bd44b3807d6e1a9ffd45fd8))
+
+* fix: add list as the output of custom features ([`00a5ec7`](https://github.com/devnums/pyheartlib/commit/00a5ec7def2aed3ee3d6723f6f94b36d05119156))
+
+### Test
+
+* test: fix test ([`7cba7b2`](https://github.com/devnums/pyheartlib/commit/7cba7b2f1799750064c26855ef1895c678a896b4))
+
+* test: update file ([`68bc944`](https://github.com/devnums/pyheartlib/commit/68bc9446498c0bf79aa4f64fb5ff86901214526c))
+
+* test: add new tests ([`5f03722`](https://github.com/devnums/pyheartlib/commit/5f037221f205f2d78a9fd9774648612ffef7e68c))
+
+* test: fix multichannel support ([`8a49220`](https://github.com/devnums/pyheartlib/commit/8a4922021ef3637eed38be0aaf26ffbdc96a5c59))
+
+* test: fix multichannel support ([`aa05103`](https://github.com/devnums/pyheartlib/commit/aa05103016bd3c40d26d046dad6a4354d83a77c3))
+
+* test: fix for multichannel support ([`e6346cb`](https://github.com/devnums/pyheartlib/commit/e6346cb806a1b7f38d3ec899c7c9e7a8e11eb5cc))
+
+
 ## v1.20.1 (2023-11-11)
 
 ### Fix
