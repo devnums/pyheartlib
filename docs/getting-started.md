@@ -34,7 +34,7 @@ It is necessary to create a *config.yaml* file in the main data directory. This 
 ```bash
 DATA_DIR: Directory of the input data relative to the main data directory.
 SAMPLING_RATE: Sampling rate of the original signals.
-CHANNEL: Name of the signal channel.
+CHANNEL: Name of the signal channels.
 BEAT_TYPES: List of heartbeat types (R-peak labels).
 RHYTHM_TYPES: List of rhythm types.
 ```
@@ -57,7 +57,7 @@ Below is the contents of the *config.yaml* file, which must be placed in the mai
 # file: data/config.yaml
 DATA_DIR: "mit-bih-arrhythmia-database-1.0.0/"
 SAMPLING_RATE: 360
-CHANNEL: "MLII"
+CHANNEL: ['MLII', 'V1']
 BEAT_TYPES: ['N', 'L', 'R', 'j', 'e', 'V', 'E', 'A', 'S', 'a', 'J', 'F', 'f', '/', 'Q']
 RHYTHM_TYPES: ['(AB', '(AFIB', '(AFL', '(B', '(BII', '(IVR', '(N', '(NOD', '(P', '(PREX', '(SBR', '(SVTA', '(T', '(VFL', '(VT']
 ```

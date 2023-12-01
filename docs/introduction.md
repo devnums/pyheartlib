@@ -122,6 +122,7 @@ Once a dataset is ready, it can be utilized in the `ECGSequence` class to genera
 - `raw` : Whether to return the waveform or the computed features.
 - `interval` : Interval for sub-segmenting the signal for waveform feature computation.
 - `shuffle` : If True, after each epoch the samples are shuffled.
+- `rri_output` : Whether to return RR-intervals and their features.
 - `rri_length` : Length of the output RR-intervals list. It is zero-padded on the right side.
 
 ```{eval-rst}
