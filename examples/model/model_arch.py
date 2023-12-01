@@ -65,16 +65,10 @@ def conv1d_block(
 def model_arch(params_model):
     x_input_dim = int(params_model["x_input_dim"])
     num_classes = int(params_model["num_classes"])
-    # out_seq_len = int(params_model["out_seq_len"])
-
-    input1_layer = Input(shape=(x_input_dim), name="x_input_dim")
-    # input1_layer = Input(shape=(150,14), name='x_input_dim')
-    print_layer(input1_layer)
-
-    # input: (None,seq_len)  --> (None,seq_len,1)
-    out = tf.expand_dims(input1_layer, axis=-1)
-    print_layer(out)
-
+    input1_layer = Input(shape=(None, x_input_dim), name="x_input_dim")
+    out = tf.gather(input1_layer, tf.constant([0]), axis=1)
+    out = tf.squeeze(input=out, axis=1)
+    out = tf.expand_dims(out, axis=-1)
     out = BatchNormalization()(out)
     print_layer(out)
     out = conv1d_block(

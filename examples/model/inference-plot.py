@@ -18,7 +18,7 @@ mdl_checkpoint = os.path.join(os.getcwd(), "checkpoint/keras.exp")
 interval_value = 6
 opt = {1: "mis", 2: "correct", 3: "all"}
 to_plot = opt[3]
-rang = range(3790, 3800)
+rang = range(3490, 3500)
 
 # load trained model
 loaded_model = tf.keras.models.load_model(mdl_checkpoint)
@@ -61,7 +61,7 @@ for i in tqdm(rang):  # range(round(len(samples_info_test)/batch_size)):
         rec = samples_info_test[i][0]
         st = samples_info_test[i][1]
         en = samples_info_test[i][2]
-        sig = annotated_records_test[rec]["signal"][st:en]
+        sig = annotated_records_test[rec]["signal"][st:en][:, 0]
         # figure
         plt.figure(figsize=(10, 5))
         # plot signal
