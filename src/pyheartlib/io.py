@@ -11,6 +11,7 @@
 
 import pickle
 
+import numpy as np
 import pandas as pd
 import wfdb
 
@@ -48,16 +49,28 @@ def get_data(record_path, config, return_dict=True):
     else:
         channels = []
         channels.append(str(chnls))
-    record = wfdb.rdrecord(record_path, channel_names=channels)
-    annotation = wfdb.rdann(record_path, "atr")
-    signal = record.p_signal
-    if signal is None:
-        raise RuntimeError("Record was not read correctly!")
+    all_channels = []
+    for ch in channels:
+        try:
+            record = wfdb.rdrecord(record_path, channel_names=[ch])
+            all_channels.append(record.p_signal.T.tolist()[0])
+        except Exception:
+            errmsg = (
+                f"Channel {ch} was not read correctly! Record "
+                f"path: {record_path}"
+            )
+            raise RuntimeError(errmsg)
+    signal = np.array(all_channels)
+    signal = signal.T
     if signal.shape[1] != len(channels):
-        raise ValueError("Channels are not right!")
+        raise ValueError(f"Channels are not right! Record path: {record_path}")
+    annotation = wfdb.rdann(record_path, "atr")
     ann_locations = annotation.sample
     if len(ann_locations) < 1:
-        errmsg = "Record was not read correctly or does not have annotations!"
+        errmsg = (
+            f"Record was not read correctly or does not have "
+            f"annotations! Record path: {record_path}"
+        )
         raise RuntimeError(errmsg)
     symbol = annotation.symbol
     aux = annotation.aux_note
