@@ -13,7 +13,6 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import math  # noqa: E402
-from warnings import warn  # noqa: E402
 
 import numpy as np  # noqa: E402
 from tensorflow.keras.utils import Sequence  # noqa: E402
@@ -210,12 +209,15 @@ class ECGSequence(Sequence):
         feature computation, by default 36
     shuffle : bool, optional
         If True, after each epoch the samples are shuffled, by default True
+    rri_output: bool, optional
+        Whether to return RR-intervals and their features.
+        If False, returns only waveforms.
     rri_length : int, optional
         Length of the output RR-intervals list.
         It is zero-padded on the right side, by default 150
 
-    Example
-    -------
+    Examples
+    --------
     >>> from pyheartlib.data_rhythm import ECGSequence
     >>> trainseq = ECGSequence(
     >>>    annotated_records,
@@ -225,9 +227,32 @@ class ECGSequence(Sequence):
     >>>    raw=True,
     >>>    interval=36,
     >>>    shuffle=False,
+    >>>    rri_output=True,
     >>>    rri_length=25
     >>> )
 
+    Notes
+    -----
+    Returns a tuple containing two elements when its object is utilized in
+    this way: ECGSequence_object[BatchNo].
+
+    The first element (Batch_x) contains data samples and the
+    second one (Batch_y) their associated annotation.
+
+    If `rri_output` is True, Batch_x is a list of NumPy arrays of
+    Batch_wave, Batch_rri, Batch_rri_feat.
+
+    Batch_wave contains signal excerpts or their features, Batch_rri
+    contains RR-intervals, and Batch_rri_feat contains RR-interval features.
+
+    If `rri_output` is False, Batch_x contains Batch_wave only.
+
+    If `raw` is False, Batch_wave has the shape of
+    (Batch size, Number of channels, Number of sub-segments, Number
+    of features), otherwise, it has the shape of
+    (Batch size, Number of channels, Length of excerpt).
+
+    Batch_y has the shape of (Batch size, ).
     """
 
     def __init__(
@@ -261,20 +286,23 @@ class ECGSequence(Sequence):
         Returns
         -------
         tuple
-            Contains batch_x, batch_y, where batch_x is a list of
-            numpy arrays of batch_seq, batch_rri, batch_rri_feat.
+            Contains batch_x and batch_y.
 
-            If raw is False, batch_seq has the shape of
+            If `rri_output` is True, batch_x is a list of Numpy arrays of
+            batch_wave, batch_rri, batch_rri_feat. If `rri_output` is
+            False, batch_x contains batch_wave only.
+
+            If `raw` is False, batch_wave has the shape of
             (batch_size, #channels, #sub-segments, #features), otherwise,
-            it has the shape of (batch_size, #channels, seq_len).
+            it has the shape of (batch_size, #channels, wave_len).
 
             batch_y has the shape of (batch_size, 1).
         """
         batch_samples = self.samples_info[
             idx * self.batch_size : (idx + 1) * self.batch_size
         ]
-        batch_seq = []
-        batch_label = []
+        batch_wave = []
+        batch_annotation = []
         batch_rri = []
         for sample in batch_samples:
             # eg sample:[10,500,800,'AFIB'] ::: [rec,start,end,ann]
@@ -285,7 +313,7 @@ class ECGSequence(Sequence):
             anno = ann
             if self.class_labels is not None:
                 anno = self.get_integer(ann)
-            batch_label.append(anno)
+            batch_annotation.append(anno)
             seq = self.data[rec_id]["signal"][start:end]
             # compute signal waveform features for fragments
             if self.raw is False:
@@ -293,27 +321,23 @@ class ECGSequence(Sequence):
                 for ch in range(seq.shape[1]):
                     feats_ch = self.compute_wf_feats(seq[:, ch])
                     feats.append(list(feats_ch))
-                batch_seq.append(feats)
+                batch_wave.append(feats)
             else:
-                batch_seq.append(seq)
+                batch_wave.append(seq)
             if self.rri_output:
                 rri = self.get_rri(rec_id, start, end)
                 batch_rri.append(rri)
-        batch_seq = np.array(batch_seq)
+        batch_wave = np.array(batch_wave)
         if self.rri_output:
             batch_rri = np.array(batch_rri)
             batch_rri_feat = self.compute_rri_features(batch_rri * 1000)
         if self.raw is True:
-            batch_seq = np.swapaxes(batch_seq, 1, 2)
-        if batch_seq.shape[1] == 1:
-            msg = "Output will have one more dimension in future for channel!"
-            warn(msg, DeprecationWarning, stacklevel=2)
-            batch_seq = np.squeeze(batch_seq, axis=1)
+            batch_wave = np.swapaxes(batch_wave, 1, 2)
         if self.rri_output:
-            batch_x = [batch_seq, batch_rri, batch_rri_feat]
+            batch_x = [batch_wave, batch_rri, batch_rri_feat]
         else:
-            batch_x = batch_seq
-        batch_y = np.array(batch_label)
+            batch_x = batch_wave
+        batch_y = np.array(batch_annotation)
         return batch_x, batch_y
 
     def on_epoch_end(self):
@@ -353,11 +377,19 @@ class ECGSequence(Sequence):
 
         mask = np.invert(rri_array.astype(bool))
         rri_masked = ma.masked_array(rri_array, mask=mask)
-        return get_hrv_features(rri_masked)
+        return get_hrv_features(rri=rri_masked)
+
+    def get_rri_features_names(self):
+        """Get RR-interval feature names."""
+        return get_hrv_features(only_names=True)
 
     def compute_wf_feats(self, seq):
         """Computes waveform features."""
-        return get_wf_feats(seq, self.interval)
+        return get_wf_feats(sig=seq, interval=self.interval, only_names=False)
+
+    def get_wf_feats_names(self):
+        """Get waveform feature names."""
+        return get_wf_feats(only_names=True)
 
 
 def load_dataset(file_path=None):

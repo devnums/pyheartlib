@@ -13,7 +13,6 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import math  # noqa: E402
-from warnings import warn  # noqa: E402
 
 import numpy as np  # noqa
 from tensorflow.keras.utils import Sequence  # noqa: E402
@@ -258,12 +257,29 @@ class ECGSequence(Sequence):
     shuffle : bool, optional
         If True, after each epoch the samples are shuffled, by default True
 
-    Example
-    -------
+    Examples
+    --------
     >>> from pyheartlib.data_rpeak import ECGSequence
     >>> trainseq = ECGSequence(
     >>>     annotated_records, samples_info, binary=False, batch_size=2,
     >>> raw=True, interval=72)
+
+    Notes
+    -----
+    Returns a tuple containing two elements when its object is utilized in
+    this way: ECGSequence_object[BatchNo].
+
+    The first element (Batch_x) contains data samples and the
+    second one (Batch_y) their associated annotation.
+
+    Batch_x contains the signal excerpts or their features (Batch_wave).
+
+    If `raw` is False, Batch_wave has the shape of
+    (Batch size, Number of channels, Number of sub-segments, Number
+    of features), otherwise, it has the shape of (Batch_size, Number
+    of channels, Length of excerpt).
+
+    Batch_y has the shape of (Batch size, Length of annotation list).
 
     """
 
@@ -300,8 +316,10 @@ class ECGSequence(Sequence):
         tuple
             Contains batch_x, batch_y as numpy arrays.
 
-            batch_x has the shape of (batch_size,#sub-segments,#features) if
-            raw is False, otherwise it has the shape of (batch_size,len_seq).
+            batch_x has the shape of
+            (batch_size, #channels, #sub-segments, #features)
+            if raw is False, otherwise it has the shape of
+            (batch_size, #channels, len_seq).
 
             batch_y has the shape of (batch_size,len_annotation_list)
         """
@@ -338,10 +356,6 @@ class ECGSequence(Sequence):
         batch_x = np.array(batch_x)
         if self.raw is True:
             batch_x = np.swapaxes(batch_x, 1, 2)
-        if batch_x.shape[1] == 1:
-            msg = "Output will have one more dimension in future for channel!"
-            warn(msg, DeprecationWarning, stacklevel=2)
-            batch_x = np.squeeze(batch_x, axis=1)
         batch_y = np.array(batch_y)
         return batch_x, batch_y
 
@@ -386,7 +400,11 @@ class ECGSequence(Sequence):
         return labels_seq
 
     def compute_wf_feats(self, seq):
-        return get_wf_feats(seq, self.interval)
+        return get_wf_feats(sig=seq, interval=self.interval, only_names=False)
+
+    def get_wf_feats_names(self):
+        """Get waveform feature names."""
+        return get_wf_feats(only_names=True)
 
 
 def load_dataset(file_path=None):
