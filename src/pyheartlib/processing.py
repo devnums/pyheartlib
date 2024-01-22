@@ -45,6 +45,22 @@ class Processing:
         return s
 
     @staticmethod
+    def custom_processors(signal, processors=None):
+        """Applies custom processors in order.
+
+        Parameters
+        ----------
+        signal : numpy.ndarray
+            one-dimensional signal.
+        processors : list
+            Definition of processor functions as a list.
+        """
+        s = signal
+        for p in processors:
+            s = p(s)
+        return s
+
+    @staticmethod
     def remove_baseline(signal, sampling_rate=360):
         """Removes the signal baseline by applying two median filters.
 
