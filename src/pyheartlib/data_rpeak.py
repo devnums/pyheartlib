@@ -56,6 +56,10 @@ class RpeakData(Data, DataSeq):
         Parameter of the low pass-filter, by default 15
     progress_bar : bool, optional
         Whether to display a progress bar, by default True
+    processors : list, optional
+        Ordered list of functions' names for preprocessing the raw signals.
+        Each function takes a one-dimensional NumPy array as its input and
+        returns an array of the same length.
 
     Example
     -------
@@ -86,6 +90,7 @@ class RpeakData(Data, DataSeq):
         cutoff=45,
         order=15,
         progress_bar=True,
+        **kwargs,
     ):
         super().__init__(
             base_path,
@@ -93,6 +98,7 @@ class RpeakData(Data, DataSeq):
             lowpass,
             cutoff,
             order,
+            **kwargs,
         )
         DataSeq.progress_bar = not progress_bar
 

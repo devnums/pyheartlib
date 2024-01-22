@@ -39,6 +39,10 @@ class Data:
         Parameter of the low pass-filter, by default 45
     order : int, optional
         Parameter of the low pass-filter, by default 15
+    processors : list, optional
+        Ordered list of functions' names for preprocessing the raw signals.
+        Each function takes a one-dimensional NumPy array as its input and
+        returns an array of the same length.
 
     Attributes
     ----------
@@ -62,11 +66,13 @@ class Data:
         lowpass=False,
         cutoff=45,
         order=15,
+        **kwargs,
     ):
         self.remove_bl = remove_bl
         self.lowpass = lowpass
         self.cutoff = cutoff
         self.order = order
+        self.kwargs = kwargs
 
         if base_path is None:
             self.base_path = os.getcwd()
@@ -111,6 +117,17 @@ class Data:
                 cutoff=self.cutoff,
                 order=self.order,
             )
+            if "processors" in self.kwargs.keys():
+                try:
+                    processed_sig[:, ch] = Processing.custom_processors(
+                        signal[:, ch], processors=self.kwargs["processors"]
+                    )
+                except Exception:
+                    errmsg = (
+                        "Processors error. Processors parameter"
+                        " must be a list of function names."
+                    )
+                    raise Exception(errmsg)
 
         data_dict["signal"] = processed_sig
         return data_dict
