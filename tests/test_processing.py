@@ -32,6 +32,20 @@ def test_apply(signal):
     assert len(r) == len(signal)
 
 
+def test_custom_processors(signal):
+    def processor1(x):
+        return 2 * x
+
+    def processor2(x):
+        return x + 1
+
+    custom_processors = [processor1, processor2]
+    r = Processing.custom_processors(signal, processors=custom_processors)
+    assert len(r) == len(signal)
+    assert r[0] == pytest.approx(2 * signal[0] + 1, rel=0.001)
+    assert r[-1] == pytest.approx(2 * signal[-1] + 1, rel=0.001)
+
+
 def test_remove_baseline(signal):
     r = Processing.remove_baseline(signal, sampling_rate=360)
     assert len(r) == len(signal)
