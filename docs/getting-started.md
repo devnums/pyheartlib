@@ -216,3 +216,36 @@ The `ECGSequence` takes the  *annotated_records* (ECG records) and the *samples_
 - {doc}`R-peak dataset <examples/rpeak>`
 - {doc}`R-peak detection <examples/rpeak_detection>`
 :::
+
+## Optional Preprocessing
+
+It is possible to remove the noise from the raw signals by setting the `remove_bl` and/or `lowpass` parameters to true. If `remove_bl` is set to true, the baseline wander will be removed by applying two median filters to the raw signal. By setting the `lowpass` parameter to true, a low pass filter is applied to the signal.
+
+It is also possible to define custom preprocessing steps to be applied to the signals. The `processors` parameter can be used to achieve this goal. This parameter takes a list of functions that are going to be applied to the signals according to their order of appearance in the list. Each function takes as its input a one-dimensional NumPy array and returns an array of the same length. Example:
+
+```python
+# Multiplies the signal by 2
+def custom_processor1(x):
+    return 2*x
+
+# Adds 1 to the signal
+def custom_processor2(x):
+    return x+1
+```
+
+The above steps can be applied to the raw signals.
+
+```python
+# custom_processor1 is applied to the raw signal first, and custom_processor2 is applied after that.
+custom_processors = [custom_processor1, custom_processor2]
+
+rhythm_data = RhythmData(
+    base_path="data",
+    remove_bl=False,
+    lowpass=False,
+    progress_bar=False,
+    processors = custom_processors,
+)
+```
+
+The `processors` parameter allows for custom noise reduction techniques to be applied to the raw signals.

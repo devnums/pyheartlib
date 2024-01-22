@@ -58,6 +58,7 @@ See also:
 - `cutoff` : Parameter of the low pass-filter.
 - `order` : Parameter of the low pass-filter.
 - `progress_bar` : Whether to display a progress bar.
+- `processors` : Ordered list of functions' names for preprocessing the raw signals. Each function takes a one-dimensional NumPy array as its input and returns an array of the same length.
 ---
 ```{eval-rst}    It is zero-padded on the right side, by default 150
 
@@ -93,6 +94,7 @@ For the arrhythmia classification, the `RhythmData` class can be utilized to cre
 - `cutoff` : Parameter of the low pass-filter.
 - `order` : Parameter of the low pass-filter.
 - `progress_bar` : Whether to display a progress bar.
+- `processors` : Ordered list of functions' names for preprocessing the raw signals. Each function takes a one-dimensional NumPy array as its input and returns an array of the same length.
 ---
 ```{eval-rst}
 :meth:`save_dataset() <pyheartlib.data.DataSeq.save_dataset>` :
@@ -157,6 +159,7 @@ Similar to the `RhythmData` class, the `RpeakData` class produces a dataset from
 - `cutoff` : Parameter of the low pass-filter.
 - `order` : Parameter of the low pass-filter.
 - `progress_bar` : Whether to display a progress bar.
+- `processors` : Ordered list of functions' names for preprocessing the raw signals. Each function takes a one-dimensional NumPy array as its input and returns an array of the same length.
 ---
 ```{eval-rst}
 :meth:`save_dataset() <pyheartlib.data.DataSeq.save_dataset>` :
