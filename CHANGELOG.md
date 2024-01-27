@@ -2,6 +2,29 @@
 
 
 
+## v1.22.0 (2024-01-27)
+
+### Chore
+
+* chore: fix examples ([`12d2b4d`](https://github.com/devnums/pyheartlib/commit/12d2b4dad62d27e080dd13980969f3cf39e0d767))
+
+### Documentation
+
+* docs: custom preprocessing functionality ([`2207862`](https://github.com/devnums/pyheartlib/commit/2207862213bc03238deccfa412e0773095c112c7))
+
+* docs: update ([`fbfc1d9`](https://github.com/devnums/pyheartlib/commit/fbfc1d9a7bdfbac90d0931f562024a5e24476747))
+
+### Feature
+
+* feat: add custom preprocessing functionality ([`3cda864`](https://github.com/devnums/pyheartlib/commit/3cda864418fae6ff2bf64376b8c2125b79d19cf2))
+
+* feat: add custom preprocessing functionality ([`52cf463`](https://github.com/devnums/pyheartlib/commit/52cf463e8d79db4adab21a7b9000c1443d2070f7))
+
+### Test
+
+* test: add test for custom processors ([`08b3729`](https://github.com/devnums/pyheartlib/commit/08b372999315d34d4a71d0d2a5bda6a92e00d898))
+
+
 ## v1.21.0 (2023-12-01)
 
 ### Build
