@@ -33,7 +33,7 @@ For the heartbeat classification task, which typically requires segmented and an
 
 For the classification of signal excerpts, e.g., arrhythmia classification (\autoref{fig:fig2}), the software is designed to store metadata about the excerpts in order to reduce memory usage significantly, especially in situations that each excerpt is being used only once during model training. By adjusting the parameters appropriately, the package provides a substantial quantity of data samples for training deep learning models. Moreover, it is feasible to incorporate RR-intervals in addition to waveforms and their computed features.
 
-![An excerpt, its onset, and offset on the original signal. \label{fig:fig2}](fig2.png){ width=98% }
+![An excerpt, its onset, and offset on the original signal. Pyheartlib can be utilized for the arrhythmia classification task. \label{fig:fig2}](fig2.png){ width=98% }
 
 Another use case is when each excerpt has to be divided into smaller sub-segments each with a specific label, e.g., R-peak detection. The package delivers data samples by storing metadata about the excerpts and providing lists of labels as annotations for the excerpts.
 
