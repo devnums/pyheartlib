@@ -19,7 +19,7 @@ bibliography: paper.bib
 
 # Summary
 
-Electrocardiogram (ECG) signals represent the electrical activity of the heart as a graph of voltage versus time. These signals have significant importance in healthcare and contain valuable information. Therefore, they can be analyzed for the diagnosis of various disease.
+Electrocardiogram (ECG) signals represent the electrical activity of the heart as a graph of voltage versus time. These signals have significant importance in healthcare and contain valuable information. Therefore, they can be analyzed for the diagnosis of various diseases.
 
 `Pyheartlib` is a Python package for processing electrocardiogram recordings. This software facilitates working with signals for tasks such as heartbeat detection, heartbeat classification, and arrhythmia classification. Utilizing it, researchers can focus on these tasks without the burden of designing data processing modules. The package transforms original data into processed signal excerpts and their computed features in order to be used for training various machine learning models including advanced deep learning models, which can be trained by taking advantage of Keras [@chollet2015keras] and Tensorflow [@tensorflow2015] libraries.
 
@@ -31,7 +31,7 @@ For the heartbeat classification task, which typically requires segmented and an
 
 ![Pyheartlib processes the provided ECG records and generates a dataset comprising waveforms, computed features, and their corresponding annotations. \label{fig:fig1}](fig1.png){ width=98% }
 
-For the classification of signal excerpts, e.g., arrhythmia classification (\autoref{fig:fig2}), the software is designed to store metadata about the excerpts in order to reduce memory usage significantly, especially in situations that each excerpt is being used only once during model training. By adjusting the parameters appropriately, the package provides a substantial quantity of data samples for training deep learning models. Moreover, it is feasible to incorporate RR-intervals in addition to waveforms and their computed features.
+For the classification of signal excerpts, e.g., arrhythmia classification (\autoref{fig:fig2}), the software is designed to store metadata about the excerpts in order to reduce memory usage significantly, especially in situations where each excerpt is being used only once during model training. By adjusting the parameters appropriately, the package provides a substantial quantity of data samples for training deep learning models. Moreover, it is feasible to incorporate RR-intervals in addition to waveforms and their computed features.
 
 ![An excerpt, its onset, and offset on the original signal. Pyheartlib can be utilized for the arrhythmia classification task. \label{fig:fig2}](fig2.png){ width=98% }
 
