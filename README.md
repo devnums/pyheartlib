@@ -11,6 +11,7 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05792/status.svg)](https://doi.org/10.21105/joss.05792)
 
 
 `Pyheartlib` is a Python package for processing electrocardiogram (ECG) recordings. This software facilitates working with signals for tasks such as heartbeat detection, heartbeat classification, and arrhythmia classification. Utilizing it, researchers can focus on these tasks without the burden of designing data processing modules. The package transforms original data into processed signal excerpts and their computed features in order to be used for training various machine learning models including advanced deep learning models, which can be trained by taking advantage of Keras and Tensorflow libraries.
@@ -41,11 +42,33 @@ $ pip install pyheartlib
 
 ## Examples
 
-Examples can be found in the [examples section](https://pyheartlib.readthedocs.io/en/latest/examples/examples.html) of the documentation and also in the GitHub repository ([examples](examples/)).
+Examples can be found in the [examples section](https://pyheartlib.readthedocs.io/en/latest/examples/examples.html) of the documentation and also in the GitHub repository ([examples](https://github.com/devnums/pyheartlib/tree/main/examples)).
+
+## Citation
+
+To cite this software, please use:
+
+> Mohammadi, S., (2024). Pyheartlib: A Python package for processing electrocardiogram signals. Journal of Open Source Software, 9(95), 5792, https://doi.org/10.21105/joss.05792
+
+BibTeX:
+```
+@article{devnums_pyheartlib_2024,
+    doi = {10.21105/joss.05792},
+    url = {https://doi.org/10.21105/joss.05792},
+    year = {2024},
+    publisher = {The Open Journal},
+    volume = {9},
+    number = {95},
+    pages = {5792},
+    author = {Sadegh Mohammadi},
+    title = {Pyheartlib: A Python package for processing electrocardiogram signals},
+    journal = {Journal of Open Source Software}
+}
+```
 
 ## Contributing
 
-Feedback and contributions are appreciated. The guidelines for contributing are provided [here](CONTRIBUTING.md).
+Feedback and contributions are appreciated. The guidelines for contributing are provided [here](https://github.com/devnums/pyheartlib/blob/main/CONTRIBUTING.md).
 
 ## Discussions & Support
 
@@ -53,4 +76,4 @@ For any questions, discussions, or problems with this software, please join us o
 
 ## License
 
-`Pyheartlib` is released under the [AGPL-3.0](LICENSE) License.
+`Pyheartlib` is released under the [AGPL-3.0-only](https://github.com/devnums/pyheartlib/blob/main/LICENSE) License.

@@ -1,0 +1,28 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Mohammadi
+  given-names: Sadegh
+  orcid: "https://orcid.org/0000-0001-9763-4963"
+doi: 10.5281/zenodo.10730468
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Mohammadi
+    given-names: Sadegh
+    orcid: "https://orcid.org/0000-0001-9763-4963"
+  date-published: 2024-03-09
+  doi: 10.21105/joss.05792
+  issn: 2475-9066
+  issue: 95
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 5792
+  title: "Pyheartlib: A Python package for processing electrocardiogram
+    signals"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.05792"
+  volume: 9
+title: "Pyheartlib: A Python package for processing electrocardiogram
+  signals"
